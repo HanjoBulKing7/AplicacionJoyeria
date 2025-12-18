@@ -1,4 +1,4 @@
-# Aplicación Joyería — Offline-First Mobile + Auto-Sync
+# Aplicación Joyería💍 — Offline-First Mobile 📴 + Auto-Sync 🔄
 
 [![Expo](https://img.shields.io/badge/Expo-React%20Native-black)](https://expo.dev/)
 [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-API-green)](https://spring.io/projects/spring-boot)

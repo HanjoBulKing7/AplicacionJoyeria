@@ -7,14 +7,14 @@ export default function RootLayout() {
     DancingScript_400Regular,
     DancingScript_700Bold, // Puedes cargar ambas variantes si quieres
   });
+    if (!fontsLoaded) {
+    return null;   
+  }
   return( 
-  <Stack>
-      <Stack.Screen
-      name="index"
-      options={{
+  <Stack
+  screenOptions={{
         headerShown: false,
-      }} 
-      />
-  </Stack>
+  }}
+  />
   );
 }

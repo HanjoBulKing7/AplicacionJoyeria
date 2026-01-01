@@ -1,4 +1,5 @@
 import InventoryRepo,{ JewelCreate, JewelUpdate } from "./inventory.repository"
+import { AppError } from "../../shared/errors/AppError";
 
 const inventoryService = {
 
@@ -26,11 +27,11 @@ const inventoryService = {
         
         if(!hasAny)  throw Error("No fields to update");//If it does not contain any throw an error
     
-        if(item.name!== undefined && !item.name.trim()) throw Error ( "Name is required")//Check if the name exists not undefined and not just blank space
+        if(item.name!== undefined && !item.name.trim()) throw new AppError ( "Name is required", 400)//Check if the name exists not undefined and not just blank space
 
-        if(item.stock!== undefined && item.stock < 0 ) throw Error ( "Stock must not be >= 0");//Check if the stock is not undefined and not less than zero
+        if(item.stock!== undefined && item.stock < 0 ) throw new AppError ( "Stock must not be >= 0", 400);//Check if the stock is not undefined and not less than zero
 
-        if(item.price !== undefined && item.price <= 0) throw Error ("Price must be greater than zero")//Check if the price is not undefined and not <= than zero
+        if(item.price !== undefined && item.price <= 0) throw new AppError ("Price must be greater than zero", 400);//Check if the price is not undefined and not <= than zero
 
         return InventoryRepo.update(item, id);
 

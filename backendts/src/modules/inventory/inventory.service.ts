@@ -1,20 +1,21 @@
-import InventoryRepo,{ JewelCreate, JewelUpdate } from "./inventory.repository"
+import InventoryRepo,{ JewelCreate, JewelUpdate } from "./inventory.repository";
 import { AppError } from "../../shared/errors/AppError";
-
+import { InventorySQLepository } from './InventorySQLite.repository';
+import { Jewel } from "./inventory.repository";
 const inventoryService = {
 
     listInventory () {
-        return InventoryRepo.list();
+        return InventorySQLepository.list();
     },
 
 
-    createInventory(item: JewelCreate){//Using my type of Jewel without Id 
+    createInventory(item: Jewel){//Using my type of Jewel without Id 
 
         if( !item.name) throw Error("Name is required");//If name isn´t sent throw an error
         if( item.stock==null || item.stock< 0 ) throw Error ( "Stock must be > 0");//If stock isn´t sent or less than zero throw an error 
         if( item.price==null || item.price<=0 ) throw Error ( "Price must be > 0");//If price isn´t sent or <=0 throw error
 
-        return InventoryRepo.create(item);
+        return InventorySQLepository.create(item);
     },
 
     updateInventory(item: JewelUpdate, id: number){
@@ -33,13 +34,13 @@ const inventoryService = {
 
         if(item.price !== undefined && item.price <= 0) throw new AppError ("Price must be greater than zero", 400);//Check if the price is not undefined and not <= than zero
 
-        return InventoryRepo.update(item, id);
+        return InventorySQLepository.update(item, id);
 
     },
 
     deleteInventory (id: number): boolean{
 
-        return InventoryRepo.delete(id);
+        return InventorySQLepository.delete(id);
     }
 };
 

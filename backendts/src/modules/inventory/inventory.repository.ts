@@ -2,8 +2,11 @@ export interface Jewel{
     //Properties for Jewel so far
     id: number;
     name: string;
-    stock: number;
+    description: string;
     price: number;
+    stock: number;
+    image_url: string;
+    status: "ACTIVE" | "INACTIVE";
 
 }
 
@@ -23,8 +26,11 @@ const data: Jewel[] = [//Hardcoded array
     {
         id: 1, 
         name: "Gold ring", 
+        description: "cute testing ring",
         stock: 10, 
-        price: 180
+        price: 180,
+        image_url: "holatilin.jpg",
+        status: "ACTIVE"
     },
 ];
 
@@ -44,7 +50,7 @@ const inventoryRepository: InventoryRepository = {
         return newItem;
     },
 
-    update(item: JewelUpdate, id: number): Jewel |  undefined {
+    update(item: JewelUpdate, id: number): Jewel |  undefined { 
 
         const idx = data.findIndex(j=> j.id === id);//Find the index of the needed object
         if( idx === -1) return undefined;//If does not  exists (-1) return undefined

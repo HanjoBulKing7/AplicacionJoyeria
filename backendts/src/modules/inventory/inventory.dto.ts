@@ -36,6 +36,16 @@ export const UpdateInventoryDTO = z
         );
 
 
-export type CreateInventoryInput = z.infer<typeof CreateInventoryDTO>;
-export type UpdateInventoryInput = z.infer<typeof UpdateInventoryDTO>
+export const InventoryRowDTO = z.
+        object({
+            id: z.coerce.number().int().positive(),
+            name: z.string().trim().min(1, "Name is required").max(70),
+            description: z.string().trim().max(200),
+            price: z.coerce.number().positive("Price must be greater than 0"),
+            stock: z.coerce.number().min(0),
+            image_url: z.string().trim().max(255),
+            status: z.enum(["ACTIVE", "INACTIVE"]),
+
+        });
+
 export type IdParamInput = z.infer<typeof IdParamDTO>;

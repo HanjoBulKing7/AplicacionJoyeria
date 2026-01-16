@@ -3,6 +3,7 @@ export interface Jewel{
     id: number;
     name: string;
     description: string;
+    category:  "RING" | "CHAIN" | "BRACELET" | "EARRINGS" | "ROSARY";
     price: number;
     stock: number;
     image_url: string;
@@ -11,7 +12,7 @@ export interface Jewel{
 }
 
 export type JewelCreate = Omit<Jewel, "id">;//New type to omit the Id, then won't be received because it is auto assigned on the backend
-export type JewelUpdate = Partial<Omit<Jewel, "id">>;//New type to make partial other fields not Id so we can update at least 1 propertie
+export type JewelUpdate = Partial<Omit<Jewel, "id">>;//New type to make partial all fields
 
 
 export interface InventoryRepository{
@@ -27,6 +28,7 @@ const data: Jewel[] = [//Hardcoded array
         id: 1, 
         name: "Gold ring", 
         description: "cute testing ring",
+        category: "RING",
         stock: 10, 
         price: 180,
         image_url: "holatilin.jpg",

@@ -6,6 +6,8 @@ export function initDb(){
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL,
         description TEXT NOT NULL,
+        category TEXT NOT NULL
+            CHECK(category in( 'RING', 'CHAIN', 'BRACELET', 'EARRINGS' , 'ROSARY' )),
         stock INTEGER NOT NULL CHECK(stock >= 0 ),
         price REAL NOT NULL CHECK ( price > 0 ),
         status TEXT NOT NULL DEFAULT 'ACTIVE'

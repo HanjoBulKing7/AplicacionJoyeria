@@ -7,10 +7,11 @@ export const IdParamDTO = z.object({
 export const CreateInventoryDTO  = z
     .object({
     name: z.string().trim().min(1, "Name is required").max(70),
-    description: z.string().trim().max(200).optional(),
+    description: z.string().trim().max(200),
+    category: z.enum([ "RING", "CHAIN", "BRACELET", "EARRINGS", "ROSARY"]),
     price: z.coerce.number().positive("Price must be > 0"),
     stock: z.coerce.number().int().min(0, "Stock must be >= 0"),
-    image_url: z.string().trim().max(255).optional(),
+    image_url: z.string().trim().max(255),
     status: z.enum(["ACTIVE", "INACTIVE"]).optional().default("ACTIVE"),
 });
 
@@ -18,8 +19,9 @@ export const UpdateInventoryDTO = z
     .object({
     name: z.string().trim().min(1, "Name is required").max(70).optional(),
     description: z.string().trim().max(200).optional(),
+    category: z.enum([ "RING", "CHAIN", "BRACELET", "EARRINGS", "ROSARY"]).optional(),
     price: z.coerce.number().positive("Price must be greater than 0").optional(),
-    stock: z.coerce.number().positive("Stock must be at least 0").optional(),
+    stock: z.coerce.number().min(0).optional(),
     image_url: z.string().trim().max(255).optional(),
     status: z.enum(["ACTIVE", "INACTIVE"]).optional(),
 
@@ -28,6 +30,7 @@ export const UpdateInventoryDTO = z
         (data) =>
             data.name !== undefined ||
             data.description !== undefined || 
+            data.category !== undefined ||
             data.price !== undefined ||
             data.stock !== undefined ||
             data.image_url !== undefined ||
@@ -41,6 +44,7 @@ export const InventoryRowDTO = z.
             id: z.coerce.number().int().positive(),
             name: z.string().trim().min(1, "Name is required").max(70),
             description: z.string().trim().max(200),
+            category: z.enum([ "RING", "CHAIN", "BRACELET", "EARRINGS", "ROSARY"]),
             price: z.coerce.number().positive("Price must be greater than 0"),
             stock: z.coerce.number().min(0),
             image_url: z.string().trim().max(255),
@@ -49,3 +53,5 @@ export const InventoryRowDTO = z.
         });
 
 export type IdParamInput = z.infer<typeof IdParamDTO>;
+export type CreateInventoryItem = z.output< typeof CreateInventoryDTO>;
+export type UpdateInventoryItem = z.output< typeof UpdateInventoryDTO>;

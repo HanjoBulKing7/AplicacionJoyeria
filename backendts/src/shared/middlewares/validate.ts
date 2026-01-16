@@ -12,8 +12,8 @@ export const validateBody =
             })
         }
 
-        req.body = result.data;
-        next();
+    req.body = result.data;
+    next();
 };
 
 export const validateParams = 

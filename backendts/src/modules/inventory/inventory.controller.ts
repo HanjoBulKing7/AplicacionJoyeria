@@ -1,10 +1,11 @@
 import { Request, Response } from "express"
 import inventoryService from "./inventory.service"
-
+import { CreateInventoryDTO, IdParamDTO, UpdateInventoryDTO } from "./inventory.dto";
 
 const inventoryController = {
 
     list(req: Request, res: Response){
+
         try{
             const items = inventoryService.listInventory();
             return res.json(items);
@@ -16,9 +17,13 @@ const inventoryController = {
     },
 
     create( req: Request, res: Response ){
+
         try{
-            const created  = inventoryService.createInventory(req.body);
-            return res.status(201).json({message: "Item added succesfully: ", data: created })
+            const createBody = CreateInventoryDTO.parse(req.body);
+
+            const created  = inventoryService.createInventory(createBody);
+
+            return res.status(201).json({message: "Item added succesfully ", data: created })
 
         }catch(err){
             
@@ -29,13 +34,18 @@ const inventoryController = {
     },
 
     update(req: Request, res: Response ){
+
         try{
-            const id = Number(req.params.id);
 
-            if(Number.isNaN(id) ||  id<=0)
-                return res.status(400).json({ message: "Invalid id "});
+            const parseResult = IdParamDTO.safeParse(req.params);
 
-            const updated = inventoryService.updateInventory(req.body, id);
+            const updateBody = UpdateInventoryDTO.parse(req.body);
+
+            if (!parseResult.success)   return res.status(400).json({ message: "Invalid id" });
+
+            const { id } = parseResult.data;
+
+            const updated = inventoryService.updateInventory(updateBody, id);
 
             if(!updated)
                 return res.status(404).json({ message: "Item not found"})
@@ -51,10 +61,14 @@ const inventoryController = {
     },
 
     delete( req: Request, res: Response ){
+
         try{
-            const id = Number(req.params.id);
-            if(Number.isNaN(id) || id<=0)
-                return res.status(400).json({ message: "Invalid id" });
+
+            const parseResult = IdParamDTO.safeParse(req.params);
+
+            if (!parseResult.success)   return res.status(400).json({ message: "Invalid id" });
+
+            const { id } = parseResult.data;
 
             const deleted = inventoryService.deleteInventory(id);
 

@@ -7,8 +7,10 @@ export default function Dashboard() {
 
       <Text style={styles.dashboardTitle} >Joyería de Karol </Text>
         <View style={styles.grid}>
+          {/*
           {/* Nueva venta */}
-          <Pressable onPress={() => router.push("/(dashboard)/sales")} style={styles.cardContainer}>
+          <Pressable //onPress={() => router.push("/(dashboard)/sales")} 
+           style={styles.cardContainer}>
             <Text style={styles.cardText} >Nueva{"\n"} venta</Text>
             <Image 
               style={styles.cardIcon}
@@ -17,7 +19,8 @@ export default function Dashboard() {
           </Pressable>
 
           {/* Clientes */}
-          <Pressable onPress={() => router.push("/(dashboard)/customers")} style={styles.cardContainer}>
+          <Pressable //onPress={() => router.push("/(dashboard)/customers")} 
+           style={styles.cardContainer}>
             <Text style={styles.cardText} > Clientes{"\n"}</Text>
                         <Image 
               style={styles.cardIcon}
@@ -26,7 +29,8 @@ export default function Dashboard() {
           </Pressable>
 
           {/* Abonos */}
-          <Pressable onPress={() => router.push("/(dashboard)/installments")} style={styles.cardContainer}>
+          <Pressable //onPress={() => router.push("/(dashboard)/installments")} 
+            style={styles.cardContainer}>
             <Text style={styles.cardText} >Abonos{"\n"}</Text>
               <Image 
               style={styles.cardIcon}
@@ -35,7 +39,8 @@ export default function Dashboard() {
           </Pressable>
 
           {/* Inventario */}
-          <Pressable onPress={() => router.push("/(dashboard)/inventory")} style={styles.cardContainer}>
+          <Pressable onPress={() => router.replace("/(dashboard)/inventory")} 
+           style={styles.cardContainer}>
             <Text style={styles.cardText} >Inventario{"\n"}</Text>
               <Image 
               style={styles.cardIcon}
@@ -55,12 +60,12 @@ const styles = StyleSheet.create({
   dashboardTitle:{
     color: "#f6ff00ff",  
     fontSize: 45,
-    fontFamily: "DancingScript_700Bold",
-    marginTop: 50,
+    fontFamily: "PlusJakartaSans-Light",
+    marginTop: 30,
     textAlign: "center"
   },
   grid:{
-    marginTop: 40,
+    marginTop: 110,
     marginLeft: 25,
     width: "90%",
     height: "70%",

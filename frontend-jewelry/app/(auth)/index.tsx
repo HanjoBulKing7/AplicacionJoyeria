@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     formTitle:{
       marginTop: 10,
       marginBottom: 150,
-      fontFamily: 'Sans Serif',
+      fontFamily: 'PlusJakartaSans-Light',
       color: "#f6ff00ff",
       fontSize: 27,
       textAlign: "center"
@@ -107,7 +107,8 @@ const styles = StyleSheet.create({
       borderRadius: 15,
       textAlign: "center",
       color: "white",
-      width: "75%"
+      width: "75%",
+      fontFamily: 'PlusJakartaSans-Light'
     },
     button: {
       marginTop: 30,
@@ -120,7 +121,7 @@ const styles = StyleSheet.create({
       height: "11%"
     },
     buttonText:{
-      fontFamily: 'Sans Serif',
+      fontFamily: 'PlusJakartaSans-Light',
       fontSize: 20,
       color: "#f6ff00ff",
       textAlign: "center",

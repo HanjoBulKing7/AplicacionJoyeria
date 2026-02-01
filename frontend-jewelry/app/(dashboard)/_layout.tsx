@@ -7,11 +7,9 @@ export default function DashboardLayout() {
         headerShown: false,
       }}
     >
-      <Stack.Screen name="index" />
-      <Stack.Screen name="ventas" />
-      <Stack.Screen name="clientes" />
-      <Stack.Screen name="abonos" />
-      <Stack.Screen name="inventario" />
+      <Stack.Screen name="sales" />
+      <Stack.Screen name="customers" />
+      <Stack.Screen name="installments" />
     </Stack>
   );
 }

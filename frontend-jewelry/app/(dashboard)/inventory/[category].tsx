@@ -3,12 +3,16 @@ import { router, useLocalSearchParams } from 'expo-router'
 import { useState } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context";
 import  JewelCard from './components/JewelCard'
+import OverlayPill, { ActivePill } from './components/Pill'
 
 export default function CategoryScreen() {
 
   const { category } = useLocalSearchParams <{ category: string }>();//Use the params sent by URL
 
   const [ inputText, setInputText ] = useState('')
+
+  const [ activePill, setActivePill ] = useState<ActivePill>(null);
+  
 
   return (
     <SafeAreaView style={categoryScreen.screen}>
@@ -50,9 +54,19 @@ export default function CategoryScreen() {
 
       {/*More actions container*/}
       <View style={ categoryScreen.actions } >
-        <Image source={ require('../../../assets/icons/actions/sort.png') } style={ categoryScreen.sort } />
-        <Image source={ require('../../../assets/icons/actions/filter.png')} style={ categoryScreen.filter } />
+        <Pressable 
+          onPress={ ( ) =>( setActivePill( current => (current ==='sort' ? null : 'sort'))  ) } > 
+          <Image source={ require('../../../assets/icons/actions/sort.png') } style={ categoryScreen.sort } /> 
+        </Pressable>
+
+        <Pressable 
+          onPress={ ( ) =>(  setActivePill( current =>( current === 'filter' ? null : 'filter')))} > 
+          <Image source={ require('../../../assets/icons/actions/filter.png')} style={ categoryScreen.filter } /> 
+        </Pressable>
       </View>
+      
+      {/*Render the overlay corresponding pill*/}
+      <OverlayPill menu={ activePill} />
 
       {/*List of cards */}
       <View style= { categoryScreen.jewelsContainer}>
@@ -117,7 +131,7 @@ const categoryScreen = StyleSheet.create({
     borderWidth: 0.5,
     borderColor: '#ddd9d9',
     alignItems: 'center',
-    justifyContent: 'center',
+    justifyContent: 'center', 
   },
   addIcon: {
     height: 30,
@@ -144,5 +158,6 @@ const categoryScreen = StyleSheet.create({
   jewelsContainer:{
 
     alignItems: 'center',
+
   }
 })

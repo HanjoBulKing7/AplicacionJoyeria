@@ -1,9 +1,31 @@
 import { View, Text, Image, TextInput, StyleSheet, Pressable } from "react-native";
 import { router, useLocalSearchParams } from 'expo-router'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { SafeAreaView } from "react-native-safe-area-context";
 import  JewelCard from './components/JewelCard'
-import OverlayPill, { ActivePill } from './components/Pill'
+import OverlayPill from './components/Pill'
+import { StockFilter, PricePreset , SortKey , SortDir} from '../../../domain/inventory'
+import { InventoryRepository, ActiveOrder , ActiveFilter  } from "@/data/repositories/InventoryRepository";
+import { JewelRow } from "@/domain/DomainSQLite";
+
+
+export type ActivePill = "sort" | "filter" | null;
+export type SortState = { key: SortKey; dir: SortDir };
+export type FilterState = {
+  stock: StockFilter;
+  price: PricePreset;
+};
+//Props fot the pill defined in the parent component 
+export type PillProps = {
+  menu: ActivePill;
+
+  sort: SortState;
+  onSortChange: (next: SortState) => void;
+
+  filters: FilterState;
+  onFiltersChange: (patch: Partial<FilterState>) => void;
+};
+
 
 export default function CategoryScreen() {
 
@@ -13,6 +35,40 @@ export default function CategoryScreen() {
 
   const [ activePill, setActivePill ] = useState<ActivePill>(null);
   
+  const [ currentSort, setCurrentSort ] = useState<SortState>({ key: 'alpha', dir: 'asc' })
+
+  const [ filters, setFilters ] = useState<FilterState>({ stock: 'any', price: 'any'});
+
+  const [ jewelList, setJewelList ] = useState<JewelRow[]>( [] )
+
+  //Si el request puede completar después del unmount, uso un flag o aborto para evitar 
+  // setState en unmounted.”
+  useEffect( () => {
+
+    let cancelled = false;//If the user laves the screen cancel setState( jewelList)
+    (
+      async ( ) => {
+        //Mapping the states from the parent component for the repository contract 
+        const mapSort: ActiveOrder = {
+          orderType: currentSort.key,
+          orderDir: currentSort.dir,
+        };
+        const mapFilters: ActiveFilter = {
+          activeStock: filters.stock,
+          activePrice: filters.price,
+        };
+
+        const jewelList = await InventoryRepository.listItems( mapSort , mapFilters );
+        if( cancelled ) return;
+
+        setJewelList( jewelList );
+
+      }) ();
+    
+      return () => { cancelled = true };
+      //Include true values that affect the query to avoid unnecesary changes
+  }, [ currentSort.key, currentSort.dir, filters.stock, filters.price ])
+
 
   return (
     <SafeAreaView style={categoryScreen.screen}>
@@ -66,11 +122,28 @@ export default function CategoryScreen() {
       </View>
       
       {/*Render the overlay corresponding pill*/}
-      <OverlayPill menu={ activePill} />
+      <OverlayPill
+        menu={activePill}
+        sort={currentSort}
+        onSortChange={ setCurrentSort }
+        filters={filters}
+        onFiltersChange={ 
+          (patch) => setFilters(prev => ({ ...prev, ...patch }))
+
+         }
+      />
 
       {/*List of cards */}
       <View style= { categoryScreen.jewelsContainer}>
-        <JewelCard />
+        {jewelList.map( singleJewel =>
+          <JewelCard 
+            key={ singleJewel.id }
+            name={ singleJewel.name }
+            price={ singleJewel.price }
+            stock={ singleJewel.stock }
+          />
+        )
+        }
       </View>
     </SafeAreaView>
   );

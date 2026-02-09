@@ -1,6 +1,11 @@
 import { View, Pressable, Text, StyleSheet, Image } from 'react-native'
 
-export default function JewelCard ()  {
+type CardParams = {
+    name: string;
+    price: number;
+    stock: number;
+}
+export default function JewelCard ({name, price, stock}:CardParams)  {
 
     return(
         <Pressable style={ s.card }>
@@ -11,12 +16,12 @@ export default function JewelCard ()  {
             />
             
             <View style={ s.right }> 
-                <Text style={ s.name } >Anillo de plata gótico</Text>
+                <Text style={ s.name } >{name}</Text>
 
                 <View style={ s.row  } >
-                    <Text style={ s.price } >$1,200</Text>
+                    <Text style={ s.price } >${price}</Text>
 
-                    <Text style={ s.stock } >Cantidad: 30</Text>
+                    <Text style={ s.stock } >Cantidad: {stock}</Text>
                 </View>
             </View>
         </Pressable>

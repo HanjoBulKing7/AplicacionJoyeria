@@ -21,14 +21,27 @@ export const dbPromiseInit = (async () => {
   `);
     const TestItem: InsertJewel= {
         id: "b025978f-c566-4867-b098-f2559502f75c",
-        name: "Johan",
-        description: "Anillo bonito de oro",
+        name: "Anillo de oro 20K",
+        description: "Anillo bonito de oro, con zirconias color plata",
         category: "ring",
         stock: 10,
         price: 1000,
         status: 'active',
         image_url: null
     }
+
+    const TestItem2: InsertJewel= {
+        id: "931a3692-e66f-4bec-821c-a1f45526dc3f",
+        name: "Anillo de plata 928",
+        description: "Anillo grande de mujer en forma de serpiente",
+        category: "ring",
+        stock: 5,
+        price: 300,
+        status: 'active',
+        image_url: null
+    }
+
+
   //Seed the table during development 
   await db.runAsync(`
       INSERT OR IGNORE INTO jewel
@@ -36,5 +49,12 @@ export const dbPromiseInit = (async () => {
       VALUES 
       ( ? , ? , ? , ? , ? , ? , ? );
     `, Object.values ( TestItem));
+
+  await db.runAsync(`
+      INSERT OR IGNORE INTO jewel
+      ( id, name, description, category, stock, price, status )
+      VALUES 
+      ( ? , ? , ? , ? , ? , ? , ? );
+    `, Object.values ( TestItem2));
   return db;
 })();

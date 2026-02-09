@@ -31,3 +31,11 @@ export const Icons: Record<CategoryKey, ImageSourcePropType> = {
   chain: require('../assets/icons/categories/chain.png'),
   rosary: require('../assets/icons/categories/rosary.png'),
 };
+
+//Pills
+//Sort pill
+export type SortKey = 'alpha' | 'price' | 'stock';
+export type SortDir = 'asc' | 'desc';
+//Filter pill
+export type StockFilter = 'any' | 'in_stock' | 'out_of_stock';
+export type PricePreset = 'any' | '1-49' | '50-99' | '100-149' | '150-299';

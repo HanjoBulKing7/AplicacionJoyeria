@@ -8,7 +8,8 @@ export default function InventoryScreen(){
 
     const [ catStock, setCatStock ] = useState<Record<string, number>>({})
 
-
+    //“Si el request puede completar después del unmount, uso un flag o aborto para evitar 
+    // setState en unmounted.”
     useEffect ( ( ) => {
         ( async ( ) => {
             const obj = await InventoryRepository.getCategoriesStock();

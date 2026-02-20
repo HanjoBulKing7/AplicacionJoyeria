@@ -1,4 +1,4 @@
-package Model;
+package domain;
 
 public class Customer {
 
@@ -7,6 +7,10 @@ public class Customer {
     private String phoneNumber;
     private String address;
     public Customer(){}
+
+    public Customer(String name){
+        this.name = name;
+    }
     //Generic constructor with the mandatory data during pure java project
     public Customer(String name, String phoneNumber, String address) {
         this.name = name;

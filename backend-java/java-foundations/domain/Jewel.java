@@ -1,4 +1,4 @@
-package Model;
+package domain;
 
 public class Jewel {
 

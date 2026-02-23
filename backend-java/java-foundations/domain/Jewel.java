@@ -1,5 +1,7 @@
 package domain;
 
+import domain.exception.InsufficientStockException;
+
 public class Jewel {
 
     private int id;
@@ -80,7 +82,7 @@ public class Jewel {
     }
 
     public void decreaseStock(byte amount){
-        if( amount <= 0 || stock - amount < 0) return;
+        if( amount <= 0 || stock - amount < 0) throw new InsufficientStockException("Not enough stock");
         this.stock -= amount;
     }
 }

@@ -1,9 +1,8 @@
 package domain;
 
 import source.service.CashRegister;
-import source.servicer.impl.DefaultEmployeeImpl;
-
-import java.time.LocalDate;
+import source.impl.DefaultEmployeeImpl;
+import source.service.SaleService;
 
 public class Employee extends DefaultEmployeeImpl {
 
@@ -11,9 +10,10 @@ public class Employee extends DefaultEmployeeImpl {
     public byte age;
 
 
-    public Employee(String name, CashRegister cashRegister){
-        super(cashRegister);
+    public Employee(String name, CashRegister cashRegister, SaleService saleService){
+        super(cashRegister, saleService);
         this.name = name;
+
     }
 
     public byte getAge() {

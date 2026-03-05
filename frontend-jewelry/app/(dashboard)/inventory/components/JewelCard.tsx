@@ -1,4 +1,4 @@
-import { View, Pressable, Text, StyleSheet, Image } from 'react-native'
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 type CardParams = {
     name: string;
@@ -40,6 +40,8 @@ const s = StyleSheet.create( {
         borderColor: '#FFF',
 
         flexDirection: 'row',
+
+        marginBottom: 20, 
 
     },
     img: {

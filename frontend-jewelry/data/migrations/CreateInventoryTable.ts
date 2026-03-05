@@ -1,6 +1,5 @@
-import * as SQLite from "expo-sqlite";
+import { InsertJewel } from '../../domain/DomainSQLite';
 import { dbPromise } from "../SQLite";
-import { InsertJewel } from '../../domain/DomainSQLite'
 
 export const dbPromiseInit = (async () => {
   const db = await dbPromise;
@@ -14,7 +13,7 @@ export const dbPromiseInit = (async () => {
       stock INTEGER NOT NULL DEFAULT 0,
       price REAL NOT NULL DEFAULT 0,
       status TEXT NOT NULL DEFAULT 'active',
-      image_url TEXT,
+      image_uri TEXT,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );

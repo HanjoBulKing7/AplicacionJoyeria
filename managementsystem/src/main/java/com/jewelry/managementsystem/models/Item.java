@@ -7,7 +7,6 @@ import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.AnyDiscriminatorImplicitValues;
 
 @Data
 @NoArgsConstructor
@@ -23,7 +22,7 @@ public class Item {
     private String name;
 
      @Nullable
-     @Size(min = 1, max = 15)
+     @Size(min = 1, max = 100)
      private String description;
 
      @NotNull ( message = "Price is mandatory for each item")

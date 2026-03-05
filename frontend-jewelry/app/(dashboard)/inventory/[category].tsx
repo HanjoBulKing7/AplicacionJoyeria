@@ -1,13 +1,13 @@
-import { View, Text, Image, TextInput, StyleSheet, Pressable } from "react-native";
-import { router, useLocalSearchParams } from 'expo-router'
-import { useState, useEffect } from 'react'
-import { SafeAreaView } from "react-native-safe-area-context";
-import  JewelCard from './components/JewelCard'
-import OverlayPill from './components/Pill'
-import { StockFilter, PricePreset , SortKey , SortDir} from '../../../domain/inventory'
-import { InventoryRepository, ActiveOrder , ActiveFilter  } from "@/data/repositories/InventoryRepository";
+import { ActiveFilter, ActiveOrder, InventoryRepository } from "@/data/repositories/InventoryRepository";
 import { JewelRow } from "@/domain/DomainSQLite";
-
+import { router, useLocalSearchParams } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Image, Modal, Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { PricePreset, SortDir, SortKey, StockFilter } from '../../../domain/inventory';
+import CreateItemForm from "./components/CreateItemForm";
+import JewelCard from './components/JewelCard';
+import OverlayPill from './components/Pill';
 
 export type ActivePill = "sort" | "filter" | null;
 export type SortState = { key: SortKey; dir: SortDir };
@@ -69,6 +69,8 @@ export default function CategoryScreen() {
       //Include true values that affect the query to avoid unnecesary changes
   }, [ currentSort.key, currentSort.dir, filters.stock, filters.price ])
 
+   //Make form to create jewel visible
+    const [formVisible, setFormVisible] = useState(false);
 
   return (
     <SafeAreaView style={categoryScreen.screen}>
@@ -103,11 +105,20 @@ export default function CategoryScreen() {
             </Pressable>
         </View>
 
-        <Pressable style= { categoryScreen.rightContainer}>
+        <Pressable style= { categoryScreen.rightContainer} onPress={ ()=> setFormVisible(true)}>
           <Image source={ require('../../../assets/icons/actions/add.png')} style= { categoryScreen.addIcon} />
         </Pressable>
       </View>
 
+      <Modal
+        visible = { formVisible }
+        animationType = "slide"
+        transparent = { true }
+      >
+        <CreateItemForm
+          onClose={() => setFormVisible(false)}
+        />
+      </Modal>
       {/*More actions container*/}
       <View style={ categoryScreen.actions } >
         <Pressable 
@@ -129,14 +140,13 @@ export default function CategoryScreen() {
         filters={filters}
         onFiltersChange={ 
           (patch) => setFilters(prev => ({ ...prev, ...patch }))
-
          }
       />
 
-      {/*List of cards */}
+      {/*List of items depending on the category */}
       <View style= { categoryScreen.jewelsContainer}>
         {jewelList.map( singleJewel =>
-          <JewelCard 
+          <JewelCard            
             key={ singleJewel.id }
             name={ singleJewel.name }
             price={ singleJewel.price }
@@ -232,5 +242,8 @@ const categoryScreen = StyleSheet.create({
 
     alignItems: 'center',
 
+  },
+  jewelCard :{
+    marginBottom: 30,
   }
 })

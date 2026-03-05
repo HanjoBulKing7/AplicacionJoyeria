@@ -1,7 +1,6 @@
-import { dbPromiseInit } from '../migrations/CreateInventoryTable'
-import { InsertJewel, JewelRow } from '../../domain/DomainSQLite'
-import { CategoryKey } from '../../domain/inventory'
-import { SortKey, SortDir, StockFilter, PricePreset  } from '../../domain/inventory';
+import { InsertJewel, JewelRow } from '../../domain/DomainSQLite';
+import { CategoryKey, PricePreset, SortDir, SortKey, StockFilter } from '../../domain/inventory';
+import { dbPromiseInit } from '../migrations/CreateInventoryTable';
 
 //Type for casting the query to get Categories & Stock
 type StockFromSQL = { 
@@ -85,35 +84,72 @@ export const InventoryRepository  = {
         return Object.fromEntries(result.map( row => [ row.category, row.stock ]));
     },
 
-    async listItems( orderState: ActiveOrder, filterState: ActiveFilter ): Promise<JewelRow[]>{
+    async listItems(
+        orderState: ActiveOrder,
+        filterState: ActiveFilter
+        ): Promise<JewelRow[]> {
+
+        const db = await dbPromiseInit;
+
+        let sql = `
+            SELECT id, name, description, category, stock, price, status, image_url
+            FROM jewel
+        `;
 
         const where: string[] = [];
         const params: (string | number)[] = [];
 
-        const sRule = STOCK_RULE[filterState.activeStock];
-        if (sRule.clause) { where.push(sRule.clause); params.push(...sRule.params); }
+        // STOCK FILTER
+        if (filterState.activeStock === "in_stock") {
+            where.push("stock > 0");
+        }
 
-        const pRule = PRICE_RULE[filterState.activePrice];
-        if (pRule.clause) { where.push(pRule.clause); params.push(...pRule.params); }
+        if (filterState.activeStock === "out_of_stock") {
+            where.push("stock = 0");
+        }
 
-        // base
-        let sql = `SELECT 
-            id, name, description, category, stock, price, status, image_url
-        FROM jewel`;
+        // PRICE FILTER
+        switch (filterState.activePrice) {
+            case "1-49":
+            where.push("price BETWEEN ? AND ?");
+            params.push(1, 49);
+            break;
 
-        if (where.length>0) {
+            case "50-99":
+            where.push("price BETWEEN ? AND ?");
+            params.push(50, 99);
+            break;
+
+            case "100-149":
+            where.push("price BETWEEN ? AND ?");
+            params.push(100, 149);
+            break;
+
+            case "150-299":
+            where.push("price BETWEEN ? AND ?");
+            params.push(150, 299);
+            break;
+        }
+
+        if (where.length > 0) {
             sql += ` WHERE ${where.join(" AND ")}`;
         }
 
-        const dir = orderState.orderDir === 'asc' ? 'ASC' : 'DESC'
+        // ORDER
+        let orderColumn = "name";
 
-        sql += ` ORDER BY ${ ORDER_RULE[orderState.orderType] } ${ dir }`;
-        
-        const db = await dbPromiseInit;
+        if (orderState.orderType === "price") {
+            orderColumn = "price";
+        }
 
-        const itemsList =  await db.getAllAsync<JewelRow>( sql, params );
+        if (orderState.orderType === "stock") {
+            orderColumn = "stock";
+        }
 
-        return itemsList;
+        const dir = orderState.orderDir === "asc" ? "ASC" : "DESC";
 
+        sql += ` ORDER BY ${orderColumn} ${dir}`;
+
+        return db.getAllAsync<JewelRow>(sql, params);
     }
 }

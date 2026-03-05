@@ -13,4 +13,7 @@ public class ErrorResponse {
     private int status;
     private LocalDateTime timestamp;
 
+    public ErrorResponse(String message) {
+        this.message = message;
+    }
 }

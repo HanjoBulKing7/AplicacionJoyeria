@@ -1,15 +1,18 @@
-import { ImageSourcePropType } from 'react-native'
+import { ImageSourcePropType } from 'react-native';
 export type CategoryKey = "ring" | "earrings" | "bracelet" | "chain" | "rosary" ;
 export type StatusEnum = "active" | "inactive" ;
 
 //Props for the category card
 type CategoryConfig = {
-  
+
   key: CategoryKey;//Key when implemented ona child
   label: string;
 };
 
-
+export enum ItemStatus  {
+  ACTIVE = "active",
+  INACTIVE = "inactive"
+}
 export const Categories: CategoryConfig[] = [
   { key: "ring", label: "Anillos" },
   { key: "earrings", label: "Aretes" } , 

@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ItemService {
 
-    ItemDTO getItem(String id);
+    ItemDTO getItem(Long id);
     ItemResponse getItems(Integer pageNumber, Integer pageSize, String sortBy, String sortDir);
     ItemDTO addItem(ItemDTO itemDTO);
     ItemDTO updateItem(Long itemId,ItemDTO itemDTO);

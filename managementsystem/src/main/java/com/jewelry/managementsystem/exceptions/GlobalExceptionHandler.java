@@ -1,14 +1,16 @@
 package com.jewelry.managementsystem.exceptions;
 
 import jakarta.validation.ConstraintViolationException;
-import org.apache.coyote.BadRequestException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 
@@ -19,14 +21,13 @@ public class GlobalExceptionHandler {
     @ExceptionHandler( EmptyResourceException.class)
     public ResponseEntity<ErrorResponse> handleEmpty (EmptyResourceException ex) {
 
-        ///  Create the Error Response object and fill with constructor
         ErrorResponse errorResponse = new ErrorResponse(
                         ex.getMessage(),
-                        HttpStatus.NO_CONTENT.value(),
+                        HttpStatus.NOT_FOUND.value(),
                         LocalDateTime.now()
                 );
         /// Set up the Response Entity and return it
-        return  ResponseEntity.status(HttpStatus.NO_CONTENT).body(errorResponse);
+        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
 
     }
 
@@ -39,12 +40,13 @@ public class GlobalExceptionHandler {
                     HttpStatus.NOT_FOUND.value(),
                     LocalDateTime.now()
         );
-        return  ResponseEntity.status(errorResponse.getStatus()).body(errorResponse);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
     }
 
     /// Duplicate items
     @ExceptionHandler ( DuplicateResourceException.class )
     public ResponseEntity<ErrorResponse> handleDuplicateResourceException (DuplicateResourceException ex) {
+
         ErrorResponse errorResponse = new ErrorResponse(
                 ex.getMessage(),
                 HttpStatus.CONFLICT.value(),
@@ -54,24 +56,31 @@ public class GlobalExceptionHandler {
     }
 
     ///  Method Argument Valid Exception @Valid -> DTO LAYER
-    @ExceptionHandler ( MethodArgumentNotValidException.class )
-    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException( MethodArgumentNotValidException ex){
-        String message = ex.getBindingResult()
-                .getFieldErrors()
-                .stream().map( e -> e.getField()+" : "+ e.getDefaultMessage() )
-                .collect(Collectors.joining(", "));
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body( new ErrorResponse(message));
+        Map<String, String> errors = new HashMap<>();
 
+        ex.getBindingResult().getAllErrors().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getDefaultMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        return new ResponseEntity<>(errors, HttpStatus.BAD_REQUEST);
     }
     ///  HIBERNATE LAYER
     @ExceptionHandler ( ConstraintViolationException.class )
-    public ResponseEntity<ErrorResponse> handleConstraintViolationException (ConstraintViolationException ex){
-        String message = ex.getConstraintViolations()
-                .stream()
-                .map( v -> v.getPropertyPath()+ ": "+ v.getMessage())
-                .collect(Collectors.joining(", "));
+    public ResponseEntity<Map<String, String>> handleConstraintViolationException (ConstraintViolationException ex){
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body( new ErrorResponse(message));
+        Map<String, String> errors = new HashMap<>();
+
+        ex.getConstraintViolations().forEach((error) -> {
+            String fieldName = ((FieldError) error).getField();
+            String errorMessage = error.getMessage();
+            errors.put(fieldName, errorMessage);
+        });
+
+        return new ResponseEntity<>( errors, HttpStatus.BAD_REQUEST);
     }
 }

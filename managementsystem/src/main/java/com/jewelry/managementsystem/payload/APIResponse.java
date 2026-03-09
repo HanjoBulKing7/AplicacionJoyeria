@@ -9,9 +9,9 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ItemResponse {
+public class APIResponse <T> {
 
-    private List<ItemDTO> content;
+    private List<T> content;
     private Integer pageNumber;
     private Integer pageSize;
     private Long totalElements;

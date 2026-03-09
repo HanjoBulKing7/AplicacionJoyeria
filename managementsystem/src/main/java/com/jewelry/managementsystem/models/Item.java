@@ -13,28 +13,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Entity
 public class Item {
-     @Id
-     @GeneratedValue ( strategy = GenerationType.IDENTITY)
-     private Long id;
-
-     @NotBlank ( message = "Please send a valid name for the item" )
-     @Size ( min = 1, max = 15 )
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @Column(nullable = false)
     private String name;
-
-     @Nullable
-     @Size(min = 1, max = 100)
-     private String description;
-
-     @NotNull ( message = "Price is mandatory for each item")
-     @Positive ( message = "Price must be greater than  0")
-     private Float price;
-
-     @NotNull
-     @PositiveOrZero ( message = "Stock must be greater or 0 ")
+    @Column(nullable = false)
+    private String description;
+    @Column(nullable = false)
+    private Float price;
+    @Column(nullable = false)
     private Integer stock;
+    @Column(nullable = false)
+    private ItemStatus status;
 
-     @Enumerated ( EnumType.STRING )
-     @NotNull  (  message = "Item status is mandatory")
-      private ItemStatus status;
+    @JoinColumn(name = "category_id")
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    private Category category;
 
 }

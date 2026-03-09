@@ -1,22 +1,19 @@
 package com.jewelry.managementsystem.controllers;
 
 import com.jewelry.managementsystem.constants.DefaultValues;
+import com.jewelry.managementsystem.payload.APIResponse;
 import com.jewelry.managementsystem.payload.ItemDTO;
-import com.jewelry.managementsystem.payload.ItemResponse;
 import com.jewelry.managementsystem.services.ItemService;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@RequestMapping  ( "/api" )
 public class ItemController {
 
     private final ItemService itemService;
@@ -32,31 +29,61 @@ public class ItemController {
     }
 
     @GetMapping( "/public/items" )
-    public ResponseEntity<ItemResponse> getItems(
+    public ResponseEntity<APIResponse<ItemDTO>> getItems(
             @RequestParam ( name = "pageNumber" , defaultValue = DefaultValues.DEFAULT_PAGE_NUMBER, required = false) Integer pageNumber,
             @RequestParam ( name = "pageSize" , defaultValue = DefaultValues.DEFAULT_PAGE_SIZE , required = false) Integer pageSize,
             @RequestParam ( name = "sortBy", defaultValue = DefaultValues.DEFAULT_SORT_FIELD , required = false )  String sortBy,
             @RequestParam ( name = "sortOrder", defaultValue = DefaultValues.DEFAULT_SORT_ORDER, required = false ) String sortOrder
     ){
-        ItemResponse itemResponse = itemService.getItems( pageNumber , pageSize , sortBy , sortOrder);
+        APIResponse<ItemDTO> itemResponse = itemService.getItems( pageNumber , pageSize , sortBy , sortOrder);
 
         return new ResponseEntity<>(itemResponse, HttpStatus.OK);
     }
 
-    @PostMapping ( "/admin/items" )
-    public ResponseEntity<ItemDTO> createItem(@Valid @RequestBody ItemDTO itemDTO){
+    @GetMapping ( "/public/items/category/{categoryId}")
+    public ResponseEntity<APIResponse<ItemDTO>> getItemByCategory(
+            @PathVariable Long categoryId ,
+            @RequestParam ( name = "pageNumber" , defaultValue = DefaultValues.DEFAULT_PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam ( name = "pageSize" , defaultValue = DefaultValues.DEFAULT_PAGE_SIZE , required = false) Integer pageSize,
+            @RequestParam ( name = "sortBy", defaultValue = DefaultValues.DEFAULT_SORT_FIELD , required = false )  String sortBy,
+            @RequestParam ( name = "sortOrder", defaultValue = DefaultValues.DEFAULT_SORT_ORDER, required = false ) String sortOrder
+    ){
 
-        ItemDTO createdItemDTO = itemService.addItem(itemDTO);
+        APIResponse apiResponse = itemService.getItemsByCategory(categoryId, pageNumber, pageSize, sortBy, sortOrder);
+
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping ("/public/items/search{keyword}")
+    public ResponseEntity<APIResponse<ItemDTO>> getItemByKeyword(
+            @RequestParam String keyword ,
+            @RequestParam ( name = "pageNumber" , defaultValue = DefaultValues.DEFAULT_PAGE_NUMBER, required = false) Integer pageNumber,
+            @RequestParam ( name = "pageSize" , defaultValue = DefaultValues.DEFAULT_PAGE_SIZE , required = false) Integer pageSize,
+            @RequestParam ( name = "sortBy", defaultValue = DefaultValues.DEFAULT_SORT_FIELD , required = false )  String sortBy,
+            @RequestParam ( name = "sortOrder", defaultValue = DefaultValues.DEFAULT_SORT_ORDER, required = false ) String sortOrder
+    ){
+        APIResponse apiResponse = itemService.getItemsByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder);
+
+        return new ResponseEntity<>( apiResponse, HttpStatus.OK);
+    }
+
+
+    @PostMapping("/admin/categories/{categoryId}/items")
+    public ResponseEntity<ItemDTO> createItem(@Valid @RequestBody ItemDTO itemDTO,
+                                              @PathVariable Long categoryId){
+
+        ItemDTO createdItemDTO = itemService.addItem(categoryId, itemDTO);
 
         return new ResponseEntity<>( createdItemDTO, HttpStatus.CREATED);
     }
 
-    @PutMapping ( "/admin/items/{itemId}" )
+    @PutMapping("/admin/categories/{categoryId}/items")
     public ResponseEntity<ItemDTO> updateItem(
             @Valid @RequestBody ItemDTO itemDTO,
-            @PathVariable Long itemId
+            @PathVariable Long itemId,
+            @RequestBody Long categoryId
     ){
-        ItemDTO updatedItemDTO = itemService.updateItem(itemId, itemDTO);
+        ItemDTO updatedItemDTO = itemService.updateItem(itemId, itemDTO, categoryId);
         return new ResponseEntity<>(updatedItemDTO, HttpStatus.OK);
 
     }

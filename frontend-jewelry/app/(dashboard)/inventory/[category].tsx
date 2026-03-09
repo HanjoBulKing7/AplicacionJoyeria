@@ -110,15 +110,17 @@ export default function CategoryScreen() {
         </Pressable>
       </View>
 
-      <Modal
-        visible = { formVisible }
-        animationType = "slide"
-        transparent = { true }
-      >
-        <CreateItemForm
-          onClose={() => setFormVisible(false)}
-        />
+        <Modal
+          visible = { formVisible }
+          animationType = "slide"
+          transparent = { true }
+        >
+         <View style={categoryScreen.modalOverlay}>
+            <CreateItemForm  onClose={() => setFormVisible(false)} />
+          </View>
       </Modal>
+
+
       {/*More actions container*/}
       <View style={ categoryScreen.actions } >
         <Pressable 
@@ -161,10 +163,14 @@ export default function CategoryScreen() {
 
 const categoryScreen = StyleSheet.create({
   screen:{
+    
     backgroundColor: '#191717',
     flex: 1,
+    alignItems: 'center',
+     
   },
   headerContainer: {
+
     flexDirection: 'row',
     alignItems: 'center',
     paddingTop: 10,
@@ -173,14 +179,17 @@ const categoryScreen = StyleSheet.create({
     paddingBottom: 40,
   },
   leftCatContainer: {
+
     flexDirection: 'row',
     alignItems: 'center',
   },
   categoryTitle: {
+
     color: '#FFF',
     fontSize: 22,
   },
   middleContainer: {
+
     height: 48,
     alignItems: 'center',
     paddingHorizontal: 12,
@@ -197,17 +206,20 @@ const categoryScreen = StyleSheet.create({
     resizeMode: 'contain',
   },
   inputText: {
+
     flex: 1,
     color: '#eaeaea',
     fontSize: 18,
     overflow: 'hidden',
   },
   closeIcon: {
+
     width: 22,
     height: 22,
 
   },
   rightContainer: {
+
     width: 48,
     height: 48,
     borderRadius: 50,
@@ -217,14 +229,23 @@ const categoryScreen = StyleSheet.create({
     justifyContent: 'center', 
   },
   addIcon: {
+
     height: 30,
     width: 30,
     resizeMode: 'contain',
   },
+  modalOverlay: {
+
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.6)" // opcional para oscurecer fondo
+  },
   icon: {
     height: 50,
     width: 30,
-  },actions:{
+  },
+  actions:{
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingBottom: 20,

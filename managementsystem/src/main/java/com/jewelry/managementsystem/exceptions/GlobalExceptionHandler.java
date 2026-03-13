@@ -1,5 +1,6 @@
 package com.jewelry.managementsystem.exceptions;
 
+import com.jewelry.managementsystem.security.response.MessageResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -82,5 +83,11 @@ public class GlobalExceptionHandler {
         });
 
         return new ResponseEntity<>( errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
+        MessageResponse response = new MessageResponse(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 }

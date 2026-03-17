@@ -9,7 +9,6 @@ import com.jewelry.managementsystem.payload.CategoryDTO;
 import com.jewelry.managementsystem.repositories.CategoryRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -41,7 +40,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public APIResponse<CategoryDTO> getAllCategories(Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 
-        Sort sortByAndOrder = sortBy.equalsIgnoreCase("asc")
+        Sort sortByAndOrder = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
 
@@ -51,7 +50,7 @@ public class CategoryServiceImpl implements CategoryService {
 
         List<Category> categoryList = categoryPage.getContent();
 
-        if (categoryList.isEmpty()) throw new EmptyResourceException("Category");
+        if (categoryList.isEmpty()) throw new EmptyResourceException("category");
 
         APIResponse<CategoryDTO> categoryResponse = new APIResponse<>();
 
@@ -90,12 +89,11 @@ public class CategoryServiceImpl implements CategoryService {
     public CategoryDTO updateCategory(Long id,CategoryDTO categoryDTO) {
 
         Category existingCategory = categoryRepository.findById(id)
-                        .orElseThrow( () -> new EmptyResourceException( id , "Category"));
+                        .orElseThrow( () -> new EmptyResourceException( id , "category"));
 
         if( categoryRepository.existsByNameAndIdNot(categoryDTO.getName(), id) ) throw new DuplicateResourceException("Category", "category name",  categoryDTO.getName());
 
         categoryMapper.updateFromDto(categoryDTO, existingCategory);
-
 
         Category savedCategory = categoryRepository.save(existingCategory);
 
@@ -103,13 +101,12 @@ public class CategoryServiceImpl implements CategoryService {
 
     }
 
-    @Transactional///  To execute the query succecsfully
+    @Transactional
     @Override
     public CategoryDTO deleteCategory(Long id) {
         Category existingCategory = categoryRepository.findById(id)
-                .orElseThrow( () -> new EmptyResourceException( id , "Category"));
+                .orElseThrow( () -> new EmptyResourceException( id , "category"));
 
-        Category tempCategory = existingCategory;
         categoryRepository.delete(existingCategory);
 
         return  categoryMapper.toDto(existingCategory);

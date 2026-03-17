@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 public class ItemServiceImpl implements ItemService {
 
@@ -32,13 +31,12 @@ public class ItemServiceImpl implements ItemService {
     private CategoryRepository categoryRepository;
 
     @Autowired
-    private final ItemMapper itemMapper;
+    private ItemMapper itemMapper;
 
     @Override
     public ItemDTO getItem(Long id) {
-
         Item existingItem = itemRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFound("Item", id));
+                .orElseThrow(() -> new EmptyResourceException( id, "item"));
 
         return itemMapper.toDto(existingItem);
     }
@@ -85,7 +83,7 @@ public class ItemServiceImpl implements ItemService {
     public APIResponse<ItemDTO> getItemsByCategory(Long categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
 
         Category existingCategory = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFound("category", categoryId));
+                .orElseThrow(() -> new EmptyResourceException(categoryId, "category" ));
 
         Sort sortByAndOrder = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
@@ -97,7 +95,7 @@ public class ItemServiceImpl implements ItemService {
 
         List<Item> itemsFromDB = itemPage.getContent();
 
-        if( itemsFromDB.isEmpty() ) throw new EmptyResourceException("items");
+        if( itemsFromDB.isEmpty() ) throw new EmptyResourceException("items","category", existingCategory.getName());
 
         List<ItemDTO> resultPageDTO = itemsFromDB.stream()
                 .map(itemMapper::toDto).toList();
@@ -126,7 +124,7 @@ public class ItemServiceImpl implements ItemService {
 
         List<Item> itemsFromDB = byKeywordPage.getContent();
 
-        if( itemsFromDB.isEmpty() ) throw new EmptyResourceException("items");
+        if( itemsFromDB.isEmpty() ) throw new EmptyResourceException("items", "keyword", keyword);
 
         APIResponse<ItemDTO> itemResponse = new APIResponse<>();
 
@@ -147,8 +145,7 @@ public class ItemServiceImpl implements ItemService {
     public ItemDTO addItem(Long categoryId, ItemDTO itemDTO) {
 
         Category existingCategory = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFound("Category", categoryId));
-
+                .orElseThrow(() -> new EmptyResourceException(categoryId, "Category"));
 
         itemRepository.findByName(itemDTO.getName())
                 .ifPresent(item -> {
@@ -164,30 +161,31 @@ public class ItemServiceImpl implements ItemService {
         return  savedItemDTO;
     }
 
-
     @Override
     public ItemDTO updateItem(Long itemId, ItemDTO itemDTO, Long categoryId) {
-
         Category existingCategory = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFound("Category", categoryId));
+                .orElseThrow(() -> new EmptyResourceException(categoryId, "Category"));
 
-        return itemRepository.findById(itemId)
-                .map(
-                        item -> {
-                            itemMapper.updateFromDto(itemDTO, item);
-                            item.setCategory(existingCategory);
-                            itemRepository.save(item);
-                            return itemMapper.toDto(item);
-                        })
-                .orElseThrow(() -> new ResourceNotFound("Item", itemId));
+        Item existingItem = itemRepository.findById(itemId)
+                .orElseThrow(() -> new EmptyResourceException(itemId, "Item"));
 
+        if (!existingItem.getName().equals(itemDTO.getName())) {
+            itemRepository.findByName(itemDTO.getName()).ifPresent(i -> {
+                throw new DuplicateResourceException("Item", "name", itemDTO.getName());
+            });
+        }
+
+        itemMapper.updateFromDto(itemDTO, existingItem);
+        existingItem.setCategory(existingCategory);
+
+        Item savedItem = itemRepository.save(existingItem);
+        return itemMapper.toDto(savedItem);
     }
 
     @Override
     public ItemDTO deleteItem(Long itemId) {
-
         Item toDelete = itemRepository.findById(itemId)
-                .orElseThrow(() -> new ResourceNotFound("Item", itemId));
+                .orElseThrow(() -> new EmptyResourceException(itemId, "Item"));
 
         itemRepository.delete(toDelete);
 

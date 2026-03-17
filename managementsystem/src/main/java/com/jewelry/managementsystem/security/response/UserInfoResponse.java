@@ -4,7 +4,6 @@ import lombok.Data;
 
 import java.util.List;
 @Data
-
 public class UserInfoResponse {
 
     private Long id;

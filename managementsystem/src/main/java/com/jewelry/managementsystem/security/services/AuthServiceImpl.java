@@ -19,6 +19,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,7 +37,7 @@ public class AuthServiceImpl implements AuthService {
     UserRepository  userRepository;
     @Autowired
     RoleRepository roleRepository;
-    @Autowired
+
     PasswordEncoder passwordEncoder;
 
     @Override
@@ -104,4 +105,5 @@ public class AuthServiceImpl implements AuthService {
         return new MessageResponse("User registered successfully!");
 
     }
+
 }

@@ -6,6 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -40,6 +41,10 @@ public class User {
             joinColumns = @JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name="role_id"))
     private Set<Role> roles = new HashSet<>();
+
+    @ToString.Exclude
+    @OneToOne( mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE } )
+    private Cart cart;
 
     public User(String username, String email, String password){
         this.username = username;

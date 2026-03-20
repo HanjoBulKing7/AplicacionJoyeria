@@ -22,16 +22,12 @@ import java.util.List;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
 
-    @Autowired
-    private ItemRepository itemRepository;
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private ItemMapper itemMapper;
+    private final ItemRepository itemRepository;
+    private final CategoryRepository categoryRepository;
+    private final ItemMapper itemMapper;
 
     @Override
     public ItemDTO getItem(Long id) {

@@ -10,11 +10,13 @@ import com.jewelry.managementsystem.security.request.LoginRequest;
 import com.jewelry.managementsystem.security.request.SignUpRequest;
 import com.jewelry.managementsystem.security.response.MessageResponse;
 import com.jewelry.managementsystem.security.response.UserInfoResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,21 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.*;
 import java.util.stream.Collectors;
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    @Autowired
-    AuthenticationManager authenticationManager;
-
-    @Autowired
-    JwtUtils jwtUtils;
-    @Autowired
-    UserDetailsServiceImpl userDetailsService;
-    @Autowired
-    UserRepository  userRepository;
-    @Autowired
-    RoleRepository roleRepository;
-
-    PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtils jwtUtils;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final UserRepository  userRepository;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public UserInfoResponse authenticateAndGetUserInfo(LoginRequest loginRequest) {

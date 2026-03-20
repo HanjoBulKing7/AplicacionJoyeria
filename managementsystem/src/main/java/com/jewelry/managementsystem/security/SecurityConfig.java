@@ -6,6 +6,7 @@ import com.jewelry.managementsystem.models.User;
 import com.jewelry.managementsystem.repositories.RoleRepository;
 import com.jewelry.managementsystem.repositories.UserRepository;
 import com.jewelry.managementsystem.security.jwt.AuthEntryPointJwt;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
@@ -30,17 +31,12 @@ import java.util.Set;
 
 @Configuration
 @EnableWebMvc
+@RequiredArgsConstructor
 public class SecurityConfig {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
-    @Autowired
-    private AuthEntryPointJwt authEntryPointJwt;
-
-    @Bean
-    public AuthTokenFilter authTokenFilter(){
-        return new AuthTokenFilter();
-    }
+    private final UserDetailsService userDetailsService;
+    private final AuthEntryPointJwt authEntryPointJwt;
+    private final AuthTokenFilter authTokenFilter;
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider(){
@@ -79,7 +75,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated());
 
                 http.authenticationProvider(daoAuthenticationProvider());
-                http.addFilterBefore(authTokenFilter(),
+                http.addFilterBefore(authTokenFilter,
                         UsernamePasswordAuthenticationFilter.class);
                 http.headers(headers->headers.frameOptions(
                         HeadersConfigurer.FrameOptionsConfig::sameOrigin

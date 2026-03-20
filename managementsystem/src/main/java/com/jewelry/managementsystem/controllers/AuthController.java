@@ -7,6 +7,7 @@ import com.jewelry.managementsystem.security.response.MessageResponse;
 import com.jewelry.managementsystem.security.response.UserInfoResponse;
 import com.jewelry.managementsystem.security.services.AuthService;
 import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
@@ -19,13 +20,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping ("/api/auth")
+@RequiredArgsConstructor
 public class AuthController {
 
-    @Autowired
-    AuthService authService;
-
-    @Autowired
-    private JwtUtils jwtUtils;
+    private final AuthService authService;
+    private final JwtUtils jwtUtils;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {

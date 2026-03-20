@@ -97,7 +97,7 @@ public class CartServiceImpl implements CartService{
         CartItem itemInCart = cartItemRepository.findByCartIdAndItemId(existingCart.getCartId(), cartItemRequest.getProductId());
 
         if(itemInCart == null)
-            throw new ShoppingCartException(itemInCart.getName(), " does not exist in the cart");
+            throw new ShoppingCartException(cartItemRequest.getProductId());
         if(originalItem.getStock() == 0)
             throw new ShoppingCartException(originalItem.getName(), " is out of stock");
         int newQuantity = itemInCart.getQuantity() + cartItemRequest.getQuantity();

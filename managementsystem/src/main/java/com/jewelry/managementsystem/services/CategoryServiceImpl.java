@@ -8,6 +8,7 @@ import com.jewelry.managementsystem.payload.APIResponse;
 import com.jewelry.managementsystem.payload.CategoryDTO;
 import com.jewelry.managementsystem.repositories.CategoryRepository;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,23 +19,18 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoryServiceImpl implements CategoryService {
 
-
-    @Autowired
-    private CategoryRepository categoryRepository;
-
-    @Autowired
-    private CategoryMapper categoryMapper;
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     @Override
     public CategoryDTO getCategoryById(Long id) {
 
-        CategoryDTO categoryById =  categoryMapper.toDto(
+        return categoryMapper.toDto(
                 categoryRepository.findById(id)
                         .orElseThrow( () -> new EmptyResourceException( id , "Category"))   );
-
-        return categoryById;
     }
 
     @Override

@@ -8,7 +8,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -45,6 +47,12 @@ public class User {
     @ToString.Exclude
     @OneToOne( mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE } )
     private Cart cart;
+
+    @OneToMany (mappedBy = "user",
+                cascade = {CascadeType.PERSIST, CascadeType.MERGE},
+                orphanRemoval = true)
+    @ToString.Exclude
+    private List<Address> addresses = new ArrayList<>();
 
     public User(String username, String email, String password){
         this.username = username;

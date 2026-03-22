@@ -19,5 +19,4 @@ public class CategoryDTO {
     @Size( min = 3 )
     private String name;
 
-    private List<ItemDTO> items;
 }

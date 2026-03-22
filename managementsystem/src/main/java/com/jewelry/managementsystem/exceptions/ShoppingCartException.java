@@ -10,6 +10,10 @@ public class ShoppingCartException extends RuntimeException{
     private int quantity;
     private Long itemId;
 
+    public ShoppingCartException(String message) {
+        super(message);
+    }
+
     public ShoppingCartException(Long itemId){
         super("Item with id: "+itemId+" does not exists on the cart");
         this.itemName = itemId.toString();

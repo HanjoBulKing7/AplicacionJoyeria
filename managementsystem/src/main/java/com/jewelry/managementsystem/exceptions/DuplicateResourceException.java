@@ -1,5 +1,8 @@
 package com.jewelry.managementsystem.exceptions;
 
+import lombok.Data;
+
+@Data
 public class DuplicateResourceException extends RuntimeException {
 
     String resourceName;
@@ -7,7 +10,7 @@ public class DuplicateResourceException extends RuntimeException {
     String fieldValue;
 
     public DuplicateResourceException(String resourceName, String resourceField, String fieldValue) {
-        super(String.format("%s with %s: %s already exists",  resourceName, resourceField, fieldValue));
+        super(String.format("%s with %s: %s, already exists",  resourceName, resourceField, fieldValue));
         this.resourceName = resourceName;
         this.resourceField = resourceField;
         this.fieldValue = fieldValue;

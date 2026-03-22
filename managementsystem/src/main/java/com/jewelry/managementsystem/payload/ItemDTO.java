@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ItemDTO {
 
+    private Long id;
     @NotBlank( message = "Please send a valid name for the item" )
     @Size ( min = 1, max = 15 )
     private String name;
@@ -35,4 +36,5 @@ public class ItemDTO {
     @NotNull  (  message = "Item status is mandatory" )
     private ItemStatus status;
 
+    private Long categoryId;
 }

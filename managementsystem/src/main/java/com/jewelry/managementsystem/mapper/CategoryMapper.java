@@ -8,4 +8,7 @@ import org.mapstruct.Mapper;
 public interface CategoryMapper extends GenericMapper <Category, CategoryDTO> {
 
 
+    @Override
+
+    CategoryDTO toDto(Category category);
 }

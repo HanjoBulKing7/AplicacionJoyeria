@@ -77,11 +77,11 @@ public class ItemController {
         return new ResponseEntity<>( createdItemDTO, HttpStatus.CREATED);
     }
 
-    @PutMapping("/admin/categories/{categoryId}/items")
+    @PutMapping("/admin/categories/{categoryId}/items/{itemId}")
     public ResponseEntity<ItemDTO> updateItem(
             @Valid @RequestBody ItemDTO itemDTO,
             @PathVariable Long itemId,
-            @RequestBody Long categoryId
+            @PathVariable Long categoryId
     ){
         ItemDTO updatedItemDTO = itemService.updateItem(itemId, itemDTO, categoryId);
         return new ResponseEntity<>(updatedItemDTO, HttpStatus.OK);

@@ -1,9 +1,7 @@
 package com.jewelry.managementsystem.models;
 
 import com.jewelry.managementsystem.constants.ItemStatus;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

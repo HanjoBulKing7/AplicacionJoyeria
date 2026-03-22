@@ -1,5 +1,6 @@
 package com.jewelry.managementsystem.exceptions;
 
+import com.jewelry.managementsystem.security.response.MessageResponse;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
@@ -82,5 +84,21 @@ public class GlobalExceptionHandler {
         });
 
         return new ResponseEntity<>( errors, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<?> handleRuntimeException(RuntimeException ex) {
+        MessageResponse response = new MessageResponse(ex.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(ShoppingCartException.class)
+    public ResponseEntity<ErrorResponse> handleShoppingCartException(ShoppingCartException ex) {
+         ErrorResponse  errorResponse = new ErrorResponse(
+                 ex.getMessage(),
+                 HttpStatus.CONFLICT.value(),
+                 LocalDateTime.now()
+         );
+         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
     }
 }

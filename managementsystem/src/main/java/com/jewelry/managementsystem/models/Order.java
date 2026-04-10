@@ -35,6 +35,7 @@ public class Order {
     @JoinColumn(name="payment_id")
     private Payment payment;
 
+    @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
     @ManyToOne

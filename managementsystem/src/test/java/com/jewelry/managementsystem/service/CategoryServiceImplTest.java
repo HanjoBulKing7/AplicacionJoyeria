@@ -55,7 +55,6 @@ public class CategoryServiceImplTest {
         testCategoryDTO = new CategoryDTO();
         testCategoryDTO.setId(1L);
         testCategoryDTO.setName("Rings");
-        testCategoryDTO.setItems(Collections.emptyList());
 
     }
 
@@ -138,10 +137,10 @@ public class CategoryServiceImplTest {
     @DisplayName("Create a category")
     void  createCategory_Sucess(){
         ///  Arrange
-        CategoryDTO inputDTO = new CategoryDTO(null, "Chains", Collections.emptyList());
+        CategoryDTO inputDTO = new CategoryDTO(null, "Chains");
         Category entityBeforeSaving = new Category(null, "Chains", Collections.emptyList());
         Category entitySaved = new  Category(1L, "Chains", Collections.emptyList());
-        CategoryDTO resultDTO = new  CategoryDTO(1L, "Chains", Collections.emptyList());
+        CategoryDTO resultDTO = new  CategoryDTO(1L, "Chains");
         when(categoryRepository.findByName(anyString())).thenReturn(Optional.empty());
         when(categoryMapper.toEntity(inputDTO)).thenReturn(entityBeforeSaving);
         when(categoryRepository.save(any())).thenReturn(entitySaved);
@@ -174,13 +173,13 @@ public class CategoryServiceImplTest {
     @Test
     @DisplayName("Update a category")
     void updateCategory_Success(){
-        CategoryDTO inputDTO = new CategoryDTO(null, "Chains", Collections.emptyList());
+        CategoryDTO inputDTO = new CategoryDTO(null, "Chains");
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
         when(categoryRepository.existsByNameAndIdNot(inputDTO.getName(), 1L)).thenReturn(Boolean.FALSE);
 
         when(categoryRepository.save(testCategory)).thenReturn(testCategory);
 
-        CategoryDTO categoryDTOUpdated = new CategoryDTO(1L, "Chains", Collections.emptyList());
+        CategoryDTO categoryDTOUpdated = new CategoryDTO(1L, "Chains");
         when(categoryMapper.toDto(testCategory)).thenReturn(categoryDTOUpdated);
 
         CategoryDTO result = categoryService.updateCategory(1L,  inputDTO);
@@ -195,7 +194,7 @@ public class CategoryServiceImplTest {
     @Test
     @DisplayName("No category found with Id")
     void updateCategoryNotFound(){
-        CategoryDTO inputDTO = new CategoryDTO(null, "Chains", Collections.emptyList());
+        CategoryDTO inputDTO = new CategoryDTO(null, "Chains");
         when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
 
         EmptyResourceException emptyEx = Assertions.assertThrows(EmptyResourceException.class,
@@ -209,7 +208,7 @@ public class CategoryServiceImplTest {
     @Test
     @DisplayName("Category throws duplicate exception")
     void  updateCategoryDuplicateException(){
-        CategoryDTO inputDTO = new CategoryDTO(null, "Chains", Collections.emptyList());
+        CategoryDTO inputDTO = new CategoryDTO(null, "Chains");
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
         when(categoryRepository.existsByNameAndIdNot(inputDTO.getName(), 1L)).thenReturn(Boolean.TRUE);
 

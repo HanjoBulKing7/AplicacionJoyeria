@@ -19,4 +19,8 @@ public class CategoryDTO {
     @Size( min = 3 )
     private String name;
 
+    public CategoryDTO(String name) {
+        this.name = name;
+    }
+
 }

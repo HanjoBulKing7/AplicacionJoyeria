@@ -69,7 +69,7 @@ public class SecurityConfig {
                         .requestMatchers("/h2-console/**").permitAll()
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
-                        .requestMatchers("/swaggers-ui/**").permitAll()
+                        .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/images/**").permitAll()
                         .anyRequest().authenticated());

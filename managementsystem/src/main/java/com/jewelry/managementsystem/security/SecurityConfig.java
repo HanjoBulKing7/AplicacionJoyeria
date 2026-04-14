@@ -26,6 +26,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import com.jewelry.managementsystem.security.jwt.AuthTokenFilter;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import java.util.Set;
 
@@ -60,6 +61,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http
+                .cors(cors->cors.configure(http))
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(e->e.authenticationEntryPoint(authEntryPointJwt))
                 .sessionManagement( session->
@@ -72,6 +74,7 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/api/test/**").permitAll()
                         .requestMatchers("/images/**").permitAll()
+                        .requestMatchers("api/public/**").permitAll()
                         .anyRequest().authenticated());
 
                 http.authenticationProvider(daoAuthenticationProvider());

@@ -2,6 +2,9 @@ package com.jewelry.managementsystem.services;
 
 import com.jewelry.managementsystem.payload.APIResponse;
 import com.jewelry.managementsystem.payload.ItemDTO;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 public interface ItemService {
 
@@ -13,4 +16,5 @@ public interface ItemService {
     ItemDTO updateItem(Long itemId,ItemDTO itemDTO, Long categoryId);
     ItemDTO deleteItem(Long itemId);
 
+    ItemDTO updateItemImage(Long itemId, MultipartFile image) throws IOException;
 }

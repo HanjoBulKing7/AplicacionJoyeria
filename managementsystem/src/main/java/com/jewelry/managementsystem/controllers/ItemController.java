@@ -10,7 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Tag(name = "Items", description = "Endpoints for managing jewelry pieces, inventory, and product search")
 @RestController
@@ -89,5 +91,12 @@ public class ItemController {
     public ResponseEntity<ItemDTO> deleteItem(@PathVariable Long itemId) {
         ItemDTO deletedItemDTO = itemService.deleteItem(itemId);
         return new ResponseEntity<>(deletedItemDTO, HttpStatus.OK);
+    }
+
+    @PutMapping("/items/{itemId}/image")
+    public ResponseEntity<ItemDTO> updateProductImage(@PathVariable Long itemId,
+                                                      @RequestParam("Image") MultipartFile image) throws IOException {
+        ItemDTO updatedImageItem = itemService.updateItemImage(itemId, image);
+        return new ResponseEntity<>(updatedImageItem, HttpStatus.OK);
     }
 }

@@ -36,5 +36,7 @@ public class ItemDTO {
     @NotNull  (  message = "Item status is mandatory" )
     private ItemStatus status;
 
+    private String image;
+
     private Long categoryId;
 }

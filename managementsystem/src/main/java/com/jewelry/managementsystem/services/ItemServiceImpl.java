@@ -18,7 +18,14 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -188,4 +195,38 @@ public class ItemServiceImpl implements ItemService {
         return itemMapper.toDto(toDelete);
     }
 
+    @Override
+    public ItemDTO updateItemImage(Long itemId, MultipartFile image) throws IOException {
+
+        // Get the product from
+        Item itemToUpdate = itemRepository.findById(itemId)
+                .orElseThrow(() -> new EmptyResourceException(itemId, "Item"));
+        //Upload iamge to server
+        //Get  the file name of uploaded image
+        String path = System.getProperty("user.dir") + File.separator + "images" + File.separator;/// Create path to save all images and getting current directory
+        String fileName = uploadImage(path, image);
+        //Updating the new file name to the item
+        itemToUpdate.setImage(fileName);
+        /// Save  updated item
+        Item updatedItem = itemRepository.save(itemToUpdate);
+        // Return DTO after mapping modified item
+        return  itemMapper.toDto(updatedItem);
+    }
+
+    public String uploadImage(String path, MultipartFile image) throws IOException {
+        ///  File name of current
+        String originalFileName = image.getOriginalFilename();
+        ///  Generate unique file name
+        String randomUUID = UUID.randomUUID().toString();
+        String fileName = randomUUID.concat(originalFileName.substring(originalFileName.lastIndexOf("."))); /// Get the extension ".jpg", ".jpeg", ".png"
+        String filePath = path + File.separator + fileName; /// /image/15245-1231.jpg
+        ///  Check if path exists or create if needed
+        File folder = new File(path);
+        if(!folder.exists())
+            folder.mkdir();
+        ///  Upload to server
+        Files.copy(image.getInputStream(), Paths.get(filePath));
+        ///  Return file
+        return fileName;
+    }
 }

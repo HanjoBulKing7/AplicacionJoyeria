@@ -25,6 +25,9 @@ public class Item {
     @Column(nullable = false)
     private ItemStatus status;
 
+    @Column(nullable = true)
+    private String image;
+
     @JoinColumn(name = "category_id")
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Category category;

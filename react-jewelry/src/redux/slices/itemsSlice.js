@@ -1,15 +1,21 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { fetchItems, fetchCategories } from '../actions/itemActions'
+import { fetchItems } from '../actions/itemActions'
 
 const itemSlice = createSlice({
     name: 'items',
     initialState: {
         items: [],
-        categories: [],
         pagination: {},
-        isLoading: false,
-        categoryLoading: false, 
+        isLoading: true,
         error: null
+    },
+    reducers: {
+        clearItems: (state)=>{
+            state.items = [];
+            state.pagination = {};
+            state.isLoading = false;
+            state.error = null;
+        },
     },
     extraReducers: (builder) => { // Builder pattern
         //  Managing the status as the state changes by itself using builder
@@ -23,17 +29,9 @@ const itemSlice = createSlice({
                 state.items = action.payload.content; // If completed set contend 
                 state.pagination = action.payload; // If completed set pagination
             })
-            
-            // Handle categories
-            .addCase(fetchCategories.pending, (state) => {
-                state.categoryLoading = true;
-            })
-            .addCase(fetchCategories.fulfilled, (state, action) => {
-                state.categoryLoading = false;
-                state.categories = action.payload.content;
-            });
     }
 });
 
 export const { clearItems } = itemSlice.actions;
+
 export default itemSlice.reducer;

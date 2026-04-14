@@ -1,5 +1,5 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-
+import { api } from '../../api/api'
 
 // Thunk para obtener Items (Soporta búsqueda, paginación y filtros)
 export const fetchItems = createAsyncThunk(

@@ -6,10 +6,13 @@ export const fetchItems = createAsyncThunk(
     'items/fetchItems',
     async (params, { rejectWithValue }) => {
         try {
-            // Llama a @GetMapping( "/public/items" ) o los de búsqueda
-            // Si mandas { keyword: 'anillo' }, Axios arma /public/items?keyword=anillo
-            const res = await api.get("/public/items", { params });
-            return res.data; 
+            const endpoint = params?.keyword 
+            ? "/public/items/keyword/search/"
+            : params?.categoryId ? `/public/items/category/${categoryId}`
+            :"/public/items";
+
+            const res = await api.get(endpoint, {params})
+            return res.data;
         } catch (e) {
             return rejectWithValue(e.response?.data?.message || 'Error fetching items');
         }
@@ -21,7 +24,6 @@ export const fetchCategories = createAsyncThunk(
     'items/fetchCategories',
     async (params, { rejectWithValue }) => {
         try {
-            // Llama a @GetMapping ( "/public/categories" )
             const res = await api.get("/public/categories", { params });
             return res.data;
         } catch (e) {

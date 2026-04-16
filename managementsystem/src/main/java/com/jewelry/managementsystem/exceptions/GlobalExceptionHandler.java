@@ -25,15 +25,15 @@ public class GlobalExceptionHandler {
 
         ErrorResponse errorResponse = new ErrorResponse(
                         ex.getMessage(),
-                        HttpStatus.NOT_FOUND.value(),
+                        HttpStatus.OK.value(),
                         LocalDateTime.now()
                 );
         /// Set up the Response Entity and return it
-        return  ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+        return  ResponseEntity.status(HttpStatus.OK).body(errorResponse);
 
     }
 
-    ///  Non existing items
+    ///  Non-existing items
     @ExceptionHandler(ResourceNotFound.class)
     public ResponseEntity<ErrorResponse> handleResourceNotFound (ResourceNotFound ex) {
 

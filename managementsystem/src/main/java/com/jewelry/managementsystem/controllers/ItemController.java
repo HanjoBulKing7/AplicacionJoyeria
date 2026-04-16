@@ -57,7 +57,7 @@ public class ItemController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-    @GetMapping ("/public/items/search{keyword}")
+    @GetMapping ("/public/items/search/{keyword}")
     public ResponseEntity<APIResponse<ItemDTO>> getItemByKeyword(
             @RequestParam String keyword ,
             @RequestParam ( name = "pageNumber" , defaultValue = DefaultValues.DEFAULT_PAGE_NUMBER, required = false) Integer pageNumber,

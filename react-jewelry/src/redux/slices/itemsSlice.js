@@ -33,5 +33,4 @@ const itemSlice = createSlice({
 });
 
 export const { clearItems } = itemSlice.actions;
-
 export default itemSlice.reducer;

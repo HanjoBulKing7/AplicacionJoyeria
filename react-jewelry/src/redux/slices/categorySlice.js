@@ -13,7 +13,7 @@ const categorySlice = createSlice({
             state.categories = [];
             state.isLoading = false;
             state.error = null;
-        }
+        },
     },
     extraReducers: (builder) =>{
         builder

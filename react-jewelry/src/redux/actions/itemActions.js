@@ -7,8 +7,8 @@ export const fetchItems = createAsyncThunk(
     async (params, { rejectWithValue }) => {
         try {
             const endpoint = params?.keyword 
-            ? "/public/items/keyword/search/"
-            : params?.categoryId ? `/public/items/category/${categoryId}`
+            ? "/public/items/search"
+            : params?.categoryId ? `/public/items/category/${params?.categoryId}`
             :"/public/items";
 
             const res = await api.get(endpoint, {params})

@@ -6,7 +6,7 @@ import { MdOutlineInventory2 } from "react-icons/md";
 import { IoReorderThree, IoTextOutline } from "react-icons/io5";
 import { FormControl, InputLabel, MenuItem, Select, Tooltip, Button, useSelectFocusSource, Menu, useEventCallback } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchCategories } from '../../redux/actions/itemActions'
+import { fetchCategories, fetchItems } from '../../redux/actions/itemActions'
 import { clearCategories } from '../../redux/slices/categorySlice'
 
 // Items fields used to display ordered by 
@@ -41,9 +41,21 @@ const Filter = () => {
         return ()=>dispatch(clearCategories());
     },[]);
 
+    useEffect(()=>{
+        if( keyword.trim() === "")
+            dispatch(fetchCategories());
+
+        const keywordDebounce = setTimeout(() => {
+            dispatch(fetchItems({keyword}));
+        }, 500);
+
+        return ()=> clearTimeout(keywordDebounce);
+    },[keyword])
+
     const handleKeywordChange = (e) => {
         const newText = e.target.value;
         setKeyword(newText);
+        console.log(keyword)
     };
 
     const handleSearchByKeyword = () => {
@@ -56,7 +68,7 @@ const Filter = () => {
     const handleCategory = (event) => {
         const selectedCategory = event.target.value;
         setCategory(selectedCategory);
-        updateFilters({name: "category", value: selectedCategory })
+        updateFilters({name: "categoryId", value: selectedCategory })
     };
 
     const handleField = (event) => {
@@ -84,7 +96,7 @@ const Filter = () => {
     };
 
     const resetFilters = () => {
-        setCategory("all");
+        setCategory("All");
         setOrder("asc");
         setSortBy("Defualt");
         setKeyword("");
@@ -128,6 +140,7 @@ const Filter = () => {
                     '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#f59e0b' }, // Ámbar al hacer clic
                     }}
                 >
+
                     <MenuItem value="All">All</MenuItem>
                     {categories.map((category) => (
                     <MenuItem key={category.id} value={category.id}>

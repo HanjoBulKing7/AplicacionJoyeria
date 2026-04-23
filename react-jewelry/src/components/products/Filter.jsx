@@ -27,7 +27,7 @@ const Filter = () => {
     // Redux
     const dispatch = useDispatch();
     const categories = useSelector((state)=> state.categories.categories);
-
+    console.log(JSON.stringify(categories));
     //Needed hooks
     const [ category, setCategory] = useState("All");
     const [ order, setOrder ] = useState("asc");
@@ -104,125 +104,99 @@ const Filter = () => {
     };
 
     
-    return(
-        <div className='bg-gray-950 w-full min-h-20 flex flex-row items-center justify-center border-b border-amber-200 gap-4 px-4 '>
-            {/*SEARCH BAR*/}
-            <div className='flex flex-row sm:w-80 w-100 lg:50 px-3 gap-1'>
-                <input
-                    id='keyword-input'
-                    className='bg-amber-50 text-gray-950 text-md focus:ring-fuchsia-700 h-9 px-1 border-0.5 rounded-2xl'
-                    placeholder='Gold ring...'
-                    value={keyword}
-                    onChange={handleKeywordChange}
-                    onKeyDown={(event)=>{if(event.key === 'Enter')handleSearchByKeyword();} }
-                />
-                <FiSearch className=' text-white text-3xl ' onClick={handleSearchByKeyword}/>
-            </div>
-            {/*CATEGORY SELECTOR*/}
-            <div>
-                <FormControl size="small" sx={{ m: 1, minWidth: 80, height: 40  }}>
-                <InputLabel 
-                    id="category-label" 
-                    sx={{ color: 'white', '&.Mui-focused': { color: '#f59e0b' } }} // Blanco por defecto, Ámbar al enfocar
-                >
-                    Category
-                </InputLabel>
+return (
+    <div className='bg-gray-950 w-full flex flex-col md:flex-row items-center justify-center border-b border-amber-200 p-4 gap-4'>
+        
+        {/*SEARCH*/}
+        <div className='flex items-center bg-amber-50 rounded-2xl px-4 w-full md:w-auto md:min-w-[300px]'>
+            <input
+                id='keyword-input'
+                className='bg-transparent w-full text-gray-950 text-md focus:outline-none h-10'
+                placeholder='Gold ring...'
+                value={keyword}
+                onChange={handleKeywordChange}
+                onKeyDown={(event) => { if (event.key === 'Enter') handleSearchByKeyword(); }}
+            />
+            <FiSearch className='text-gray-950 text-2xl cursor-pointer' onClick={handleSearchByKeyword} />
+        </div>
+
+        {/* 2. SELECTORS CONTAINER*/}
+        <div className='flex flex-wrap items-center justify-center gap-2 w-full md:w-auto'>
+            
+            {/* CATEGORY */}
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+                <InputLabel sx={{ color: 'white', '&.Mui-focused': { color: '#f59e0b' } }}>Category</InputLabel>
                 <Select
-                    labelId="category-label"
                     value={category}
                     label="Category"
                     onChange={handleCategory}
                     sx={{
-                    color: 'white', // Texto seleccionado en blanco
-                    height: '40px',
-                    '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' }, // Borde gris claro
-                    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'white' }, // Blanco al pasar el mouse
-                    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#f59e0b' }, // Ámbar al hacer clic
+                        color: 'white',
+                        height: '40px',
+                        '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
+                        '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#f59e0b' },
                     }}
                 >
-
                     <MenuItem value="All">All</MenuItem>
-                    {categories.map((category) => (
-                    <MenuItem key={category.id} value={category.id}>
-                        {category.name}
-                    </MenuItem>
+                    {categories?.map((cat) => (
+                        <MenuItem key={cat.id} value={cat.id}>{cat.name}</MenuItem>
                     ))}
                 </Select>
-                </FormControl>
-            </div>
-            {/*FIELD(SORT BY) SELECTOR*/}
-            <div>
-                <FormControl size="small" sx={{ m: 1, minWidth: 80, height: 40  }}>
-                <InputLabel 
-                    id="category-label" 
-                    sx={{ color: 'white', '&.Mui-focused': { color: '#f59e0b' } }} >
-                    Sort By
-                </InputLabel>
-                        <Select
-                            labelId="category-label"
-                            value={sortBy}
-                            onChange={handleField}
-                            label="Sort By" // Cambié esto a "Sort By" para que coincida con tu imagen
-                            sx={{
-                                color: 'white',
-                                // 1. Esto alinea el icono y el texto en fila dentro del Select
-                                '.MuiSelect-select': {
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: '13px', // Espacio entre el icono y el texto
-                                },
-                                '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
-                                '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
-                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#f59e0b' },
-                            }} >
-                            {fields.map((field, id) => {
-                                const IconComponent = field.icon;
-                                return (
-                                <MenuItem key={id} value={field.label} >
-                                    <IconComponent size={20} className='pr-2' /> {field.label}
-                                </MenuItem>
-                                );
+            </FormControl>
+
+            {/* SORT BY */}
+            <FormControl size="small" sx={{ minWidth: 120 }}>
+                <InputLabel sx={{ color: 'white', '&.Mui-focused': { color: '#f59e0b' } }}>Sort By</InputLabel>
+                <Select
+                    value={sortBy}
+                    label="Sort By"
+                    onChange={handleField}
+                    sx={{
+                        color: 'white',
+                        height: '40px',
+                        '.MuiSelect-select': { display: 'flex', alignItems: 'center', gap: '8px' },
+                        '.MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255, 255, 255, 0.5)' },
+                        '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'white' },
+                    }}
+                >
+                    {fields.map((field, id) => {
+                        const Icon = field.icon;
+                        return (
+                            <MenuItem key={id} value={field.label}>
+                                <Icon size={18} /> <span className="ml-2">{field.label}</span>
+                            </MenuItem>
+                        );
                     })}
                 </Select>
-                </FormControl>
-            </div>
-                {/* BOTÓN PARA ORDEN */}
-                <Tooltip title={`Order: ${order === 'asc' ? 'Ascending' : 'Descending'}`}>
+            </FormControl>
+
+            {/* ACTION BUTTONS */}
+            <div className="flex gap-2">
+                <Tooltip title="Toggle Order">
                     <Button 
-                        sx={{
-                            color: 'white',
-                            borderColor: 'white',
-                            textTransform: 'none', // Para que no salga todo en mayúsculas
-                            height: '40px', // Misma altura que tus Selects
-                            '&:hover': { borderColor: 'white', backgroundColor: 'rgba(255,255,255,0.1)' }
-                        }}
-                        variant="outlined"
-                        startIcon={order === 'asc' ? <FiArrowUp /> : <FiArrowDown />}
+                        variant="outlined" 
                         onClick={toggleOrder}
+                        startIcon={order === 'asc' ? <FiArrowUp /> : <FiArrowDown />}
+                        sx={{ color: 'white', borderColor: 'white', height: '40px', textTransform: 'none' }}
                     >
                         Sort
                     </Button>
                 </Tooltip>
 
-                {/* BOTÓN RESET */}
-                <Tooltip title="Reset all filters">
+                <Tooltip title="Reset">
                     <Button 
-                    variant='outlined'
-                        sx={{
-                            color: '#f59e0b',
-                            textTransform: 'none',
-                            height: '40px',
-                            gap: 1,
-                            borderColor: 'white',
-                        }}
+                        variant="outlined" 
                         onClick={resetFilters}
+                        sx={{ color: '#f59e0b', borderColor: '#f59e0b', height: '40px', textTransform: 'none' }}
                     >
-                        Reset Filters
                         <FiRefreshCcw />
                     </Button>
                 </Tooltip>
+            </div>
         </div>
-    );
+    </div>
+);
 }
 
 export default Filter;

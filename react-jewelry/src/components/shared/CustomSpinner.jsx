@@ -5,15 +5,9 @@ const CustomSpinner = ({text}) => {
     return(
         <div className="flex flex-col items-center justify-center w-full pt-40 gap-7">
             <ClockLoader
-            visible={true}
-            height="96"
-            width="96"
-            color="grey"
-            strokeWidth="5"
-            animationDuration="0.75"
-            ariaLabel="rotating-lines-loading"
-            wrapperStyle={{}}
-            wrapperClass=""
+                size={80}
+                color="#ecff00"
+                speedMultiplier={3}
             />
             <p className='text-white text-3xl font-semibold'>
                 { text ? text : "Plase wait" }

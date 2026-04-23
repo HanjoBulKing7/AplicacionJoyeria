@@ -5,14 +5,26 @@ const itemSlice = createSlice({
     name: 'items',
     initialState: {
         items: [],
-        pagination: {},
+        pagination: {
+            pageNumber: 0,
+            pageSize: 0,
+            totalElements: 0,
+            totalPages: 0,
+            lastPage: 0,
+        },
         isLoading: true,
         error: null
     },
     reducers: {
         clearItems: (state)=>{
             state.items = [];
-            state.pagination = {};
+            state.pagination = {
+                pageNumber: 0,
+                pageSize: 0,
+                totalElements: 0,
+                totalPages: 0,
+                lastPage: 0,
+            };
             state.isLoading = false;
             state.error = null;
         },
@@ -26,8 +38,14 @@ const itemSlice = createSlice({
             })
             .addCase(fetchItems.fulfilled, (state, action) => {
                 state.isLoading = false;
-                state.items = action.payload.content; // If completed set contend 
-                state.pagination = action.payload; // If completed set pagination
+                state.items = action.payload.content; 
+                state.pagination = {
+                    pageNumber: action.payload.pageNumber,
+                    pageSize: action.payload.pageSize,
+                    totalElements: action.payload.totalElements,
+                    totalPages: action.payload.totalPages,
+                    totalElements: action.payload.totalElements,
+                }; 
             })
     }
 });

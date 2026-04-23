@@ -38,7 +38,7 @@ public class ItemController {
             @RequestParam ( name = "sortBy", defaultValue = DefaultValues.DEFAULT_SORT_FIELD , required = false )  String sortBy,
             @RequestParam ( name = "sortOrder", defaultValue = DefaultValues.DEFAULT_SORT_ORDER, required = false ) String sortOrder
     ){
-        APIResponse<ItemDTO> itemResponse = itemService.getItems( pageNumber , pageSize , sortBy , sortOrder);
+        APIResponse<ItemDTO> itemResponse = itemService.getItems( ((pageNumber <= 0) ? 0 : pageNumber - 1), pageSize , sortBy , sortOrder);
 
         return new ResponseEntity<>(itemResponse, HttpStatus.OK);
     }
@@ -52,7 +52,7 @@ public class ItemController {
             @RequestParam ( name = "sortOrder", defaultValue = DefaultValues.DEFAULT_SORT_ORDER, required = false ) String sortOrder
     ){
 
-        APIResponse apiResponse = itemService.getItemsByCategory(categoryId, pageNumber, pageSize, sortBy, sortOrder);
+        APIResponse apiResponse = itemService.getItemsByCategory(categoryId, ((pageNumber <= 0) ? 0 : pageNumber - 1), pageSize, sortBy, sortOrder);
 
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
@@ -65,7 +65,7 @@ public class ItemController {
             @RequestParam ( name = "sortBy", defaultValue = DefaultValues.DEFAULT_SORT_FIELD , required = false )  String sortBy,
             @RequestParam ( name = "sortOrder", defaultValue = DefaultValues.DEFAULT_SORT_ORDER, required = false ) String sortOrder
     ){
-        APIResponse apiResponse = itemService.getItemsByKeyword(keyword, pageNumber, pageSize, sortBy, sortOrder);
+        APIResponse apiResponse = itemService.getItemsByKeyword(keyword, ((pageNumber <= 0) ? 0 : pageNumber - 1), pageSize, sortBy, sortOrder);
 
         return new ResponseEntity<>( apiResponse, HttpStatus.OK);
     }

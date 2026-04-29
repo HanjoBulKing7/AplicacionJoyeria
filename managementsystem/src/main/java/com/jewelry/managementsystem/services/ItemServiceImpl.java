@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -62,7 +63,16 @@ public class ItemServiceImpl implements ItemService {
         ///  Get content from the page to create an ItemResponse
         List<Item> itemsFromDB = itemPage.getContent();
 
-        if( itemsFromDB.isEmpty() ) throw new EmptyResourceException("items");
+        if (itemsFromDB.isEmpty()) {
+            return new APIResponse<ItemDTO>(
+                    Collections.emptyList(), // content
+                    pageNumber,              // pageNumber
+                    pageSize,                // pageSize
+                    0L,                      // totalElements
+                    0,                       // totalPages
+                    true                     // lastPage
+            );
+        }
 
         List<ItemDTO>  itemsDTO = itemsFromDB.stream()
                 .map( itemMapper::toDto)
@@ -98,7 +108,13 @@ public class ItemServiceImpl implements ItemService {
 
         List<Item> itemsFromDB = itemPage.getContent();
 
-        if( itemsFromDB.isEmpty() ) throw new EmptyResourceException("items","category", existingCategory.getName());
+        if( itemsFromDB.isEmpty() )
+            return new APIResponse<>(Collections.emptyList(),
+                    pageNumber,
+                    pageSize,
+                    0L,
+                    0,
+                    true);
 
         List<ItemDTO> resultPageDTO = itemsFromDB.stream()
                 .map(itemMapper::toDto).toList();
@@ -127,7 +143,13 @@ public class ItemServiceImpl implements ItemService {
 
         List<Item> itemsFromDB = byKeywordPage.getContent();
 
-        if( itemsFromDB.isEmpty() ) throw new EmptyResourceException("items", "keyword", keyword);
+        if( itemsFromDB.isEmpty() )
+            return new APIResponse<>(Collections.emptyList(),
+                    pageNumber,
+                    pageSize,
+                    0L,
+                    0,
+                    true);
 
         APIResponse<ItemDTO> itemResponse = new APIResponse<>();
 

@@ -9,7 +9,7 @@ import CustomSpinner from '../shared/CustomSpinner'
 import PaginationComp from '../shared/Pagination'
 
 
-const Products = () => {
+const MainItems = () => {
     const dispatch = useDispatch();
     // Verifica si es state.inventory o state.items (según tu store.js)
     const items = useSelector((state) => state.inventory.items);
@@ -43,4 +43,4 @@ const Products = () => {
         </div>
     );
 }
-export default Products;
+export default MainItems;

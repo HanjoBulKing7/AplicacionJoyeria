@@ -16,27 +16,27 @@ const navLinks = [
 const Navbar = () => {
 
     const [ isOpen, setIsOpen ] = useState(false);
-    const path = useLocation().pathname;
+    const pathname = useLocation().pathname;
 
     return(
         <div className='bg-black'>
             <ul className={`flex flex-col items-center justify-center w-full text-white gap-6 md:flex-row md:gap-20 md:h-20 md:overflow-visible 
                  ${isOpen ? 'h-fit gap-10 pt-2' : 'h-0 overflow-hidden'}`}>
-                {navLinks.map((link) => (
-                    <li key={link.path}>
+                {navLinks.map((link, i) => (
+                    <li key={i}>
                     <Link 
                         to={link.path} 
                         className={`transition-all duration-300 relative group
-                        ${path === link.path 
+                        ${pathname === link.path 
                             ? 'text-amber-400 font-medium' // Selected color
                             : 'text-white hover:text-amber-200' // Default color
                         }`}
                     >
                         {link.name}
                         
-                        {/* The "Elegant Underline" Logic */}
+                        {/* The "Elegant Underline" Logic */console.log("Current path", link.path)}
                         <span className={`absolute -bottom-1 left-0 h-[1px] bg-amber-400 transition-all duration-500
-                        ${path === link.path ? 'w-full' : 'w-0 group-hover:w-full'}`}>
+                        ${pathname === link.path ? 'w-full' : 'w-0 group-hover:w-full'}`}>
                         </span>
                     </Link>
                     </li>
@@ -59,12 +59,7 @@ const Navbar = () => {
             <button 
                 onClick={()=>setIsOpen(!isOpen)}
                 className='md:hidden p-3'>
-                    {
-                        isOpen ? 
-                        ( <RxCross2 className='text-white text-3xl'/> )
-                        :
-                        (<GiHamburgerMenu className='text-white text-3xl'/> )
-                    }
+                    {   isOpen ?  <RxCross2 className='text-white text-3xl'/> : <GiHamburgerMenu className='text-white text-3xl'/> }
             </ button>
         </div>
     );

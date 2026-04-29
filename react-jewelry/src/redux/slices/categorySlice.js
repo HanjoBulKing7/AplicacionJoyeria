@@ -8,7 +8,7 @@ const categorySlice = createSlice({
         isLoading: false,
         error: null
     },
-    rerducers: {
+    reducers: {
         clearCategories: (state)=>{
             state.categories = [];
             state.isLoading = false;

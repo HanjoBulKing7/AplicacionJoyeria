@@ -42,7 +42,7 @@ const Navbar = () => {
                     </li>
                 ))}
                 <li>
-                    <Link>
+                    <Link to='/cart'>
                         <Badge
                             showZero
                             badgeContent={0}

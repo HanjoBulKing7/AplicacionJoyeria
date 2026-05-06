@@ -5,6 +5,7 @@ import { IoIosMenu } from 'react-icons/io'
 import { RxCross2 } from 'react-icons/rx'
 import { FaShoppingCart } from 'react-icons/fa'
 import { Badge } from '@mui/material'
+import { useSelector } from 'react-redux'
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -17,6 +18,7 @@ const Navbar = () => {
 
     const [ isOpen, setIsOpen ] = useState(false);
     const pathname = useLocation().pathname;
+    const cart = useSelector((state) => state.cart.cart);
 
     return(
         <div className='bg-black'>
@@ -42,10 +44,10 @@ const Navbar = () => {
                     </li>
                 ))}
                 <li>
-                    <Link>
+                    <Link to='/cart'>
                         <Badge
                             showZero
-                            badgeContent={0}
+                            badgeContent={cart.length}
                             color='primary'
                             overlap='circular'
                             anchorOrigin={{vertical: 'top', horizontal: 'right',}}

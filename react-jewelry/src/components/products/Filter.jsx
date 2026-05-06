@@ -27,7 +27,7 @@ const Filter = () => {
     // Redux
     const dispatch = useDispatch();
     const categories = useSelector((state)=> state.categories.categories);
-    console.log(JSON.stringify(categories));
+
     //Needed hooks
     const [ category, setCategory] = useState("All");
     const [ order, setOrder ] = useState("asc");
@@ -55,7 +55,6 @@ const Filter = () => {
     const handleKeywordChange = (e) => {
         const newText = e.target.value;
         setKeyword(newText);
-        console.log(keyword)
     };
 
     const handleSearchByKeyword = () => {

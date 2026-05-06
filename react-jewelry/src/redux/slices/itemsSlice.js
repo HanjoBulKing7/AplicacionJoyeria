@@ -16,7 +16,7 @@ const itemSlice = createSlice({
         error: null
     },
     reducers: {
-        clearItems: (state)=>{
+        clearItems: (state) => {
             state.items = [];
             state.pagination = {
                 pageNumber: 0,

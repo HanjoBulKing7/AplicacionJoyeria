@@ -6,6 +6,7 @@ import { RxCross2 } from 'react-icons/rx'
 import { FaShoppingCart } from 'react-icons/fa'
 import { Badge } from '@mui/material'
 import { useSelector } from 'react-redux'
+import { FaUser } from "react-icons/fa";
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -21,8 +22,8 @@ const Navbar = () => {
     const cart = useSelector((state) => state.cart.cart);
 
     return(
-        <div className='bg-black'>
-            <ul className={`flex flex-col items-center justify-center w-full text-white gap-6 md:flex-row md:gap-20 md:h-20 md:overflow-visible 
+        <div className='bg-black w-full flex flex-col md:flex-row md:items-center md:justify-between px-4 md:px-10'>
+            <ul className={`flex flex-col items-center justify-center text-white gap-6 md:flex-row md:gap-20 md:h-20 md:overflow-visible 
                  ${isOpen ? 'h-fit gap-10 pt-2' : 'h-0 overflow-hidden'}`}>
                 {navLinks.map((link, i) => (
                     <li key={i}>
@@ -43,20 +44,24 @@ const Navbar = () => {
                     </Link>
                     </li>
                 ))}
-                <li>
-                    <Link to='/cart'>
-                        <Badge
-                            showZero
-                            badgeContent={cart.length}
-                            color='primary'
-                            overlap='circular'
-                            anchorOrigin={{vertical: 'top', horizontal: 'right',}}
-                        >
-                            <FaShoppingCart size={25} />                            
-                        </Badge>
-                    </Link>
-                </li>
+
             </ul>
+            <div className='flex flex-col md:flex-row items-center pt-4 gap-10 md:gap-6 text-white'>
+                <Link to='/cart'>
+                    <Badge
+                        showZero
+                        badgeContent={cart.length}
+                        color='primary'
+                        overlap='circular'
+                        anchorOrigin={{vertical: 'top', horizontal: 'right',}}
+                       >
+                        <FaShoppingCart size={25} />                            
+                    </Badge>
+                </Link>
+                <Link to='/login'>
+                    <FaUser />
+                </Link>
+            </div>
 
             <button 
                 onClick={()=>setIsOpen(!isOpen)}

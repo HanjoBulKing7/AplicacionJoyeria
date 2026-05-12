@@ -7,6 +7,7 @@ import { FaShoppingCart } from 'react-icons/fa'
 import { Badge } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { FaUser } from "react-icons/fa";
+import { GrUserSettings } from "react-icons/gr";
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -20,6 +21,8 @@ const Navbar = () => {
     const [ isOpen, setIsOpen ] = useState(false);
     const pathname = useLocation().pathname;
     const cart = useSelector((state) => state.cart.cart);
+    const user  = useSelector((state)=> state.auth);
+    console.log(user)
 
     return(
         <div className='bg-black w-full flex flex-col md:flex-row md:items-center md:justify-between px-4 md:px-10'>
@@ -59,7 +62,7 @@ const Navbar = () => {
                     </Badge>
                 </Link>
                 <Link to='/login'>
-                    <FaUser />
+                    { user ? <GrUserSettings /> :   <FaUser /> }
                 </Link>
             </div>
 

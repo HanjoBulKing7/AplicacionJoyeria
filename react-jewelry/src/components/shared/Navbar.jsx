@@ -8,6 +8,7 @@ import { Badge } from '@mui/material'
 import { useSelector } from 'react-redux'
 import { FaUser } from "react-icons/fa";
 import { GrUserSettings } from "react-icons/gr";
+import UserMenu from '../auth/UserMenu';
 
 const navLinks = [
   { name: 'Home', path: '/' },
@@ -15,6 +16,7 @@ const navLinks = [
   { name: 'Contact', path: '/contact' },
   { name: 'About us', path: '/about' },
 ];
+const userIconStyles = 'text-2xl text-white'
 
 const Navbar = () => {
 
@@ -22,6 +24,7 @@ const Navbar = () => {
     const pathname = useLocation().pathname;
     const cart = useSelector((state) => state.cart.cart);
     const user  = useSelector((state)=> state.auth);
+    const [ isMenuVisible, setIsMenuVisible ] = useState(false)
     console.log(user)
 
     return(
@@ -49,7 +52,7 @@ const Navbar = () => {
                 ))}
 
             </ul>
-            <div className='flex flex-col md:flex-row items-center pt-4 gap-10 md:gap-6 text-white'>
+            <div className='relative flex flex-col md:flex-row items-center pt-4 gap-10 md:gap-6 text-white'>
                 <Link to='/cart'>
                     <Badge
                         showZero
@@ -62,7 +65,12 @@ const Navbar = () => {
                     </Badge>
                 </Link>
                 <Link to='/login'>
-                    { user ? <GrUserSettings /> :   <FaUser /> }
+                    { user ? 
+                    <>
+                        <GrUserSettings className='text-2xl text-white' onClick={ ()=> setIsMenuVisible(!isMenuVisible) } /> 
+                        { isMenuVisible && <UserMenu /> }
+                    </>
+                     :   <FaUser className='text-2xl text-white' /> }
                 </Link>
             </div>
 

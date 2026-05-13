@@ -27,6 +27,13 @@ const authSlice = createSlice({
                 state.roles = action.payload.roles;
                 localStorage.setItem("auth", JSON.stringify(state.auth));
             })
+
+            .addCase( registerUser.pending, (state)=>{
+                state.authLoading = true;
+            })
+            addCase( registerUser.pending, (state, action)=>{
+                state.authLoading = false;
+            })
     }
 
 })

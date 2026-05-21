@@ -25,7 +25,6 @@ const Navbar = () => {
     const cart = useSelector((state) => state.cart.cart);
     const user  = useSelector((state)=> state.auth);
     const [ isMenuVisible, setIsMenuVisible ] = useState(false)
-    console.log(user)
 
     return(
         <div className='bg-black w-full flex flex-col md:flex-row md:items-center md:justify-between px-4 md:px-10'>
@@ -43,7 +42,6 @@ const Navbar = () => {
                     >
                         {link.name}
                         
-                        {/* The "Elegant Underline" Logic */console.log("Current path", link.path)}
                         <span className={`absolute -bottom-1 left-0 h-[1px] bg-amber-400 transition-all duration-500
                         ${pathname === link.path ? 'w-full' : 'w-0 group-hover:w-full'}`}>
                         </span>
@@ -64,14 +62,14 @@ const Navbar = () => {
                         <FaShoppingCart size={25} />                            
                     </Badge>
                 </Link>
-                <Link to='/login'>
+                <button to='/login'>
                     { user ? 
                     <>
                         <GrUserSettings className='text-2xl text-white' onClick={ ()=> setIsMenuVisible(!isMenuVisible) } /> 
                         { isMenuVisible && <UserMenu /> }
                     </>
                      :   <FaUser className='text-2xl text-white' /> }
-                </Link>
+                </button>
             </div>
 
             <button 

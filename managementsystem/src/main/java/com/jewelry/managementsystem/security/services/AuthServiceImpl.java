@@ -1,30 +1,31 @@
 package com.jewelry.managementsystem.security.services;
 
+import com.jewelry.managementsystem.models.RefreshToken;
 import com.jewelry.managementsystem.models.Role;
 import com.jewelry.managementsystem.models.Roles;
 import com.jewelry.managementsystem.models.User;
+import com.jewelry.managementsystem.repositories.RefreshTokenRepository;
 import com.jewelry.managementsystem.repositories.RoleRepository;
 import com.jewelry.managementsystem.repositories.UserRepository;
 import com.jewelry.managementsystem.security.jwt.JwtUtils;
 import com.jewelry.managementsystem.security.request.LoginRequest;
 import com.jewelry.managementsystem.security.request.SignUpRequest;
+import com.jewelry.managementsystem.security.response.JWTResponse;
 import com.jewelry.managementsystem.security.response.MessageResponse;
-import com.jewelry.managementsystem.security.response.UserInfoResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -35,9 +36,10 @@ public class AuthServiceImpl implements AuthService {
     private final UserRepository  userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
-    public UserInfoResponse authenticateAndGetUserInfo(LoginRequest loginRequest) {
+    public JWTResponse authenticateAndGetUserInfo(LoginRequest loginRequest) {
             ///  Try to authenticate if fails the enry point throws an exception
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
@@ -53,14 +55,11 @@ public class AuthServiceImpl implements AuthService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        ///  Return data and the controller will handle cookies
-        return new UserInfoResponse(userDetails.getId(), userDetails.getUsername(), roles);
-    }
+        String accessToken = jwtUtils.generateAccessToken(userDetails.getUsername(), roles);
+        String refreshToken = refreshTokenRepository.findByUser_UserId(userDetails.getId()).get().getToken();
 
-    @Override
-    public ResponseCookie generateJwtCookieForuser(String username) {
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        return jwtUtils.generateJwtCookie(userDetails);
+        ///  Return data and the controller will handle cookies
+        return new JWTResponse(userDetails.getId(),  accessToken, refreshToken, userDetails.getUsername(), roles);
     }
 
     @Override
@@ -95,10 +94,25 @@ public class AuthServiceImpl implements AuthService {
                 roles.add(finalRole);
             });
         }
+
+        RefreshToken refreshTokenForUser = new RefreshToken();
+        refreshTokenForUser.setUser(user);
+        refreshTokenForUser.setToken(jwtUtils.generateRefreshToken());
+
+        Instant expirationTime = Instant.now().plus(7, ChronoUnit.DAYS); /// Generate the expiration time
+
+        refreshTokenForUser.setExpirationDate(expirationTime);
+
         user.setRoles(roles);
         userRepository.save(user);
+        refreshTokenRepository.save(refreshTokenForUser);
 
         return new MessageResponse("User registered successfully!");
+
+    }
+
+    @Override
+    public JWTResponse refreshToken(String refreshToken) {
 
     }
 

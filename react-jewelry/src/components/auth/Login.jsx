@@ -18,8 +18,11 @@ function Login() {
   const [ loading, setLoading ] = useState(false)
   const [ showPwd, setShowPwd ] = useState(false)
 
-  const handleLogin = (data) => {
-    dispatch(loginUser(data));
+  const handleLogin = async (data) => {
+    const loginRes = await dispatch(loginUser(data));
+    
+    if(loginUser.fulfilled.match(loginRes))
+      navigate('/items')
   }
 
   return (
@@ -49,7 +52,7 @@ function Login() {
               {...register("password", {
                   required: "Password is required",
                   minLength: {value: 7, message: "Password must be at least 7 characters"},
-                  pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, message: "Must include uppercase, lowercase, and a number" }
+                  //pattern: { value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, message: "Must include uppercase, lowercase, and a number" }
                 })}
                 />
                 <button
@@ -71,7 +74,7 @@ function Login() {
             <>Login</> 
             }
           </button>
-          <span className='text-white '>Don't have an account? <Link to='/signup' >Sign up</Link></span>
+          <span className='text-white '>Don't have an account? <Link to='/signup' className='font-bold underline'>Sign up</Link></span>
         </div>
       </form>
     </div>

@@ -17,6 +17,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -52,17 +53,10 @@ public class AuthController {
 
     @PostMapping("/refresh-token")
     public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
-        // request contiene el refresh token string que mandó el frontend
-        String requestRefreshToken = request.getRefreshToken();
 
-        return refreshTokenService.findByToken(requestRefreshToken)
-                .map(refreshTokenService::verifyExpiration)   // ¿expiró?
-                .map(RefreshToken::getUser)                    // saca el User
-                .map(user -> {
-                    String newAccessToken = jwtUtils.generateAccessToken(userRepository.findById(user).get().getUsername(), userRepository.findById(user).get().getRoles());
-                    return ResponseEntity.ok(new TokenRefreshResponse(newAccessToken, requestRefreshToken));
-                })
-                .orElseThrow(() -> new RuntimeException("Refresh token no encontrado"));
+        JWTResponse refreshTokenResponse = authService.refreshToken(request.getRefreshToken());
+
+        return new ResponseEntity<>(refreshTokenResponse, HttpStatus.OK);
     }
 
     @PostMapping("/signout")

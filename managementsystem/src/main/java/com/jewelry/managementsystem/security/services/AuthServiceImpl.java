@@ -1,5 +1,6 @@
 package com.jewelry.managementsystem.security.services;
 
+import com.jewelry.managementsystem.exceptions.TokenException;
 import com.jewelry.managementsystem.models.RefreshToken;
 import com.jewelry.managementsystem.models.Role;
 import com.jewelry.managementsystem.models.Roles;
@@ -21,6 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.sql.Ref;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -45,7 +47,7 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
         );
 
-        ///  If the authentication was succesfully performed
+        ///  If the authentication was successfully performed
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         ///  Get user details
@@ -56,10 +58,10 @@ public class AuthServiceImpl implements AuthService {
                 .collect(Collectors.toList());
 
         String accessToken = jwtUtils.generateAccessToken(userDetails.getUsername(), roles);
-        String refreshToken = refreshTokenRepository.findByUser_UserId(userDetails.getId()).get().getToken();
-
+        RefreshToken refreshToken = refreshTokenRepository.findByUser_UserId(userDetails.getId())
+                .orElseThrow(()-> new TokenException("Invalid token"));
         ///  Return data and the controller will handle cookies
-        return new JWTResponse(userDetails.getId(),  accessToken, refreshToken, userDetails.getUsername(), roles);
+        return new JWTResponse(  accessToken, refreshToken.getToken(), userDetails.getUsername(), roles);
     }
 
     @Override
@@ -114,6 +116,35 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public JWTResponse refreshToken(String refreshToken) {
 
-    }
+        //Check if the refresh token exists
+        RefreshToken refreshTokenFromUser = refreshTokenRepository.findByToken(refreshToken)
+                ///  IN case the token does not exist
+                .orElseThrow(() -> new RuntimeException("Error: Refresh token not found!"));new TokenException(refreshToken, "Invalid token");
 
+        ///  In case the toke does exist
+        if( refreshTokenFromUser.getExpirationDate().isBefore(Instant.now()) )
+            throw new TokenException("Token is already expired!");
+
+        refreshTokenFromUser.setToken("");
+        String newToken = jwtUtils.generateRefreshToken();
+        refreshTokenFromUser.setToken(newToken);
+        refreshTokenFromUser.setExpirationDate(Instant.now().plus(7, ChronoUnit.DAYS));
+        refreshTokenRepository.save(refreshTokenFromUser);
+
+        JWTResponse refreshedResponse = new JWTResponse();
+        User userFromRefreshToken = refreshTokenFromUser.getUser();
+
+        refreshedResponse.setRefreshToken(refreshTokenFromUser.getToken());
+        List<String> stringRoles = userFromRefreshToken.getRoles().stream()
+                        .map(role -> role.getRolename().toString())
+                                .toList();
+
+        refreshedResponse.setAccessToken(jwtUtils.generateAccessToken(userFromRefreshToken.getUsername(), stringRoles));
+
+        refreshedResponse.setRefreshToken(newToken);
+        refreshedResponse.setUsername(userFromRefreshToken.getUsername());
+
+        return refreshedResponse;
+
+    }
 }

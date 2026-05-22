@@ -14,7 +14,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
-    @Value("${spring.app.refreshExpirationMs}")
+    @Value("${spring.app.refreshTokenExpirationMs}")
     private Long refreshExpirationMs;
 
     private final UserRepository userRepository;

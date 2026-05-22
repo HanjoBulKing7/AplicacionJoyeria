@@ -25,8 +25,8 @@ public class JwtUtils {
 
     @Value("${spring.app.jwtSecret}")
     private String jwtSecret;
-    @Value("${spring.app.jwtExpirationMs}")
-    private int jwtExpirationMs;
+    @Value("${spring.app.accessTokenExpiration}")
+    private int accessTokenExpirationMs;
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
     @Value("${spring.jewelry.app.jwtCookieName}")
@@ -39,13 +39,21 @@ public class JwtUtils {
                 .build();
     }
 
+    public String getJWTFromHeader(HttpServletRequest request){
+        String bearerToken = request.getHeader("Authorization");
+        if(bearerToken != null && bearerToken.startsWith("Bearer "))
+            return bearerToken.substring(7);
+
+        return null;
+    }
+
     ///  Generating access token from Username
     public String generateAccessToken(String username, List<String> rolesList){
         return Jwts.builder()
                 .claim("roles", rolesList)
                 .subject(username)
                 .issuedAt(new Date())
-                .expiration(new Date((new Date().getTime() + jwtExpirationMs)))
+                .expiration(new Date((new Date().getTime() + accessTokenExpirationMs)))
                 .signWith(SignatureAlgorithm.HS256, jwtSecret)
                 .compact();
     }

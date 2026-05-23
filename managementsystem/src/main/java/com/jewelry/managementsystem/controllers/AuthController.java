@@ -60,8 +60,9 @@ public class AuthController {
     }
 
     @PostMapping("/signout")
-    public ResponseEntity<?> signoutUser(){
-        ResponseCookie jwtCookie = jwtUtils.getCleanJwtCookie(null);
+    public ResponseEntity<?> signoutUser(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+
+        String logoutMessage = authService.logoutUser(refreshTokenRequest);
 
         return ResponseEntity.ok( new MessageResponse("You've been signed out!"));
     }

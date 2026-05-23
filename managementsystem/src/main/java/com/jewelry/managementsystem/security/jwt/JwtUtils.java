@@ -1,19 +1,13 @@
 package com.jewelry.managementsystem.security.jwt;
 
-import com.jewelry.managementsystem.models.Roles;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseCookie;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import org.springframework.web.util.WebUtils;
-
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
@@ -32,12 +26,6 @@ public class JwtUtils {
     @Value("${spring.jewelry.app.jwtCookieName}")
     private String jwtCookie;
 
-    ///  Delete the cookie to sign out and obligate the user to sign up again
-    public ResponseCookie getCleanJwtCookie(UserDetails userPrincipal){
-        return ResponseCookie.from(jwtCookie, null)
-                .path("/api")
-                .build();
-    }
 
     public String getJWTFromHeader(HttpServletRequest request){
         String bearerToken = request.getHeader("Authorization");

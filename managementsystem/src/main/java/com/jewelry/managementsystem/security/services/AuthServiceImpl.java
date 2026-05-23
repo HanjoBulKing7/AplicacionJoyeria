@@ -10,9 +10,11 @@ import com.jewelry.managementsystem.repositories.RoleRepository;
 import com.jewelry.managementsystem.repositories.UserRepository;
 import com.jewelry.managementsystem.security.jwt.JwtUtils;
 import com.jewelry.managementsystem.security.request.LoginRequest;
+import com.jewelry.managementsystem.security.request.RefreshTokenRequest;
 import com.jewelry.managementsystem.security.request.SignUpRequest;
 import com.jewelry.managementsystem.security.response.JWTResponse;
 import com.jewelry.managementsystem.security.response.MessageResponse;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,12 +23,11 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.sql.Ref;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -59,7 +60,7 @@ public class AuthServiceImpl implements AuthService {
 
         String accessToken = jwtUtils.generateAccessToken(userDetails.getUsername(), roles);
         RefreshToken refreshToken = refreshTokenRepository.findByUser_UserId(userDetails.getId())
-                .orElseThrow(()-> new TokenException("Invalid token"));
+                .orElseThrow(()-> new TokenException("Invalid token for logging in"));
         ///  Return data and the controller will handle cookies
         return new JWTResponse(  accessToken, refreshToken.getToken(), userDetails.getUsername(), roles);
     }
@@ -119,7 +120,7 @@ public class AuthServiceImpl implements AuthService {
         //Check if the refresh token exists
         RefreshToken refreshTokenFromUser = refreshTokenRepository.findByToken(refreshToken)
                 ///  IN case the token does not exist
-                .orElseThrow(() -> new RuntimeException("Error: Refresh token not found!"));new TokenException(refreshToken, "Invalid token");
+                .orElseThrow(() -> new RuntimeException("Error: Refresh token not found to refresh!"));new TokenException(refreshToken, "Invalid token");
 
         ///  In case the toke does exist
         if( refreshTokenFromUser.getExpirationDate().isBefore(Instant.now()) )
@@ -140,11 +141,23 @@ public class AuthServiceImpl implements AuthService {
                                 .toList();
 
         refreshedResponse.setAccessToken(jwtUtils.generateAccessToken(userFromRefreshToken.getUsername(), stringRoles));
-
+        refreshedResponse.setRoles(stringRoles);
         refreshedResponse.setRefreshToken(newToken);
         refreshedResponse.setUsername(userFromRefreshToken.getUsername());
 
         return refreshedResponse;
 
+    }
+
+    @Override
+    @Transactional
+    public String logoutUser(RefreshTokenRequest refreshTokenRequest) {
+        String issuedToken = refreshTokenRequest.getRefreshToken();
+        Integer rowsAffected = refreshTokenRepository.deleteByToken(issuedToken);
+
+        if(rowsAffected == 0)
+            throw new TokenException("Token not found");
+
+        return "Logged out successfully";
     }
 }

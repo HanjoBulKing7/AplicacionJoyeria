@@ -42,7 +42,7 @@ public class AuthServiceImpl implements AuthService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
-    public JWTResponse authenticateAndGetUserInfo(LoginRequest loginRequest) {
+    public JWTResponse authenticateAndGetUserInfo(LoginRequest loginRequest) { // Login
             ///  Try to authenticate if fails the enry point throws an exception
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())

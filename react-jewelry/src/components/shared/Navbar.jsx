@@ -23,7 +23,7 @@ const Navbar = () => {
     const [ isOpen, setIsOpen ] = useState(false);
     const pathname = useLocation().pathname;
     const cart = useSelector((state) => state.cart.cart);
-    const user  = useSelector((state)=> state.auth);
+    const user  = useSelector((state)=> state.auth.accessToken);
     const [ isMenuVisible, setIsMenuVisible ] = useState(false)
 
     return(
@@ -62,14 +62,14 @@ const Navbar = () => {
                         <FaShoppingCart size={25} />                            
                     </Badge>
                 </Link>
-                <button to='/login'>
+                <div  className='cursor-pointer'>
                     { user ? 
                     <>
                         <GrUserSettings className='text-2xl text-white' onClick={ ()=> setIsMenuVisible(!isMenuVisible) } /> 
                         { isMenuVisible && <UserMenu /> }
                     </>
-                     :   <FaUser className='text-2xl text-white' /> }
-                </button>
+                     :   <Link to='/login'><FaUser className='text-2xl text-white' /></Link> }
+                </div>
             </div>
 
             <button 

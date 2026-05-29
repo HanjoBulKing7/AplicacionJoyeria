@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form'
 import React from 'react'
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, Link } from 'react-router-dom'
 import { ImEnter } from "react-icons/im";
 import { useState } from 'react'
@@ -15,7 +15,9 @@ function Login() {
   const { register, handleSubmit, reset, formState: { errors } } = useForm({mode: "onTouched"})
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [ loading, setLoading ] = useState(false)
+
+  const isLoading = useSelector((state)=> state.auth.isLoading);
+
   const [ showPwd, setShowPwd ] = useState(false)
 
   const handleLogin = async (data) => {
@@ -26,7 +28,7 @@ function Login() {
   }
 
   return (
-    <div className=' flex items-center justify-center min-h-[calc(100vh-80px)]'>
+    <div className={`flex items-center justify-center min-h-[calc(100vh-80px)] ${ isLoading ? 'cursor-progress' : ''}`}>
       <form action=""
         className='bg-black w-70 md:w-100 rounded-2xl font-montserrat font-light' onSubmit={handleSubmit(handleLogin)}
       >
@@ -47,7 +49,7 @@ function Login() {
           <label htmlFor="Username">Password</label>
           <div className='relative w-fit'>
             <input
-              className='border-b-2 w-55 border-amber-50 focus:ring-0 focus:outline-none bg-transparent pr-8' 
+              className='border-b-2 w-55 border-amber-50 focus:ring-0 focus:outline-none bg-transparent pr-8 cursor-wait' 
               type={showPwd ? "text" : "password"}
               {...register("password", {
                   required: "Password is required",
@@ -66,15 +68,16 @@ function Login() {
               </div>
               {errors.password && <span className='text-red-500 text-xs'>{errors.password.message}</span>}
           <button
-            className='bg-button-gradient p-2 rounded-lg'
+            disabled={isLoading}
+            className='bg-button-gradient p-2 rounded-lg cursor-pointer'
           >
-            { loading ? 
+            { isLoading ? 
             <><MutatingDots />Logging in</>
             :
             <>Login</> 
             }
           </button>
-          <span className='text-white '>Don't have an account? <Link to='/signup' className='font-bold underline'>Sign up</Link></span>
+          <span className='text-white cursor-help'>Don't have an account? <Link to='/signup' className='font-bold underline'>Sign up</Link></span>
         </div>
       </form>
     </div>

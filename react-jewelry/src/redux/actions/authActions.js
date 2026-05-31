@@ -19,10 +19,25 @@ export const logoutUser = createAsyncThunk(
 
         try{
             const res = await api.post('/auth/signout', requestBody);
-            return res.message;
+            console.log("Refresh token: ", requestBody)
+            return res.data.message;
         }catch(e){
             return rejectWithValue(e?.response?.message || 'Error logging out!');
         }
     }
 
+)
+
+export const signUpUser = createAsyncThunk(
+    'auth/signup',
+    async( requestBody, { rejectWithValue }) => {
+
+        try{
+            const res = await api.post('/auth/signup', requestBody);
+
+            return res.data.message;
+        }catch(e){
+            return rejectWithValue(e?.response?.message || 'Error signing up!');
+        }
+    }
 )

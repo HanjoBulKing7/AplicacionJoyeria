@@ -1,22 +1,31 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { HiUserAdd } from "react-icons/hi";
 import { MutatingDots } from 'react-loader-spinner'
 import { FaEye } from "react-icons/fa";
 import { FaEyeSlash } from "react-icons/fa6";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { PasswordMinLen, UsernameMinLen } from '../../utils/constants';
+import { signUpUser } from '../../redux/actions/authActions';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 function Register() {
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { register, handleSubmit, reset, formState: {errors} } = useForm({mode: "onTouched"});
   const [ loading, setLoading ] = useState(false)
   const [ showPwd, setShowPwd ] = useState(false)
+  const message = useSelector((state)=> state.auth.message);
 
-  const handleSignup  = () => {
-    dispatch()
-  };
+
+  const handleSignup = async (data) => {
+      const res = await dispatch(signUpUser(data));
+      if(signUpUser.fulfilled.match(res))
+          navigate('/login');
+  }
+
+
 
   return (
     <div className='flex items-center justify-center min-h-[calc(100vh-80px)] bg-gray-600'>

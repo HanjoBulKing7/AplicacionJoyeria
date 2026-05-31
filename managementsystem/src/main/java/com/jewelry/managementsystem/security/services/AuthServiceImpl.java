@@ -1,5 +1,6 @@
 package com.jewelry.managementsystem.security.services;
 
+import com.jewelry.managementsystem.exceptions.ResourceNotFound;
 import com.jewelry.managementsystem.exceptions.TokenException;
 import com.jewelry.managementsystem.models.RefreshToken;
 import com.jewelry.managementsystem.models.Role;
@@ -59,8 +60,21 @@ public class AuthServiceImpl implements AuthService {
                 .collect(Collectors.toList());
 
         String accessToken = jwtUtils.generateAccessToken(userDetails.getUsername(), roles);
-        RefreshToken refreshToken = refreshTokenRepository.findByUser_UserId(userDetails.getId())
-                .orElseThrow(()-> new TokenException("Invalid token for logging in"));
+        RefreshToken refreshToken = refreshTokenRepository.findByUser_UserId(userDetails.getId()) ///  Get token if exists
+                .orElseGet(()-> {
+                    User tempUser = userRepository.findById(userDetails.getId()).orElseThrow(()-> new ResourceNotFound("User","user id", Long.toString(userDetails.getId())));
+                    RefreshToken loginRefreshToken = new RefreshToken();
+                    loginRefreshToken.setToken(jwtUtils.generateRefreshToken());
+
+                    Instant expirationTime = Instant.now().plus(7, ChronoUnit.DAYS); /// Generate the expiration time
+
+                    loginRefreshToken.setExpirationDate(expirationTime);
+                    loginRefreshToken.setUser(tempUser);
+                    refreshTokenRepository.save(loginRefreshToken);
+
+                    return loginRefreshToken;
+                });  /// If not exists create a new one with the existing user
+
         ///  Return data and the controller will handle cookies
         return new JWTResponse(  accessToken, refreshToken.getToken(), userDetails.getUsername(), roles);
     }
@@ -80,7 +94,7 @@ public class AuthServiceImpl implements AuthService {
         Set<String> strRoles = signUpRequest.getRoles();
         Set<Role> roles = new HashSet<>();
 
-        if( strRoles.isEmpty() ){
+        if(strRoles == null || strRoles.isEmpty()){
             Role userRole = roleRepository.findByRolename(Roles.USER)
                     .orElseThrow( ()-> new RuntimeException("Error: Role not found "));
 

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { loginUser } from '../actions/authActions'
+import { loginUser, signUpUser } from '../actions/authActions'
 import { useNavigate } from "react-router-dom"
 
 
@@ -9,6 +9,7 @@ const initialState = {
     accessToken: '',
     refreshToken: '',
     isLoading: false,
+    message: '',
     error: '',
 }
 
@@ -23,6 +24,7 @@ const authSlice = createSlice({
             state.refreshToken = '';
             state.error = null;
             state.isLoading = false;
+            state.message = 'Logged out succesfully';
         }
     },
     extraReducers: (builder) => {
@@ -36,9 +38,16 @@ const authSlice = createSlice({
                 state.roles = action.payload.roles;
                 state.accessToken = action.payload.accessToken;
                 state.refreshToken = action.payload.refreshToken;
+                state.message = 'Succesfully logged in'
+            })
+            .addCase(signUpUser.pending, (state)=>{
+                state.isLoading = true;
+            })
+            .addCase(signUpUser.fulfilled, (state, action)=>{
+                state.isLoading = false;
+                state.message = action.payload.message;
             })
     }
-
 })
 
 export const { logout } = authSlice.actions;

@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom' 
-import './App.css'
 import MainItems from './components/products/MainItems'
 import Navbar from './components/shared/Navbar'
 import Home from './components/home/Home'
@@ -9,8 +8,10 @@ import Cart from './components/cart/Cart'
 import Login from './components/auth/Login'
 import Register from './components/auth/Register'
 import RouteProtector from './components/auth/RouteProtector'
+import useAuthToast from './components/hooks/useAuthToast'
 
 function App() {
+  useAuthToast();
   return (
     <BrowserRouter>
       <Navbar />

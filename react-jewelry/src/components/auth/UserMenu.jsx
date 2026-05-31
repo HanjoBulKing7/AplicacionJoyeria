@@ -7,6 +7,7 @@ import { Link , useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../redux/actions/authActions';
 import { logout } from '../../redux/slices/authSlice';
+import toast from 'react-hot-toast';
 
 const menuElements = [
     { icon: FaUser, label: "Profile", destination: '/profile' },
@@ -17,7 +18,8 @@ const menuElements = [
 function UserMenu() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const refreshToken = useSelector((state) => state.auth.refreshToken);
+    const  refreshToken  = useSelector((state) => state.auth.refreshToken);
+    
 
     const handleLogout = async () => {
         await dispatch(logoutUser({ refreshToken }));

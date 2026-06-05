@@ -8,8 +8,8 @@ import com.jewelry.managementsystem.repositories.UserRepository;
 import com.jewelry.managementsystem.security.jwt.JwtUtils;
 import com.jewelry.managementsystem.security.request.LoginRequest;
 import com.jewelry.managementsystem.security.request.SignUpRequest;
+import com.jewelry.managementsystem.security.response.LoginResponse;
 import com.jewelry.managementsystem.security.response.MessageResponse;
-import com.jewelry.managementsystem.security.response.UserInfoResponse;
 import com.jewelry.managementsystem.security.services.AuthServiceImpl;
 import com.jewelry.managementsystem.security.services.UserDetailsImpl;
 import com.jewelry.managementsystem.security.services.UserDetailsServiceImpl;
@@ -85,7 +85,7 @@ public class AuthServiceImplTest {
 
         when(authenticationManager.authenticate(any())).thenReturn(auth);
         when(auth.getPrincipal()).thenReturn(userDetails);
-        UserInfoResponse  response = authService.authenticateAndGetUserInfo(testLoginRequest);
+        LoginResponse response = authService.authenticateAndGetUserInfo(testLoginRequest);
 
         Assertions.assertNotNull(response);
         Assertions.assertEquals("johan_dev", response.getUsername());

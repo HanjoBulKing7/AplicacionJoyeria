@@ -1,15 +1,23 @@
 package com.jewelry.managementsystem.controllers;
 
+import com.jewelry.managementsystem.models.RefreshToken;
+import com.jewelry.managementsystem.repositories.UserRepository;
 import com.jewelry.managementsystem.security.jwt.JwtUtils;
 import com.jewelry.managementsystem.security.request.LoginRequest;
+import com.jewelry.managementsystem.security.request.RefreshTokenRequest;
 import com.jewelry.managementsystem.security.request.SignUpRequest;
+import com.jewelry.managementsystem.security.response.JWTResponse;
 import com.jewelry.managementsystem.security.response.MessageResponse;
-import com.jewelry.managementsystem.security.response.UserInfoResponse;
 import com.jewelry.managementsystem.security.services.AuthService;
+import com.jewelry.managementsystem.security.services.AuthServiceImpl;
+import com.jewelry.managementsystem.security.services.RefreshTokenService;
+import com.jewelry.managementsystem.security.services.RefreshTokenServiceImpl;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -24,17 +32,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final RefreshTokenService refreshTokenService;
+    private final UserRepository userRepository;
     private final JwtUtils jwtUtils;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
         System.out.println("---- ENTRANDO AL SIGNIN CON: " + loginRequest.getUsername());
-        UserInfoResponse response = authService.authenticateAndGetUserInfo(loginRequest);
-        ResponseCookie jwtCookie = authService.generateJwtCookieForuser(loginRequest.getUsername());
+        JWTResponse response = authService.authenticateAndGetUserInfo(loginRequest);
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString())
-                .body(response);
+        return ResponseEntity.ok().body(response);
     }
 
     @PostMapping("/signup")
@@ -44,11 +51,19 @@ public class AuthController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/signout")
-    public ResponseEntity<?> signoutUser(){
+    @PostMapping("/refresh-token")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
 
-        ResponseCookie jwtCookie = jwtUtils.getCleanJwtCookie(null);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, jwtCookie.toString()).body(new MessageResponse("You've been signed out!"));
+        JWTResponse refreshTokenResponse = authService.refreshToken(request.getRefreshToken());
+
+        return new ResponseEntity<>(refreshTokenResponse, HttpStatus.OK);
+    }
+
+    @PostMapping("/signout")
+    public ResponseEntity<?> signoutUser(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
+
+        String logoutMessage = authService.logoutUser(refreshTokenRequest);
+
+        return ResponseEntity.ok( new MessageResponse("You've been signed out!"));
     }
 }

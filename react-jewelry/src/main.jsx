@@ -14,5 +14,5 @@ createRoot(document.getElementById('root')).render(
       <Toaster position="center" toastOptions={TOAST_OPTIONS}/>
       <App />
     </StrictMode>
-  </Provider>,
+  </Provider>
 )

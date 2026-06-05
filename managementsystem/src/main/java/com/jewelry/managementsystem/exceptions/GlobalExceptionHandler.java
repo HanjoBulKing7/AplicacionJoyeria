@@ -2,6 +2,7 @@ package com.jewelry.managementsystem.exceptions;
 
 import com.jewelry.managementsystem.security.response.MessageResponse;
 import jakarta.validation.ConstraintViolationException;
+import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -100,5 +101,17 @@ public class GlobalExceptionHandler {
                  LocalDateTime.now()
          );
          return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(TokenException.class)
+    public ResponseEntity<ErrorResponse> handleJWTExcepetion(TokenException jwrEx){
+
+        ErrorResponse errorResponse = new ErrorResponse(
+                jwrEx.getError(),
+                HttpStatus.UNAUTHORIZED.value(),
+                LocalDateTime.now()
+        );
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 }

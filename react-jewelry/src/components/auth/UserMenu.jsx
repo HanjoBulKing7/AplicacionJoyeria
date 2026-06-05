@@ -1,0 +1,54 @@
+import React from 'react'
+import { FaUser } from 'react-icons/fa'
+import { GiConsoleController } from 'react-icons/gi';
+import { IoLogOutSharp } from "react-icons/io5";
+import { IoSettingsSharp } from "react-icons/io5";
+import { Link , useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../../redux/actions/authActions';
+import { logout } from '../../redux/slices/authSlice';
+import toast from 'react-hot-toast';
+
+const menuElements = [
+    { icon: FaUser, label: "Profile", destination: '/profile' },
+    { icon: IoSettingsSharp, label: "Settings", destination: '/settings' },
+    { icon: IoLogOutSharp, label: "Logout" }
+]
+
+function UserMenu() {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const  refreshToken  = useSelector((state) => state.auth.refreshToken);
+    
+
+    const handleLogout = async () => {
+        await dispatch(logoutUser({ refreshToken }));
+        dispatch(logout());
+        navigate('/items');
+    }
+
+    return (
+        <div className='absolute flex flex-col items-start space-y-5 py-2 z-20 right-0 bg-gray-900 rounded-2xl'>
+            {menuElements.map((e, i) => {
+                let CurrentIcon = e.icon;
+                return (
+                    <div key={i} className='px-4 py-3 cursor-pointer transition-all duration-300
+                        hover:bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,rgba(251,191,36,0.1)_40%,transparent_70%)]'>
+                        {e.destination
+                            ? <Link className='flex flex-row gap-2' to={e.destination}>
+                                <CurrentIcon className='text-white text-xl' />
+                                <span>{e.label}</span>
+                              </Link>
+                            : <button className='flex flex-row gap-2' onClick={handleLogout}>
+                                <CurrentIcon className='text-white text-xl' />
+                                <span>{e.label}</span>
+                              </button>
+                        }
+                    </div>
+                );
+            })}
+        </div>
+    );
+}
+
+export default UserMenu;

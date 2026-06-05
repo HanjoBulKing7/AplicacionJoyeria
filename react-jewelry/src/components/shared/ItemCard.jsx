@@ -11,14 +11,15 @@ const ItemCard = ({ item }) => {
     
     return (
         <div 
-        onClick={toggleModalView}
-        className='flex flex-col bg-black border border-amber-200/50 shadow-md shadow-yellow-900/20 rounded-lg overflow-hidden hover:scale-105 transition-transform'>
+
+        className='group flex flex-col bg-black border border-amber-200/50 shadow-md shadow-yellow-900/20 rounded-lg overflow-hidden'>
             {/* Contenedor de imagen con aspecto cuadrado */}
-            <div className="aspect-square w-full bg-neutral-900">
+            <div className=" aspect-square w-full bg-neutral-900">
                 <img 
+                    onClick={toggleModalView}
                     src={`${import.meta.env.VITE_BACKEND_URL}/public/images/${item.image}`} 
                     alt={item.name}
-                    className="w-full h-full object-cover" 
+                    className="w-full h-full object-cover group-hover:scale-110 duration-300 transition-transform ease-in-out cursor-pointer" 
                 />
             </div>
             

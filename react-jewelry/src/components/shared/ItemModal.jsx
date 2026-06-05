@@ -4,6 +4,8 @@ import { useDispatch } from 'react-redux';
 import { cartAction } from '../../redux/slices/cartSlice';
 import { MdShoppingCart } from "react-icons/md";
 import toast from 'react-hot-toast';
+import { formatPrice } from '../../utils/formatPrice';
+import { FaTimes, FaCheck } from 'react-icons/fa';
 
 const ItemModal = ({ item, open, setOpen }) => {
 
@@ -28,17 +30,20 @@ const ItemModal = ({ item, open, setOpen }) => {
                             className='relative bg-white  transform flex flex-col items-center overflow-hidden rounded-lg shadow-xl transition-all w-60 max-w-lg md:max-w-155' >
                             { image && 
                                 <div className='flex w-50 justify-center'>
-                                <img src={`${import.meta.env.VITE_BACKEND_URL}/public/images/${image}`} alt={name} />
+                                    <img src={`${import.meta.env.VITE_BACKEND_URL}/public/images/${image}`} alt={name} />
                                 </div>
                             }
                             <div className=' flex flex-col items-center p-7 gap-5'>
-                                <DialogTitle>{name}</DialogTitle>
-                                <p>{price}</p>
+                                <DialogTitle className='text-4xl font-light tracking-widest'>{name}</DialogTitle>
+                                <p className='text-2xl text-amber-400'>{formatPrice(price)}</p>
                                 { stock > 0 ? 
-                                    <p>Available</p>
+                                    <div className='flex flex-row justify-center items-center gap-3'><p>Available</p><FaCheck color="green" size={10} /></div>
                                     :
-                                    <p>Not available</p>
+                                    <div className='flex flex-row justify-center items-center gap-3'><p>Not available<FaTimes color="red" size={10} /></p></div>
                                 }
+                                <p className='text-lg text-black font-light text-center'>
+                                    {description}
+                                </p>
                                 <button
                                 onClick={()=>{
                                     addItem(item) 

@@ -1,11 +1,14 @@
 package com.jewelry.managementsystem.security;
 
+import com.jewelry.managementsystem.models.RefreshToken;
 import com.jewelry.managementsystem.models.Role;
 import com.jewelry.managementsystem.models.Roles;
 import com.jewelry.managementsystem.models.User;
+import com.jewelry.managementsystem.repositories.RefreshTokenRepository;
 import com.jewelry.managementsystem.repositories.RoleRepository;
 import com.jewelry.managementsystem.repositories.UserRepository;
 import com.jewelry.managementsystem.security.jwt.AuthEntryPointJwt;
+import com.jewelry.managementsystem.security.jwt.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -28,6 +31,8 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import com.jewelry.managementsystem.security.jwt.AuthTokenFilter;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Set;
 
 @Configuration
@@ -38,6 +43,9 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
     private final AuthEntryPointJwt authEntryPointJwt;
     private final AuthTokenFilter authTokenFilter;
+    private final JwtUtils jwtUtils;
+    private final RefreshTokenRepository tokenRepository;
+
 
     @Bean
     public DaoAuthenticationProvider daoAuthenticationProvider(){
@@ -85,8 +93,8 @@ public class SecurityConfig {
                 ));
 
                 return http.build();
-    }
 
+}
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
         return (web -> web.ignoring().requestMatchers(
@@ -118,30 +126,47 @@ public class SecurityConfig {
             Set<Role> userRoles = Set.of(userRole);
             Set<Role> adminRoles = Set.of(userRole, adminRole);
 
+            User user1 = new User("user1", "user1@example.com", passwordEncoder.encode("password1"));
+            User admin = new User("admin", "admin@example.com", passwordEncoder.encode("adminPass"));
 
             // Create users if not already present
-            if (!userRepository.existsByUsername("user1")) {
-                User user1 = new User("user1", "user1@example.com", passwordEncoder.encode("password1"));
+            if (!userRepository.existsByUsername("user1"))
                 userRepository.save(user1);
-            }
 
 
-            if (!userRepository.existsByUsername("admin")) {
-                User admin = new User("admin", "admin@example.com", passwordEncoder.encode("adminPass"));
+            if (!userRepository.existsByUsername("admin"))
                 userRepository.save(admin);
-            }
+
 
             // Update roles for existing users
             userRepository.findByUsername("user1").ifPresent(user -> {
                 user.setRoles(userRoles);
                 userRepository.save(user);
+
+                if(!tokenRepository.existsByUser(user)) {
+                    RefreshToken refreshTokenUser1 = new RefreshToken();
+                    refreshTokenUser1.setUser(user);  // ← el de BD
+                    refreshTokenUser1.setToken(jwtUtils.generateRefreshToken());
+                    refreshTokenUser1.setExpirationDate(Instant.now().plus(7, ChronoUnit.DAYS));
+                    tokenRepository.save(refreshTokenUser1);
+                }
             });
 
 
-            userRepository.findByUsername("admin").ifPresent(admin -> {
-                admin.setRoles(adminRoles);
-                userRepository.save(admin);
+            userRepository.findByUsername("admin").ifPresent(admin1 -> {
+                admin1.setRoles(adminRoles);
+                userRepository.save(admin1);
+
+                if(!tokenRepository.existsByUser(admin1)) {
+                    RefreshToken refreshTokenUser1 = new RefreshToken();
+                    refreshTokenUser1.setUser(admin1);  // ← el de BD
+                    refreshTokenUser1.setToken(jwtUtils.generateRefreshToken());
+                    refreshTokenUser1.setExpirationDate(Instant.now().plus(7, ChronoUnit.DAYS));
+                    tokenRepository.save(refreshTokenUser1);
+                }
             });
+
         };
+
     }
 }

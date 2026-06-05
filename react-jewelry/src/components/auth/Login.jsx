@@ -46,10 +46,10 @@ function Login() {
           {errors.username && <span className='text-red-500 text-xs'>{errors.username.message}</span>}
 
 
-          <label htmlFor="Username">Password</label>
+          <label htmlFor="Password">Password</label>
           <div className='relative w-fit'>
             <input
-              className='border-b-2 w-55 border-amber-50 focus:ring-0 focus:outline-none bg-transparent pr-8 cursor-wait' 
+              className='border-b-2 w-55 border-amber-50 focus:ring-0 focus:outline-none bg-transparent pr-8' 
               type={showPwd ? "text" : "password"}
               {...register("password", {
                   required: "Password is required",

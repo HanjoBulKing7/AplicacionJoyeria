@@ -38,33 +38,38 @@ const Home = () => {
 
     return(
         <div className='bg-black min-h-[calc(100vh-80px)] p-0'>
-            <div className='border-4 border-amber-50/20 hover:border-white py-5 mx-20 items text-center'>
-                <h1 className='text-white text-5xl font-montserrat tracking-tighter pt-10'>Find out all our products and the best prices ever</h1>
-                <div className='sm:flex sm:flex-col sm:flex-col md:grid md:grid-cols-2 md:mt-10'>
-                    <div className='md:flex md:flex-col items-center justify-center'>
-                        <ul className='md:space-x-4 md:flex md:flex-row'>
+            <div className='border-4 border-amber-50/20 hover:border-white py-5 mx-4 sm:mx-10 md:mx-20 text-center'>
+                <h1 className='text-white text-2xl sm:text-3xl md:text-5xl font-montserrat tracking-tighter pt-10'>
+                    Find out all our products and the best prices ever
+                </h1>
+
+                <div className='flex flex-col md:grid md:grid-cols-2 md:mt-10'>
+
+                    <div className='flex flex-col items-center justify-center mt-6 ml-5 md:mt-0'>
+                        <ul className='flex flex-col gap-2 w-full px-4 sm:px-8 md:flex-row md:space-x-4 md:px-0'>
                             {
                                 categoriesList.map(c => {
                                     return(
-                                    <li key={c.id} 
-                                    className='group text-white border-2 border-amber-50/40 p-5 rounded-md hover:scale-110 hover:border-white shadow-xl hover:shadow-amber-50'>
-                                        {c.name}
-                                        <img src={c.icon} alt={`Icon of ${c.name} category`} className='h-15 w-15 group-hover:scale-110'/>
+                                    <li key={c.id}
+                                    className='group text-white border-2 border-amber-50/40 p-5 rounded-md hover:scale-110 hover:border-white shadow-xl hover:shadow-amber-50 flex flex-row items-center gap-4 md:flex-col md:gap-0'>
+                                        <img src={c.icon} alt={`Icon of ${c.name} category`} className='h-10 w-10 sm:h-12 sm:w-12 md:h-15 md:w-15 group-hover:scale-110'/>
+                                        <span>{c.name}</span>
                                     </li>
                                     );
                                 })
                             }
                         </ul>
                     </div>
-                    <div>
-                        <img src={JewelryDish} alt="Representative image of the tast for jewelry" className='h-70 w-120'/>
+
+                    <div className='flex justify-center mt-6 md:mt-0'>
+                        <img src={JewelryDish} alt="Representative image of the tast for jewelry" className='h-52 w-auto sm:h-64 md:h-70 md:w-120 object-cover'/>
                     </div>
                 </div>
             </div>
-            <div className='flex items-center justify-center mt-20'>
-                <span className='text-white text-5xl'>More content coming soon...</span>
-            </div>
 
+            <div className='flex items-center justify-center mt-20'>
+                <span className='text-white text-2xl sm:text-3xl md:text-5xl text-center px-4'>More content coming soon...</span>
+            </div>
         </div>
     );
 }

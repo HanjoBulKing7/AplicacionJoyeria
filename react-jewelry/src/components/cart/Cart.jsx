@@ -1,6 +1,7 @@
 import { useSelector } from 'react-redux'
 import CartItem from './CartItem';
 import { formatPrice } from '../../utils/formatPrice';
+import { Link } from 'react-router-dom';
 
 const Cart = () => {
     const cart = useSelector((state) => state.cart.cart);
@@ -22,7 +23,7 @@ const Cart = () => {
             ) : (
                 <>
                 <div className="w-full max-w-5xl mx-auto">
-                    <ul className='hidden sm:grid sm:grid-cols-4 text-white text-base sm:text-lg tracking-widest mb-4 px-2 text-neutral-400'>
+                    <ul className='hidden sm:grid sm:grid-cols-4 text-white text-base sm:text-lg tracking-widest mb-4 px-2'>
                         <li>Product</li>
                         <li className="text-center">Price</li>
                         <li className="text-center">Quantity</li>
@@ -38,6 +39,11 @@ const Cart = () => {
                 <div className='flex flex-col md:items-end gap-5 sm:items-center'>
                     <h1 className='text-white md:text-2xl sm:text-lg'>Subtotal:</h1> 
                     <span className='text-white md:text-3xl sm:text-2xl'>{formatPrice(subtotal)}</span>
+                </div>
+                <div className='flex items-end'>
+                        <Link to='/checkout'>
+                            <button> Checkout</button>
+                        </Link>
                 </div>
                 </>
             )}

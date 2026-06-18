@@ -6,6 +6,13 @@ export const loginUser = createAsyncThunk(
     async ( requestBody, { rejectWithValue }) => {
         try{
             const res = await api.post('/auth/signin', requestBody);
+            const { accessToken, refreshToken } = res.data;
+            console.log( accessToken, refreshToken);
+            
+            // ✅ CORRECCIÓN: Agrega las variables como segundo argumento
+            if (accessToken) localStorage.setItem('accessToken', accessToken);
+            if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+            
             return res.data;
         }catch(e){
             return rejectWithValue(e?.response?.data?.message || "Error logging user");

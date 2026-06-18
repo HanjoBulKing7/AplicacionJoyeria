@@ -40,6 +40,10 @@ const authSlice = createSlice({
                 state.refreshToken = action.payload.refreshToken;
                 state.message = 'Succesfully logged in'
             })
+            .addCase(loginUser.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload; // Aquí guardamos el mensaje de error para mostrarlo en UI
+            })
             .addCase(signUpUser.pending, (state)=>{
                 state.isLoading = true;
             })

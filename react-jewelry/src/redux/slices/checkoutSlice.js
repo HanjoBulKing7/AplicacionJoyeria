@@ -23,7 +23,7 @@ const checkoutSlice = createSlice({
             })
             .addCase(fetchAddresses.fulfilled, (state, action)=>{
                 state.isLoading = false;
-                state.addresses = action.payload.addresses;
+                state.addresses = action.payload;
             })
     }
 })

@@ -1,13 +1,14 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
-import { publicApi } from '../../api/api'
+import { api, publicApi } from '../../api/api'
+import { __unsafe_useEmotionCache } from "@emotion/react";
 
 
 export const fetchAddresses = createAsyncThunk(
-    'checkout/fetchAddresses',
-    async ({ rejectWithValue }) => {
+    'checkout',
+    async (_,{ rejectWithValue }) => {
         try{
 
-            const res = publicApi.get('/addresses')
+            const res = await api.get('/addresses')
             return res.data;
 
         }catch(e){

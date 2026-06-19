@@ -14,10 +14,14 @@ const Address = () => {
 
 
     const { isLoading , addresses } = useSelector((state) => state.checkout);
+
+    const toggleAddressFormModal = () => {
+      console.log("Modal toggled")
+    }
     
   return (
     
-    <div className={`flex items-center justify-center mt-15 ${ isLoading ? 'modo-skeleton' : ''}`} >
+    <div className={`flex flex-col items-center justify-center mt-15 ${ isLoading ? 'modo-skeleton' : ''}`} >
         <h2 className='text-black text-5xl tracking-wide'>Select or add an address</h2>
         {
           isLoading ? (
@@ -25,7 +29,16 @@ const Address = () => {
           ) 
           :
           (
-            <AddressList />
+            (addresses.length === 0 || !addresses )
+            ?
+
+            ( 
+              <button onClick={()=>toggleAddressFormModal()}>
+                Add a new address
+              </button>
+            )
+            :
+             <AddressList openModal={toggleAddressFormModal}/> 
           )
         }
     </div>

@@ -1,48 +1,47 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { fetchAddresses } from '../../../redux/actions/checkoutActions';
-import { ClipLoader } from 'react-spinners'
+import { BounceLoader } from 'react-spinners'
 import AddressList from './AddressList';
+import { AddressModalProvider, useAddressModal } from '../../hooks/useAddressContext'
 
-const Address = () => {
+const AddressContent = () => {
+  const dispatch = useDispatch();
 
-    const dispatch = useDispatch();
-  
-    useEffect(() => {
-        dispatch(fetchAddresses());
-    }, [dispatch]);
+  useEffect(() => {
+    dispatch(fetchAddresses());
+  }, [dispatch]);
 
+  const { isLoading, addresses } = useSelector((state) => state.checkout);
+  const { toggleAddressFormModal } = useAddressModal();
 
-    const { isLoading , addresses } = useSelector((state) => state.checkout);
-
-    const toggleAddressFormModal = () => {
-      console.log("Modal toggled")
-    }
-    
   return (
-    
-    <div className={`flex flex-col items-center justify-center mt-15 ${ isLoading ? 'modo-skeleton' : ''}`} >
-        <h2 className='text-black text-5xl tracking-wide'>Select or add an address</h2>
-        {
-          isLoading ? (
-            <ClipLoader />
-          ) 
-          :
-          (
-            (addresses.length === 0 || !addresses )
-            ?
-
-            ( 
-              <button onClick={()=>toggleAddressFormModal()}>
+    <div className={`flex flex-col items-center justify-center mt-10 sm:mt-15 px-4 ${isLoading ? 'modo-skeleton' : ''}`}>
+      <h2 className='text-white text-3xl sm:text-4xl lg:text-5xl tracking-wide font-montserrat font-light text-center'>
+        Select or add an address
+      </h2>
+      {
+        isLoading ? (
+          <BounceLoader />
+        )
+        : (
+          (addresses.length === 0 || !addresses)
+            ? (
+              <button onClick={toggleAddressFormModal}>
                 Add a new address
               </button>
             )
-            :
-             <AddressList openModal={toggleAddressFormModal}/> 
-          )
-        }
+            : <AddressList addresses={addresses} />
+        )
+      }
     </div>
   )
 }
+
+const Address = () => (
+  <AddressModalProvider>
+    <AddressContent />
+  </AddressModalProvider>
+)
 
 export default Address

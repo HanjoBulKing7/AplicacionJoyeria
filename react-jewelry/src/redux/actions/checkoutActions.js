@@ -16,3 +16,14 @@ export const fetchAddresses = createAsyncThunk(
         }
     }
 );
+
+export const updateAddress = (addressId ) => createAsyncThunk(
+    'checkout',
+    async (requestBody, { rejectWithValue }) => {
+        try{
+            const res = await api.put(`/addresses/${addressId}`,requestBody)
+        }catch(e){
+            return rejectWithValue(e?.response?.data?.message || 'Error updating the address')
+        }
+    }
+)

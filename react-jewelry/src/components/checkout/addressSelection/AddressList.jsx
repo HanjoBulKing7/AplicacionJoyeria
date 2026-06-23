@@ -8,6 +8,8 @@ import { TbMapPinCode } from "react-icons/tb";
 import { CiFlag1 } from "react-icons/ci";
 import AddressFormModal from './AddressFormModal';
 import { AddressModalProvider, useAddressModal } from '../../hooks/useAddressContext'
+import { MdEdit } from "react-icons/md";
+import ConditionalForm from './ConditionalForm';
 
 const AddressList = ({ addresses }) => {
   const { setEditingAddress , openAddressFormModal } = useAddressModal();
@@ -15,8 +17,11 @@ const AddressList = ({ addresses }) => {
   return (
     <div className='flex flex-col mt-10 w-full max-w-4xl mx-auto px-4'>
       <div className='relative flex justify-end mb-4'>
-        <button onClick={()=>openAddressFormModal(null)}>
+        <button onClick={()=>openAddressFormModal(null)} className='cursor-pointer relative group'>
           <BsBuildingAdd className='text-white text-2xl sm:text-3xl' />
+          <span className='p-2 absolute invisible opacity-0 group-hover:opacity-100 group-hover:visible duration-200 ease-in-out
+          transition-transform bottom-[120%] font-light text-white text-sm bg-amber-50/20 rounded-lg
+          -translate-x-1/2  ' >Add a new address</span>
         </button>
       </div>
 
@@ -24,12 +29,16 @@ const AddressList = ({ addresses }) => {
         {
           addresses.map((address) => (
             <div key={address.addressId}
-              className='text-white w-full flex flex-col hover:cursor-pointer p-6 sm:p-10
+              className='text-white w-full flex flex-col md:p-4 sm:p-7
               border-2 border-amber-50 rounded-2xl hover:border-amber-200 transition-all ease-in-out'
-              onClick={()=>{setEditingAddress(address), openAddressFormModal(addresscls
-                
-              )}}
               >
+              <div className='group relative flex cursor-pointer items-center justify-end'
+              onClick={()=>{setEditingAddress(address), openAddressFormModal(address)}}>
+                <MdEdit className='text-white text-2xl'/>
+                <span className='absolute z-10 opacity-0 group-hover:opacity-100 transition-transform duration-300 
+                ease-in-out text-white font-light text-sm bg-amber-300/30 left-[105%] 
+                rounded-lg p-2'>Edit address</span>
+              </div>
               <div className='flex flex-row justify-between'>
                 <div className='flex flex-row items-center gap-2'><GiStreetLight className='text-white text-xl' /><h3 className='font-light text-xl text-amber-200'>Street: </h3></div>
                 <p className='text-white'>{address.street}</p>
@@ -58,7 +67,9 @@ const AddressList = ({ addresses }) => {
         }
       </div>
 
-      <AddressFormModal />
+      <AddressFormModal >
+        <ConditionalForm  />
+      </AddressFormModal>
     </div>
   )
 }

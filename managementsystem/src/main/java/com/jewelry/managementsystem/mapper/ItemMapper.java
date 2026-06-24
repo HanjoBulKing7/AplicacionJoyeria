@@ -18,7 +18,7 @@ public interface ItemMapper extends GenericMapper<Item, ItemDTO>{
     ItemDTO toDto(Item item);
 
     @Override
-    @Mapping(target = "id", ignore = true) // <--- Evita que Hibernate explote
+    @Mapping(target = "id", ignore = true)
     void updateFromDto(ItemDTO dto, @MappingTarget Item existingItem);
 
     CartItem toCartItem(Item item); /// To add products to the car

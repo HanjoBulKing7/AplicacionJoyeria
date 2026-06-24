@@ -5,11 +5,11 @@ import { RxCrossCircled } from "react-icons/rx";
 
 
 const AddressFormModal = ({ children }) => {
-  const { openModal, setOpenModal , editingAddress } = useAddressModal();
+  const { openModal, closeAddressFormModal , editingAddress } = useAddressModal();
 
   return (
     <Transition show={openModal} as={Fragment}>
-      <Dialog as='div' className='relative z-20' onClose={() => setOpenModal(false)}>
+      <Dialog as='div' className='relative z-20' onClose={() => closeAddressFormModal()}>
         <Transition.Child
           as={Fragment}
           enter='ease-out duration-200'
@@ -35,7 +35,7 @@ const AddressFormModal = ({ children }) => {
             <Dialog.Panel className='w-full max-w-md sm:max-w-lg bg-zinc-900 rounded-2xl p-6 sm:p-8'>
               <Dialog.Title as="h3" className="flex justify-between text-lg font-semibold leading-6 text-gray-900 mb-1">
                 <p className='text-4xl text-white tracking-wider '>{ editingAddress?.addressId ? 'Update address' : 'Add a new address'}</p>
-                <button onClick={()=>setOpenModal(prev => !prev)}
+                <button onClick={()=>closeAddressFormModal()}
                   className='group relative cursor-pointer items-center justify-end'
                   >
                   <RxCrossCircled className='text-red-500 text-4xl'/>

@@ -2,12 +2,12 @@ import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import { useAddressModal } from '../../hooks/useAddressContext';
 import { useDispatch } from 'react-redux'
-import { updateAddress } from '../../../redux/actions/checkoutActions';
+import { updateAddress } from '../../../redux/actions/addressActions';
 
 const ConditionalForm = () => {
 
   const { handleSubmit, register, setValue , formState: { errors  } } = useForm({mode: "onTouched"});
-  const { editingAddress , setOpenModal } = useAddressModal();
+  const { editingAddress , closeAddressFormModal } = useAddressModal();
   const dispatch = useDispatch();
 
   useEffect(()=>{
@@ -22,11 +22,11 @@ const ConditionalForm = () => {
   },[editingAddress])
 
   const onSaveAddress = async (data) => {
-
     if(editingAddress?.addressId){
-      console.log({...data, addressId: editingAddress.addressId})
-      console.log("Upadting address")
-      dispatch(updateAddress(editingAddress?.addressId, data));
+      const updateRes = await dispatch(updateAddress({ addressId: editingAddress.addressId, requestBody: data }));
+
+      if(updateAddress.fulfilled.match(updateRes))
+        closeAddressFormModal()
     }
   };
 

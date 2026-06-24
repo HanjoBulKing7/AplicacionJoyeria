@@ -7,13 +7,13 @@ export const AddressModalProvider = ({ children }) => {
   const [ editingAddress, setEditingAddress ] = useState({})
 
   const openAddressFormModal = (editingAddress = null) => {
-    setOpenModal(prev => !prev);
-    setEditingAddress( editingAddress ? editingAddress : null)
+    setOpenModal(true);
+    setEditingAddress(editingAddress);
   };
 
   const closeAddressFormModal = () => {
-    setOpenModal(false)
-    setEditingAddress(null)
+    setOpenModal(false);
+    setEditingAddress(null);
   };
 
   return (

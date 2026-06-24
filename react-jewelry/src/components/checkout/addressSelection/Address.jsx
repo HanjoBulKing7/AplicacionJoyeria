@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { fetchAddresses } from '../../../redux/actions/checkoutActions';
+import { fetchAddresses } from '../../../redux/actions/addressActions';
 import { BounceLoader } from 'react-spinners'
 import AddressList from './AddressList';
 import { AddressModalProvider, useAddressModal } from '../../hooks/useAddressContext'
@@ -8,12 +8,12 @@ import { AddressModalProvider, useAddressModal } from '../../hooks/useAddressCon
 const AddressContent = () => {
   const dispatch = useDispatch();
 
+  const { isLoading, addresses } = useSelector((state) => state.address);
+  const { toggleAddressFormModal } = useAddressModal();
+
   useEffect(() => {
     dispatch(fetchAddresses());
   }, [dispatch]);
-
-  const { isLoading, addresses } = useSelector((state) => state.checkout);
-  const { toggleAddressFormModal } = useAddressModal();
 
   return (
     <div className={`flex flex-col items-center justify-center mt-10 sm:mt-15 px-4 ${isLoading ? 'modo-skeleton' : ''}`}>

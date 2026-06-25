@@ -40,7 +40,8 @@ const Cart = () => {
                     <h1 className='text-white md:text-2xl sm:text-lg'>Subtotal:</h1> 
                     <span className='text-white md:text-3xl sm:text-2xl'>{formatPrice(subtotal)}</span>
                 </div>
-                <div className='flex items-end'>
+                <div className='flex items-center justify-center bg-white/90 text-2xl font-light tracking-tighter 
+                p-3 w-40 rounded-2xl cursor-pointer hover:border-2 hover:border-white shadow-md hover:shadow-amber-50'>
                         <Link to='/checkout'>
                             <button> Checkout</button>
                         </Link>

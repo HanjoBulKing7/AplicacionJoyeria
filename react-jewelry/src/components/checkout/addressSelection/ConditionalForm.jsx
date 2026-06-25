@@ -2,7 +2,7 @@ import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import { useAddressModal } from '../../hooks/useAddressContext';
 import { useDispatch } from 'react-redux'
-import { updateAddress } from '../../../redux/actions/addressActions';
+import { saveAddress, updateAddress } from '../../../redux/actions/addressActions';
 
 const ConditionalForm = () => {
 
@@ -26,7 +26,11 @@ const ConditionalForm = () => {
       const updateRes = await dispatch(updateAddress({ addressId: editingAddress.addressId, requestBody: data }));
 
       if(updateAddress.fulfilled.match(updateRes))
-        closeAddressFormModal()
+        closeAddressFormModal();
+    }else{
+      const savedAddress = await dispatch(saveAddress(data));
+      if(saveAddress.fulfilled.match(savedAddress))
+        closeAddressFormModal();
     }
   };
 

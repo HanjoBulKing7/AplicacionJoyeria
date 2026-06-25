@@ -31,7 +31,7 @@ const AddressContent = () => {
                 Add a new address
               </button>
             )
-            : <AddressList addresses={addresses} />
+            : <AddressList />
         )
       }
     </div>

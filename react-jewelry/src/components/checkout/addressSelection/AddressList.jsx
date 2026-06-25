@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BsBuildingAdd } from "react-icons/bs";
 import { GiStreetLight } from "react-icons/gi";
 import { FaMountainCity } from "react-icons/fa6";
@@ -8,20 +8,38 @@ import { TbMapPinCode } from "react-icons/tb";
 import { CiFlag1 } from "react-icons/ci";
 import AddressFormModal from './AddressFormModal';
 import { AddressModalProvider, useAddressModal } from '../../hooks/useAddressContext'
-import { MdEdit } from "react-icons/md";
+import { MdDelete, MdEdit } from "react-icons/md";
 import ConditionalForm from './ConditionalForm';
+import { useDispatch, useSelector } from 'react-redux';
+import truncateText from '../../../utils/truncateText';
+import { deleteAddress } from '../../../redux/actions/addressActions';
+import { toast } from 'react-hot-toast'
 
-const AddressList = ({ addresses }) => {
-  const { setEditingAddress , openAddressFormModal } = useAddressModal();
+const AddressList = () => {
+
+  const { setEditingAddress , openAddressFormModal  } = useAddressModal();
+  const { addresses } = useSelector((state)=> state.address); 
+
+  const dispatch = useDispatch()
+
+  const isLimitReached = addresses.length >= 3; 
+
+
+  const handleDelete = (addressId) => {
+    const dispatchMessage = dispatch(deleteAddress(addressId))
+
+    if(deleteAddress.fulfilled.match(dispatchMessage))
+      toast.success(dispatchMessage);
+  }
 
   return (
     <div className='flex flex-col mt-10 w-full max-w-4xl mx-auto px-4'>
-      <div className='relative flex justify-end mb-4'>
+      <div className='relative flex justify-end my-10 '>
         <button onClick={()=>openAddressFormModal(null)} className='cursor-pointer relative group'>
-          <BsBuildingAdd className='text-white text-2xl sm:text-3xl' />
+          <BsBuildingAdd className={`${isLimitReached ? 'text-gray-600/40' : 'text-white'} text-2xl sm:text-3xl `} />
           <span className='p-2 absolute invisible opacity-0 group-hover:opacity-100 group-hover:visible duration-200 ease-in-out
           transition-transform bottom-[120%] font-light text-white text-sm bg-amber-50/20 rounded-lg
-          -translate-x-1/2  ' >Add a new address</span>
+          -translate-x-1/2  ' >{ isLimitReached ? 'You reached the limit of saved addresses': 'Add a new address' }</span>
         </button>
       </div>
 
@@ -32,16 +50,25 @@ const AddressList = ({ addresses }) => {
               className='text-white w-full flex flex-col md:p-4 sm:p-7
               border-2 border-amber-50 rounded-2xl hover:border-amber-200 transition-all ease-in-out'
               >
-              <div className='group relative flex cursor-pointer items-center justify-end'
-              onClick={()=>{setEditingAddress(address), openAddressFormModal(address)}}>
-                <MdEdit className='text-white text-2xl'/>
-                <span className='absolute z-10 opacity-0 group-hover:opacity-100 transition-transform duration-300 
-                ease-in-out text-white font-light text-sm bg-amber-300/30 left-[105%] 
-                rounded-lg p-2'>Edit address</span>
-              </div>
+                <div className='flex flex-row justify-end items-end gap-3'>
+                  <button className='group relative flex cursor-pointer items-center'
+                  onClick={()=>{setEditingAddress(address), openAddressFormModal(address)}}>
+                    <MdEdit className='text-white text-2xl'/>
+                    <span className='absolute z-10 opacity-0 group-hover:opacity-100 transition-transform duration-300 
+                    ease-in-out text-white font-light text-sm bg-amber-300/30 bottom-[105%] 
+                    rounded-lg p-2'>Edit address</span>
+                  </button> 
+                  <button className='group relative flex cursor-pointer items-center' onClick={()=>handleDelete(address.addressId)} >
+                    <MdDelete className='text-red-600 text-2xl' />
+                    <span className='absolute z-10 opacity-0 group-hover:opacity-100 transition-transform duration-300 
+                    ease-in-out text-white font-light text-sm bg-amber-300/30 bottom-[105%] 
+                    rounded-lg p-2'>Delete address</span>
+                  </button>
+                </div>
+
               <div className='flex flex-row justify-between'>
                 <div className='flex flex-row items-center gap-2'><GiStreetLight className='text-white text-xl' /><h3 className='font-light text-xl text-amber-200'>Street: </h3></div>
-                <p className='text-white'>{address.street}</p>
+                <p className='text-white'>{truncateText (address.street)}</p>
               </div>
               <div className='flex flex-row justify-between'>
                 <div className='flex flex-row items-center gap-2'><FaMountainCity className='text-white text-xl' /><h3 className='font-light text-xl text-amber-200'>City: </h3></div>

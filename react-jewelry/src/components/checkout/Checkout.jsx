@@ -1,6 +1,7 @@
 import { Step, StepLabel, Stepper } from '@mui/material'
 import React,{ useState } from 'react'
 import Address from './addressSelection/Address';
+import { CheckoutProvider } from '../hooks/useCheckoutContext';
 
 
 const stepperStyle = { 
@@ -11,6 +12,7 @@ const stepperStyle = {
       borderTopWidth: 1,
     }
 };
+
 const stepLabelStyle = {
           // Estilo del Texto (Label)
           '& .MuiStepLabel-label': {
@@ -43,7 +45,7 @@ const stepLabelStyle = {
           },
 };
 
-const Checkout = () => {
+const CheckoutContent = () => {
 
     const [ activeStep , setActiveStep ] = useState(0)
     const steps = [
@@ -55,7 +57,7 @@ const Checkout = () => {
 
 
   return (
-    <div className='w-full h-screen pt-5 bg-slate-950'>
+    <div className='flex flex-col w-full min-h-[calc(100vh-80px)] pt-4 bg-slate-950'>
         <Stepper activeStep={activeStep} alternativeLabel
         sx={stepperStyle}>
             {steps.map((step) => (
@@ -65,13 +67,37 @@ const Checkout = () => {
             ))}
         </Stepper>
         {
-            <div className='mt-5'>
+            <div className='flex-1 h-auto'>
                 { activeStep === 0 && <Address /> }
             </div>
         }
 
+        <div className='w-full h-22 bg-gray-800/90 flex justify-between items-center p-4'>
+          <button
+            className='h-12 border-2 rounded-lg bg-black text-white tracking-normal text-xl font-light 
+             hover:bg-black/50 hover:cursor-pointer hover:border-amber-400 p-3'
+             ///Check if we have an address selected and it is not the first stepdisabled={}
+          >
+            Back
+          </button>
+          <button
+            className='h-12 border-2 rounded-lg bg-black text-white tracking-normal text-xl font-light
+             hover:bg-black/50 hover:cursor-pointer hover:border-amber-400 p-3'
+          >
+            Next
+          </button>
+        </div>
     </div>
   )
 }
 
-export default Checkout
+const Checkout = () => {
+
+  return(
+  <CheckoutProvider>
+    <CheckoutContent />
+  </CheckoutProvider>
+  )
+}
+
+export default Checkout;

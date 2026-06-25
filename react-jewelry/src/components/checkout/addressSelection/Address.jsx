@@ -16,7 +16,7 @@ const AddressContent = () => {
   }, [dispatch]);
 
   return (
-    <div className={`flex flex-col items-center justify-center mt-10 sm:mt-15 px-4 ${isLoading ? 'modo-skeleton' : ''}`}>
+    <div className={`flex flex-col items-center justify-center mt-4 sm:mt-10 px-4 ${isLoading ? 'modo-skeleton' : ''}`}>
       <h2 className='text-white text-3xl sm:text-4xl lg:text-5xl tracking-wide font-montserrat font-light text-center'>
         Select or add an address
       </h2>

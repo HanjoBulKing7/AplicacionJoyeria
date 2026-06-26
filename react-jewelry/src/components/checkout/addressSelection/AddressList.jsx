@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useContext, useEffect } from 'react'
 import { BsBuildingAdd } from "react-icons/bs";
 import { GiStreetLight } from "react-icons/gi";
 import { FaMountainCity } from "react-icons/fa6";
@@ -14,11 +14,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import truncateText from '../../../utils/truncateText';
 import { deleteAddress } from '../../../redux/actions/addressActions';
 import { toast } from 'react-hot-toast'
+import { useCheckoutContext } from '../../hooks/useCheckoutContext';
+import { MdCheckBox } from "react-icons/md";
 
 const AddressList = () => {
 
   const { setEditingAddress , openAddressFormModal  } = useAddressModal();
   const { addresses } = useSelector((state)=> state.address); 
+  const { checkoutAddress, setCheckoutAddress } = useCheckoutContext();
 
   const dispatch = useDispatch()
 
@@ -47,23 +50,31 @@ const AddressList = () => {
         {
           addresses.map((address) => (
             <div key={address.addressId}
-              className='text-white w-full flex flex-col md:p-4 sm:p-7
-              border-2 border-amber-50 rounded-2xl hover:border-amber-200 transition-all ease-in-out'
+              className={`text-white w-full flex flex-col md:p-4 sm:p-7 rounded-2xl transition-all ease-in-out
+              border-2 ${ checkoutAddress?.addressId === address.addressId ? 'border-green-400' : 'border-amber-50 hover:border-amber-200' } `}
+              
+              onClick={()=>setCheckoutAddress(address)}
               >
-                <div className='flex flex-row justify-end items-end gap-3'>
-                  <button className='group relative flex cursor-pointer items-center'
-                  onClick={()=>{setEditingAddress(address), openAddressFormModal(address)}}>
-                    <MdEdit className='text-white text-2xl'/>
-                    <span className='absolute z-10 opacity-0 group-hover:opacity-100 transition-transform duration-300 
-                    ease-in-out text-white font-light text-sm bg-amber-300/30 bottom-[105%] 
-                    rounded-lg p-2'>Edit address</span>
-                  </button> 
-                  <button className='group relative flex cursor-pointer items-center' onClick={()=>handleDelete(address.addressId)} >
-                    <MdDelete className='text-red-600 text-2xl' />
-                    <span className='absolute z-10 opacity-0 group-hover:opacity-100 transition-transform duration-300 
-                    ease-in-out text-white font-light text-sm bg-amber-300/30 bottom-[105%] 
-                    rounded-lg p-2'>Delete address</span>
-                  </button>
+                <div className='flex flex-row justify-between items-end gap-3'>
+                  <div>
+                    { checkoutAddress?.addressId === address.addressId && <MdCheckBox className='text-green-400 text-2xl'/>  }
+                  </div>
+
+                  <div className='flex flex-row'>
+                    <button className='group relative flex cursor-pointer items-center'
+                    onClick={()=>{setEditingAddress(address), openAddressFormModal(address)}}>
+                      <MdEdit className='text-white text-2xl'/>
+                      <span className='absolute z-10 opacity-0 group-hover:opacity-100 transition-transform duration-300 
+                      ease-in-out text-white font-light text-sm bg-amber-300/30 bottom-[110%] 
+                      rounded-lg p-2'>Edit address</span>
+                    </button> 
+                    <button className='group relative flex cursor-pointer items-center' onClick={()=>handleDelete(address.addressId)} >
+                      <MdDelete className='text-red-600 text-2xl' />
+                      <span className='absolute z-10 opacity-0 group-hover:opacity-100 transition-transform duration-300 
+                      ease-in-out text-white font-light text-sm bg-amber-300/30 bottom-[110%] 
+                      rounded-lg p-2'>Delete address</span>
+                    </button>
+                  </div>
                 </div>
 
               <div className='flex flex-row justify-between'>

@@ -1,7 +1,8 @@
 import { Step, StepLabel, Stepper } from '@mui/material'
 import React,{ useState } from 'react'
 import Address from './addressSelection/Address';
-import { CheckoutProvider } from '../hooks/useCheckoutContext';
+import { CheckoutProvider, useCheckoutContext } from '../hooks/useCheckoutContext';
+import PaymentMethod from './PaymentMethod';
 
 
 const stepperStyle = { 
@@ -55,6 +56,7 @@ const CheckoutContent = () => {
         { id: 4, label: "Complete payment"},
     ];
 
+    const { checkoutAddress , checkoutMethod } = useCheckoutContext();
 
   return (
     <div className='flex flex-col w-full min-h-[calc(100vh-80px)] pt-4 bg-slate-950'>
@@ -66,9 +68,11 @@ const CheckoutContent = () => {
                 </Step>
             ))}
         </Stepper>
+
         {
             <div className='flex-1 h-auto'>
                 { activeStep === 0 && <Address /> }
+                { activeStep === 1 && <PaymentMethod /> }
             </div>
         }
 
@@ -76,15 +80,22 @@ const CheckoutContent = () => {
           <button
             className='h-12 border-2 rounded-lg bg-black text-white tracking-normal text-xl font-light 
              hover:bg-black/50 hover:cursor-pointer hover:border-amber-400 p-3'
-             ///Check if we have an address selected and it is not the first stepdisabled={}
+             disabled={ activeStep === 0 }
+             onClick={  ()=>setActiveStep(prev => prev-1) }
           >
             Back
           </button>
           <button
             className='h-12 border-2 rounded-lg bg-black text-white tracking-normal text-xl font-light
              hover:bg-black/50 hover:cursor-pointer hover:border-amber-400 p-3'
+             disabled={
+                    activeStep === 0 ? !checkoutAddress 
+                    : activeStep === 1 ? !checkoutMethod 
+                    : false
+             }
+             onClick={  ()=>setActiveStep(prev => prev+1) }
           >
-            Next
+            Proceed
           </button>
         </div>
     </div>

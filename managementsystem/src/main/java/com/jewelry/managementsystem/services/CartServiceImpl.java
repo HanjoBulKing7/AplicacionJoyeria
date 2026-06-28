@@ -1,5 +1,6 @@
 package com.jewelry.managementsystem.services;
 
+import com.jewelry.managementsystem.constants.ItemCheckStatus;
 import com.jewelry.managementsystem.exceptions.EmptyResourceException;
 import com.jewelry.managementsystem.exceptions.ShoppingCartException;
 import com.jewelry.managementsystem.mapper.CartItemMapper;
@@ -9,6 +10,7 @@ import com.jewelry.managementsystem.models.Cart;
 import com.jewelry.managementsystem.models.CartItem;
 import com.jewelry.managementsystem.models.Item;
 import com.jewelry.managementsystem.payload.CartDTO;
+import com.jewelry.managementsystem.payload.CartItemCheckDTO;
 import com.jewelry.managementsystem.payload.CartItemDTO;
 import com.jewelry.managementsystem.repositories.CartItemRepository;
 import com.jewelry.managementsystem.repositories.CartRepository;
@@ -63,7 +65,7 @@ public class CartServiceImpl implements CartService{
         if( cartItemRequest.getQuantity() > foundItem.getStock())
             throw new ShoppingCartException(foundItem.getName(), foundItem.getStock());
         ///  Setting up the Cart Item ( item inside the shopping cart)
-        CartItem cartItem = itemMapper.toCartItem(foundItem); /// Map struct to transform
+        CartItem cartItem = itemMapper.toCartItem(foundItem);
         log.info("Cart mapped: {}, {}", cartItem.getPrice(),cartItem.getName());
         cartItem.setQuantity(cartItemRequest.getQuantity());
         cartItem.setCart(newCart);
@@ -132,6 +134,35 @@ public class CartServiceImpl implements CartService{
         return "Item with id "+productId+" successfully";
     }
 
+    @Override
+    public List<CartItemCheckDTO> checkCartItemsAvailabilty(CartDTO currentCart){
+        List<CartItemDTO> currentItems = currentCart.getCartItems();
+        List<CartItemCheckDTO> checkedItems = new ArrayList<>();
+
+        for(CartItemDTO item : currentItems){
+            CartItemCheckDTO singleChecked = new CartItemCheckDTO();
+            Item itemFromStock = itemRepository.findById(item.getProductId())
+                    .orElseThrow(()-> new ShoppingCartException("The product does not exist in stock"));
+
+            singleChecked.setCartItemId(item.getProductId());/// Assign the cartId to identify and compare in frontend
+
+            if(itemFromStock.getStock() == 0 ){
+                singleChecked.setStatus(ItemCheckStatus.OUTTA_STOCK);
+                singleChecked.setMessage("This product ran out of stock verify the shopping cart");
+            }
+            if(itemFromStock.getStock()> 0 && itemFromStock.getStock() <= 5){
+                singleChecked.setStatus(ItemCheckStatus.LOW_STOCK);
+                singleChecked.setMessage("This product is almost sold out ");
+            }
+            if(itemFromStock.getStock() > 5 )
+                singleChecked.setStatus(ItemCheckStatus.IN_STOCK);
+
+            checkedItems.add(singleChecked);
+        }
+
+        return checkedItems;
+    }
+
     private Cart checkBeforeCreateCart() {
         Cart  existingCart = cartRepository.findByEmail(authUtil.loggedInEmail());
         if( existingCart != null) return existingCart;
@@ -143,4 +174,7 @@ public class CartServiceImpl implements CartService{
             return savedCart;
         }
     }
+
+
+
 }

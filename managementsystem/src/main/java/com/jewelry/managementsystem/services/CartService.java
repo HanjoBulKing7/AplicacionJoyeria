@@ -15,5 +15,7 @@ public interface CartService {
     CartDTO updateItemInCart(CartItemRequest cartItemRequest);
     String deleteItemFromCart(Long cartId);
 
-    List<CartItemCheckDTO> checkCartItemsAvailabilty(CartDTO currentCart);
+    List<CartItemCheckDTO> checkCartItemsAvailability(CartDTO currentCart);
+
+    String processCart();
 }

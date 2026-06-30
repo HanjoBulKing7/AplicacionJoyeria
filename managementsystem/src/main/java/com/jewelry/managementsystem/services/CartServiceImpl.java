@@ -17,8 +17,11 @@ import com.jewelry.managementsystem.repositories.CartRepository;
 import com.jewelry.managementsystem.repositories.ItemRepository;
 import com.jewelry.managementsystem.security.request.CartItemRequest;
 import com.jewelry.managementsystem.util.AuthUtil;
+import jakarta.persistence.Version;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.DialectOverride;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -135,32 +138,44 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
-    public List<CartItemCheckDTO> checkCartItemsAvailabilty(CartDTO currentCart){
+    public List<CartItemCheckDTO> checkCartItemsAvailability(CartDTO currentCart){
         List<CartItemDTO> currentItems = currentCart.getCartItems();
-        List<CartItemCheckDTO> checkedItems = new ArrayList<>();
 
-        for(CartItemDTO item : currentItems){
-            CartItemCheckDTO singleChecked = new CartItemCheckDTO();
-            Item itemFromStock = itemRepository.findById(item.getProductId())
-                    .orElseThrow(()-> new ShoppingCartException("The product does not exist in stock"));
+        return currentItems.stream()
+                .map(
+                        uncheckedItem->{
+                            CartItemCheckDTO checkedItem = new CartItemCheckDTO();
 
-            singleChecked.setCartItemId(item.getProductId());/// Assign the cartId to identify and compare in frontend
+                            /// Check if the cart item is on stock
+                            Item itemFromStock = itemRepository.findById(uncheckedItem.getProductId())
+                                    .orElseThrow(()-> new ShoppingCartException("The product does not exist in stock"));
+                            ///If exists assign from stock to the  checked list ( if not we will add something unlikely existing)
+                            checkedItem.setCartItemId(itemFromStock.getId());
 
-            if(itemFromStock.getStock() == 0 ){
-                singleChecked.setStatus(ItemCheckStatus.OUTTA_STOCK);
-                singleChecked.setMessage("This product ran out of stock verify the shopping cart");
-            }
-            if(itemFromStock.getStock()> 0 && itemFromStock.getStock() <= 5){
-                singleChecked.setStatus(ItemCheckStatus.LOW_STOCK);
-                singleChecked.setMessage("This product is almost sold out ");
-            }
-            if(itemFromStock.getStock() > 5 )
-                singleChecked.setStatus(ItemCheckStatus.IN_STOCK);
+                            if(itemFromStock.getStock() == 0 ){
+                                checkedItem.setStatus(ItemCheckStatus.OUTTA_STOCK);
+                                checkedItem.setMessage("This product ran out of stock verify the shopping cart");
+                            }
+                            if(itemFromStock.getStock()> 0 && itemFromStock.getStock() <= 5){
+                                checkedItem.setStatus(ItemCheckStatus.LOW_STOCK);
+                                checkedItem.setMessage("This product is almost sold out ");
+                            }
+                            if(itemFromStock.getStock() > 5 )
+                                checkedItem.setStatus(ItemCheckStatus.IN_STOCK);
 
-            checkedItems.add(singleChecked);
-        }
+                            return checkedItem;
+                        }
+                )
+                .toList();
 
-        return checkedItems;
+    }
+
+
+    @Override
+    @Transactional
+    public String processCart() {
+
+        return "Temp response";
     }
 
     private Cart checkBeforeCreateCart() {
@@ -174,7 +189,5 @@ public class CartServiceImpl implements CartService{
             return savedCart;
         }
     }
-
-
 
 }

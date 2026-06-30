@@ -47,10 +47,19 @@ public class CartController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    @GetMapping("/cart/check-availability")
+    @PostMapping("/cart/check-availability")
     public ResponseEntity<List<CartItemCheckDTO>> checkAvailability(@RequestParam CartDTO currentCart) {
-        List<CartItemCheckDTO> checkedItems = cartService.checkCartItemsAvailabilty(currentCart);
+        List<CartItemCheckDTO> checkedItems = cartService.checkCartItemsAvailability(currentCart);
 
         return ResponseEntity.ok(checkedItems);
+    }
+
+    @PostMapping("/checkout/validate")
+    public ResponseEntity<String> validateCart(@RequestBody CartDTO currentCart) {
+
+        String response = cartService.processCart();
+
+        return new ResponseEntity<>(response, HttpStatus.OK);
+
     }
 }

@@ -48,7 +48,7 @@ public class CartController {
     }
 
     @PostMapping("/cart/check-availability")
-    public ResponseEntity<List<CartItemCheckDTO>> checkAvailability(@RequestParam CartDTO currentCart) {
+    public ResponseEntity<List<CartItemCheckDTO>> checkAvailability(@RequestBody CartDTO currentCart) {
         List<CartItemCheckDTO> checkedItems = cartService.checkCartItemsAvailability(currentCart);
 
         return ResponseEntity.ok(checkedItems);

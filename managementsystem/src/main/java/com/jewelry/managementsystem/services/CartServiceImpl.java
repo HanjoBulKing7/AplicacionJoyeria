@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static java.lang.Double.sum;
+
 @RequiredArgsConstructor
 @Service
 @Slf4j
@@ -73,6 +75,7 @@ public class CartServiceImpl implements CartService{
         cartItem.setQuantity(cartItemRequest.getQuantity());
         cartItem.setCart(newCart);
         cartItem.setOriginalItem(foundItem);
+
         // 1. Guardamos el item para que exista en DB
         cartItemRepository.save(cartItem);
 
@@ -125,18 +128,29 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
+    @Transactional
     public String deleteItemFromCart(Long productId) {
         Cart currentCart = cartRepository.findByEmail(authUtil.loggedInEmail());
         CartItem cartItem  = cartItemRepository.findByCartIdAndItemId(currentCart.getCartId(), productId);
 
         if(cartItem == null)
-            throw new ShoppingCartException(productId);
+            throw new ShoppingCartException("Item not found in cart: " + productId);
 
         cartItemRepository.delete(cartItem);
 
-        return "Item with id "+productId+" successfully";
-    }
+        currentCart.getCartItems().remove(cartItem);
 
+        Double newTotalPrice = currentCart.getCartItems().stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
+
+
+        currentCart.setCartTotalPrice(newTotalPrice);
+
+        cartRepository.save(currentCart);
+
+        return "Item with id " + productId + " deleted successfully";
+    }
     @Override
     public List<CartItemCheckDTO> checkCartItemsAvailability(CartDTO currentCart){
         List<CartItemDTO> currentItems = currentCart.getCartItems();

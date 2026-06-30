@@ -171,12 +171,6 @@ public class CartServiceImpl implements CartService{
     }
 
 
-    @Override
-    @Transactional
-    public String processCart() {
-
-        return "Temp response";
-    }
 
     private Cart checkBeforeCreateCart() {
         Cart  existingCart = cartRepository.findByEmail(authUtil.loggedInEmail());

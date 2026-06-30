@@ -17,5 +17,4 @@ public interface CartService {
 
     List<CartItemCheckDTO> checkCartItemsAvailability(CartDTO currentCart);
 
-    String processCart();
 }

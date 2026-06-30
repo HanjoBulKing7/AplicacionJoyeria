@@ -34,10 +34,11 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final OrderItemRepository orderItemRepository;
+    private final ItemRepository itemRepository;
 
     @Transactional
     @Override
-    public OrderDTO placeOrder(OrderRequestDTO orderRequest) {
+    public OrderDTO validateAndPlaceOrder(OrderRequestDTO orderRequest) {
         ///  Getting cart and address from the user
         Cart shoppingCart = cartRepository.findByEmail(authUtil.loggedInEmail());
         if(shoppingCart == null) ///  Check if shopping cart exists
@@ -52,31 +53,25 @@ public class OrderServiceImpl implements OrderService {
             throw new OrderException(orderRequest.getPgTotalAmount());
 
         /// Create order
-        Order orderReady = new Order();
-        orderReady.setAddress(userAddress);
-        orderReady.setOrderDate(LocalDate.now());
-        orderReady.setEmail(authUtil.loggedInEmail());
-        orderReady.setOrderStatus(OrderStatus.SUCCED);
-        orderReady.setTotalAmount(shoppingCart.getCartTotalPrice());
+        Order pendingOrder = new Order();
+        pendingOrder.setAddress(userAddress);
+        pendingOrder.setOrderDate(LocalDate.now());
+        pendingOrder.setEmail(authUtil.loggedInEmail());
+        pendingOrder.setOrderStatus(OrderStatus.PENDING);
+        pendingOrder.setTotalAmount(shoppingCart.getCartTotalPrice());
 
-        ///  Create and save payment to add to the order
-        Payment payment = new Payment(
-                orderRequest.getPgPaymentId(),
-                orderRequest.getPaymentMethod(),
-                orderRequest.getPgStatus(),
-                "Payment completed",
-                orderRequest.getPgName()
-        );
-
-        payment.setOrder(orderReady); ///
-        payment = paymentRepository.save(payment);
-        orderReady.setPayment(payment);
-        Order savedOrder = orderRepository.save(orderReady);
+        Order savedOrder = orderRepository.save(pendingOrder);
 
         List<OrderItem> orderItems = new ArrayList<>();
 
         ///  Transform all cart items into order items
         shoppingCart.getCartItems().forEach(cartItem -> {
+            Item modifyItem = itemRepository.findById(cartItem.getOriginalItem().getId())
+                    .orElseThrow(()-> new EmptyResourceException(cartItem.getOriginalItem().getId(), "item"));
+            /// Set new quantity in stock OPTIMISTIC LOCKING HERE
+            modifyItem.setStock(modifyItem.getStock()- cartItem.getQuantity());
+            itemRepository.save(modifyItem);
+            ///  Add to the order
             OrderItem orderItem = new OrderItem();
             orderItem.setOrderItemName(cartItem.getName());
             orderItem.setOrderItemQuantity(cartItem.getQuantity());
@@ -85,9 +80,11 @@ public class OrderServiceImpl implements OrderService {
             orderItem.setOrder(savedOrder);
             orderItems.add(orderItem);
         });
+
         orderItemRepository.saveAll(orderItems);
 
         savedOrder.setOrderItems(orderItems);
+
 
         OrderDTO orderDTO = orderMapper.toDto(savedOrder);
         log.info("orderItemsDTO list: {}", orderDTO.getOrderItems());

@@ -19,7 +19,7 @@ public class Cart {
     @OneToOne
     @JoinColumn ( name ="user_id")
     private User user;
-    @OneToMany ( mappedBy = "cart", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
+    @OneToMany ( mappedBy = "cart", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY, orphanRemoval = true )
     private List<CartItem> cartItems = new ArrayList<>();
     private Double cartTotalPrice;
 }

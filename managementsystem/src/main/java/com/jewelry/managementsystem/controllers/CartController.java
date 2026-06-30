@@ -54,12 +54,4 @@ public class CartController {
         return ResponseEntity.ok(checkedItems);
     }
 
-    @PostMapping("/checkout/validate")
-    public ResponseEntity<String> validateCart(@RequestBody CartDTO currentCart) {
-
-        String response = cartService.processCart();
-
-        return new ResponseEntity<>(response, HttpStatus.OK);
-
-    }
 }

@@ -5,5 +5,5 @@ import com.jewelry.managementsystem.payload.OrderRequestDTO;
 
 public interface OrderService {
 
-    OrderDTO placeOrder(OrderRequestDTO orderRequest);
+    OrderDTO validateAndPlaceOrder(OrderRequestDTO orderRequest);
 }

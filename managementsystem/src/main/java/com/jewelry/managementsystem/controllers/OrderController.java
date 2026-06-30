@@ -18,10 +18,10 @@ public class OrderController {
 
     private final OrderService orderService;
 
-    @PostMapping("/orders/place-order")
+    @PostMapping("/orders/validate")
     public ResponseEntity<OrderDTO> placeOrder(@RequestBody OrderRequestDTO orderRequest){
 
-        return new ResponseEntity<>(orderService.placeOrder(orderRequest), HttpStatus.OK);
+        return new ResponseEntity<>(orderService.validateAndPlaceOrder(orderRequest), HttpStatus.OK);
     }
 
 

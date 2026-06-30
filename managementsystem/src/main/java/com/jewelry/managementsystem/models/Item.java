@@ -24,6 +24,8 @@ public class Item {
     private Integer stock;
     @Column(nullable = false)
     private ItemStatus status;
+    @Version
+    private Integer version;
 
     @Column(nullable = true)
     private String image;

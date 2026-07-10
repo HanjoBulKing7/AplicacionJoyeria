@@ -1,12 +1,19 @@
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import CartItem from './CartItem';
 import { formatPrice } from '../../utils/formatPrice';
 import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { checkCartItems } from '../../redux/actions/cartActions';
 
 const Cart = () => {
-    const cart = useSelector((state) => state.cart.cart);
-
+    const  { cart , cartChecked } = useSelector((state) => state.cart);
     const subtotal = parseInt(cart?.reduce((acc, cur) => acc += (cur.quantity * cur.price), 0));
+    const dispatch = useDispatch();
+
+    useEffect(()=>{
+        if(cart.length !== 0 )
+            dispatch(checkCartItems({ cartTotalPrice: subtotal , cartItems: cart  }));
+    },[dispatch])
 
     return (
         <div className="bg-gray-900 min-h-screen pt-10 px-4 sm:px-8 lg:px-16 space-y-6">
@@ -31,9 +38,13 @@ const Cart = () => {
                     </ul>
 
                     <div className="space-y-4 sm:space-y-2">
-                        {cart.map((item) => (
-                            <CartItem key={item.id} {...item} />
-                        ))}
+                        {
+                            cart.map((item) =>{ 
+                                    const i = cartChecked.find(i => i.productId === item.productId );
+                                    return <CartItem key={item.productId} item={item} message={i?.message} />
+                                }
+                            )
+                        }
                     </div>
                 </div>
                 <div className='flex flex-col md:items-end gap-5 sm:items-center'>
@@ -48,8 +59,6 @@ const Cart = () => {
                 </div>
                 </>
             )}
-
-
         </div>
     );
 }

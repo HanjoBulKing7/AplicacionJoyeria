@@ -154,7 +154,7 @@ public class CartServiceImpl implements CartService{
     @Override
     public List<CartItemCheckDTO> checkCartItemsAvailability(CartDTO currentCart){
         List<CartItemDTO> currentItems = currentCart.getCartItems();
-
+        System.out.println("Entered the service and Current items: " + currentItems);
         return currentItems.stream()
                 .map(
                         uncheckedItem->{
@@ -164,7 +164,7 @@ public class CartServiceImpl implements CartService{
                             Item itemFromStock = itemRepository.findById(uncheckedItem.getProductId())
                                     .orElseThrow(()-> new ShoppingCartException("The product does not exist in stock"));
                             ///If exists assign from stock to the  checked list ( if not we will add something unlikely existing)
-                            checkedItem.setCartItemId(itemFromStock.getId());
+                            checkedItem.setProductId(uncheckedItem.getProductId());
 
                             if(itemFromStock.getStock() == 0 ){
                                 checkedItem.setStatus(ItemCheckStatus.OUTTA_STOCK);

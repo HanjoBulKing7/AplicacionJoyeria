@@ -9,7 +9,7 @@ import { FaTimes, FaCheck } from 'react-icons/fa';
 
 const ItemModal = ({ item, open, setOpen }) => {
 
-    const { id, name, description, image, quantity, price, discount, stock } = item;
+    const { productId, name, description, image, quantity, price, discount, stock } = item;
     
     const dispatch = useDispatch();
 

@@ -33,7 +33,7 @@ const MainItems = () => {
                 <>
                     <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6'>
                         {items && items.map((i) => (
-                            <ItemCard key={i.id} item={i} />
+                            <ItemCard key={i.productId} item={i} />
                         ))}
                     </div>
                     <PaginationComp numberOfPages={pagination.totalPages} totalElements={pagination.totalElements} />

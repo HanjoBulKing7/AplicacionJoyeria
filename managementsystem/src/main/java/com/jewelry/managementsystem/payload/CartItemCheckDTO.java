@@ -12,7 +12,7 @@ import java.util.Optional;
 @NoArgsConstructor
 public class CartItemCheckDTO {
 
-    private Long cartItemId;
+    private Long productId;
     private ItemCheckStatus status;
     private String message;
 

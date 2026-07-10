@@ -15,6 +15,7 @@ public interface ItemMapper extends GenericMapper<Item, ItemDTO>{
 
     @Override ///  Since this class inherits all the methods from the interface of MapStruct we do not need to implement anything
     @Mapping(source = "category.id", target = "categoryId")
+    @Mapping(source = "id", target = "productId")
     ItemDTO toDto(Item item);
 
     @Override

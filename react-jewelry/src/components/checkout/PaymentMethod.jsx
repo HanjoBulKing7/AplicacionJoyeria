@@ -29,7 +29,7 @@ const PaymentMethod = () => {
                     onChange={(e)=>paymentMethodHandler(e.target.value)}
                     className='gap-10'
                 >
-                    <FormControlLabel value="Stripe" className='text-white' control={  <Radio color='primary' className='text-white' /> } 
+                    <FormControlLabel value="PayPal" className='text-white' control={  <Radio color='primary' className='text-white' /> } 
                      label={             
                         <div className="flex items-center gap-2">
                             <FaPaypal className="text-2xl" />
@@ -38,7 +38,7 @@ const PaymentMethod = () => {
                         } >
                         <FaPaypal />
                     </FormControlLabel>
-                    <FormControlLabel value="Paypal" className='text-white' control={ <Radio color='primary' className='text-white'/> } 
+                    <FormControlLabel value="Stripe" className='text-white' control={ <Radio color='primary' className='text-white'/> } 
                     label={              
                         <div className="flex items-center gap-2">
                             <FaStripeS className="text-2xl" />

@@ -1,8 +1,11 @@
 import { Step, StepLabel, Stepper } from '@mui/material'
-import React,{ useState } from 'react'
+import React,{ useEffect, useState } from 'react'
 import Address from './addressSelection/Address';
 import { CheckoutProvider, useCheckoutContext } from '../hooks/useCheckoutContext';
 import PaymentMethod from './PaymentMethod';
+import OrderSummary from './OrderSummary';
+import { useSearchParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 
 const stepperStyle = { 
@@ -58,6 +61,10 @@ const CheckoutContent = () => {
 
     const { checkoutAddress , checkoutMethod } = useCheckoutContext();
 
+    useEffect(()=>{
+      console.log(checkoutMethod)
+    },[checkoutMethod])
+
   return (
     <div className='flex flex-col w-full min-h-[calc(100vh-80px)] pt-4 bg-slate-950'>
         <Stepper activeStep={activeStep} alternativeLabel
@@ -73,6 +80,7 @@ const CheckoutContent = () => {
             <div className='flex-1 h-auto'>
                 { activeStep === 0 && <Address /> }
                 { activeStep === 1 && <PaymentMethod /> }
+                { activeStep === 2 && <OrderSummary />}
             </div>
         }
 

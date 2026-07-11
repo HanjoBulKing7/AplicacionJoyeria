@@ -23,10 +23,12 @@ function App() {
         <Route path='/about' element={ <About /> } />
         <Route path='/cart' element={ <Cart />} />
         <Route path='/checkout' element={ <Checkout />} />
+
         <Route element={ <RouteProtector isAuthPage={true} /> } >
           <Route path='/login' element={ <Login /> } />
           <Route path='/signup' element={ <Register /> } />
         </Route>
+        
       </Routes>
     </BrowserRouter>
   )

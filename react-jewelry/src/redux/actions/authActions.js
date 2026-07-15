@@ -48,3 +48,12 @@ export const signUpUser = createAsyncThunk(
         }
     }
 )
+
+export const createStripeSecret = createAsyncThunk(
+    'auth/clientSecret',
+    async( requestBody , {rejectWithValue}) => {
+        try{
+            const res = await api.post()
+        }
+    }
+)

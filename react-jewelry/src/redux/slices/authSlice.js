@@ -8,6 +8,7 @@ const initialState = {
     roles: [],
     accessToken: '',
     refreshToken: '',
+    clientSecret: null,
     isLoading: false,
     message: '',
     error: '',
@@ -51,6 +52,7 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.message = action.payload.message;
             })
+            .addCase()
     }
 })
 

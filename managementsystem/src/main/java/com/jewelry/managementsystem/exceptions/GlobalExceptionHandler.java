@@ -1,6 +1,7 @@
 package com.jewelry.managementsystem.exceptions;
 
 import com.jewelry.managementsystem.security.response.MessageResponse;
+import com.stripe.exception.*;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
@@ -113,5 +114,20 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    @ExceptionHandler(StripeException.class)
+    public ResponseEntity<MessageResponse> handleStripeException(StripeException e) {
+
+        HttpStatus status = switch (e) {
+            case CardException ex          -> HttpStatus.PAYMENT_REQUIRED;  // 402
+            case InvalidRequestException ex -> HttpStatus.BAD_REQUEST;       // 400
+            case AuthenticationException ex -> HttpStatus.UNAUTHORIZED;      // 401
+            case RateLimitException ex     -> HttpStatus.TOO_MANY_REQUESTS;  // 429
+            default                        -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
+
+        return ResponseEntity.status(status)
+                .body(new MessageResponse(e.getMessage()));
     }
 }

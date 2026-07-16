@@ -60,7 +60,7 @@ const OrderSummary = () => {
               </div>
 
               {/* Price */}
-              <span className='text-sm font-medium text-white flex-shrink-0'>
+              <span className='text-sm font-medium text-white shrink-0'>
                 {formatPrice((item.price ?? 0) * (item.quantity ?? 1))}
               </span>
             </div>

@@ -6,11 +6,12 @@ import com.jewelry.managementsystem.exceptions.OrderException;
 import com.jewelry.managementsystem.exceptions.ShoppingCartException;
 import com.jewelry.managementsystem.mapper.OrderMapper;
 import com.jewelry.managementsystem.models.*;
-import com.jewelry.managementsystem.payload.OrderDTO;
-import com.jewelry.managementsystem.payload.OrderItemDTO;
-import com.jewelry.managementsystem.payload.OrderRequestDTO;
+import com.jewelry.managementsystem.payload.*;
 import com.jewelry.managementsystem.repositories.*;
+import com.jewelry.managementsystem.security.services.UserDetailsImpl;
 import com.jewelry.managementsystem.util.AuthUtil;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,10 +36,11 @@ public class OrderServiceImpl implements OrderService {
     private final OrderMapper orderMapper;
     private final OrderItemRepository orderItemRepository;
     private final ItemRepository itemRepository;
+    private final StripeService stripeService;
 
     @Transactional
     @Override
-    public OrderDTO validateAndPlaceOrder(OrderRequestDTO orderRequest) {
+    public CheckoutResponseDTO validateAndPlaceOrder(OrderRequestDTO orderRequest) throws StripeException {
         ///  Getting cart and address from the user
         Cart shoppingCart = cartRepository.findByEmail(authUtil.loggedInEmail());
         if(shoppingCart == null) ///  Check if shopping cart exists
@@ -87,8 +89,18 @@ public class OrderServiceImpl implements OrderService {
 
 
         OrderDTO orderDTO = orderMapper.toDto(savedOrder);
-        log.info("orderItemsDTO list: {}", orderDTO.getOrderItems());
 
-        return orderDTO;
+        StripePaymentDTO stripePaymentDTO = new StripePaymentDTO(
+                userAddress.getAddressId(),
+                savedOrder.getOrderId(),
+                (long)(shoppingCart.getCartTotalPrice() * 100),
+                orderRequest.getCurrency(),
+                authUtil.loggedInEmail(),
+                authUtil.loggedInEmail(),
+                "Jewelry order #" + savedOrder.getOrderId()
+        );
+
+        PaymentIntent paymentIntent = stripeService.createPaymentIntent(stripePaymentDTO);
+        return new CheckoutResponseDTO(orderDTO, paymentIntent.getClientSecret());
     }
 }

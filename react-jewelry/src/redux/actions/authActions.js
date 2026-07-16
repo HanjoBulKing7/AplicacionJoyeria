@@ -53,7 +53,12 @@ export const createStripeSecret = createAsyncThunk(
     'auth/clientSecret',
     async( requestBody , {rejectWithValue}) => {
         try{
-            const res = await api.post()
+            const res = await api.post("/orders/validate", requestBody );
+
+            return res.data;
+
+        }catch(e){
+            return rejectWithValue(e?.response?.message || 'Error getting the client secret');
         }
     }
 )

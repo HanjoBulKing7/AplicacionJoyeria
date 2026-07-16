@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { loginUser, signUpUser } from '../actions/authActions'
+import { createStripeSecret, loginUser, signUpUser } from '../actions/authActions'
 import { useNavigate } from "react-router-dom"
 
 
@@ -52,7 +52,13 @@ const authSlice = createSlice({
                 state.isLoading = false;
                 state.message = action.payload.message;
             })
-            .addCase()
+            .addCase(createStripeSecret.pending, (state)=>{
+                state.isLoading = true;
+            })
+            .addCase(createStripeSecret.fulfilled, (state, action)=>{
+                state.false = false;
+                state.clientSecret = action.clientSecret;
+            })
     }
 })
 

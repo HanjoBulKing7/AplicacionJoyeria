@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -129,5 +130,11 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(status)
                 .body(new MessageResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<MessageResponse> handleOptimisticLocking(ObjectOptimisticLockingFailureException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT) // 409
+                .body(new MessageResponse("Someone just bought this item. Please review your cart."));
     }
 }

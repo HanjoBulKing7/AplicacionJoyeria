@@ -21,6 +21,7 @@ public class Payment {
     private PaymentMethod paymentMethod;
 
     private String paymentGatewayPaymentId;
+    // TODO: IMPLEMENT ENUM PAYMENT STATUS AS WELL
     private String paymentGatewayStatus;
     private String paymentGatewayResponse;
     private String paymentGatewayName;

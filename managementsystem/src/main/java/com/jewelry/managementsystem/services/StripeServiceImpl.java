@@ -83,8 +83,4 @@ public class StripeServiceImpl implements StripeService {
         return PaymentIntent.create(params);
     }
 
-    @Override
-    public Event validateWebHook(String payload, String sigHeader) {
-        return null;
-    }
 }

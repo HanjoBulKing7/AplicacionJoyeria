@@ -8,4 +8,5 @@ import com.stripe.exception.StripeException;
 public interface OrderService {
 
     CheckoutResponseDTO validateAndPlaceOrder(OrderRequestDTO orderRequest) throws StripeException;
+
 }

@@ -31,7 +31,6 @@ public class OrderServiceImpl implements OrderService {
     private final CartRepository cartRepository;
     private final AuthUtil authUtil;
     private final AddressRepository addressRepository;
-    private final PaymentRepository paymentRepository;
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
     private final OrderItemRepository orderItemRepository;
@@ -48,11 +47,9 @@ public class OrderServiceImpl implements OrderService {
         if(shoppingCart.getCartItems().isEmpty())
             throw new ShoppingCartException("Cart has no items");
 
+        log.info("addressId: {}",  orderRequest.getAddressId());
         Address userAddress = addressRepository.findById(orderRequest.getAddressId())
                 .orElseThrow( ()-> new EmptyResourceException(orderRequest.getAddressId(), "address"));
-        ///  Check if total amount matches with the cartTotalAmount ( source of truth)
-        if(!orderRequest.getPgTotalAmount().equals(shoppingCart.getCartTotalPrice()))
-            throw new OrderException(orderRequest.getPgTotalAmount());
 
         /// Create order
         Order pendingOrder = new Order();
@@ -60,6 +57,7 @@ public class OrderServiceImpl implements OrderService {
         pendingOrder.setOrderDate(LocalDate.now());
         pendingOrder.setEmail(authUtil.loggedInEmail());
         pendingOrder.setOrderStatus(OrderStatus.PENDING);
+         // TODO : ASSIGN A PAYMENT TO THE ORDER!!!!
         pendingOrder.setTotalAmount(shoppingCart.getCartTotalPrice());
 
         Order savedOrder = orderRepository.save(pendingOrder);

@@ -5,16 +5,18 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class OrderRequestDTO {
 
     private Long addressId;
-    private PaymentMethod paymentMethod;
-    private String pgName;
-    private String pgPaymentId;
-    private String pgStatus;
-    private Double pgTotalAmount;
+    private Double amount;
     private String currency;
+    private String username;
+    private String pgName;
+    private String description;
+    private Map<String, String> metadata;
 }

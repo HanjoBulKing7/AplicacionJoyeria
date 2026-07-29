@@ -6,6 +6,7 @@ import PaymentMethod from './PaymentMethod';
 import OrderSummary from './OrderSummary';
 import { useSearchParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import StripePaymentPage from './Stripe/StripePaymentPage';
 
 
 const stepperStyle = { 
@@ -78,9 +79,10 @@ const CheckoutContent = () => {
 
         {
             <div className='flex-1 h-auto'>
-                { activeStep === 0 && <Address /> }
+                { activeStep === 0 && <Address />       }
                 { activeStep === 1 && <PaymentMethod /> }
-                { activeStep === 2 && <OrderSummary />}
+                { activeStep === 2 && <OrderSummary />  }
+                { activeStep === 3 && <StripePaymentPage /> }
             </div>
         }
 

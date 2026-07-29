@@ -17,6 +17,7 @@ const cartSlice = createSlice({
         isLoading: true,
         error: null,
     },
+
     reducers: {
         cartAction: (state, action) => {
             const { item, qty } = action.payload;

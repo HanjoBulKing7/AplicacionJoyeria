@@ -1,7 +1,9 @@
 package com.jewelry.managementsystem.constants;
 
-public enum OrderStatus {
-    SUCCED,
+public enum PaymentStatus {
+
     PENDING,
     CANCELED,
+    COMPLETED,
+    FAILED
 }

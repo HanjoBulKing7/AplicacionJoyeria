@@ -25,7 +25,7 @@ public class StripeServiceImpl implements StripeService {
     @Value("${stripe.secret.key}")
     private String secretKey;
 
-    private AddressRepository addressRepository;
+    private final AddressRepository addressRepository;
 
     @PostConstruct
     public void init() {
@@ -37,7 +37,7 @@ public class StripeServiceImpl implements StripeService {
         Customer customer;
 
         CustomerSearchParams searchExistingParams =
-                CustomerSearchParams.builder().setQuery("email '"+stripePaymentDTO.email())
+                CustomerSearchParams.builder().setQuery("email:'" + stripePaymentDTO.email() + "'")
                         .build();
         CustomerSearchResult customers = Customer.search(searchExistingParams);
 

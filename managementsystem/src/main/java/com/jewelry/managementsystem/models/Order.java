@@ -25,16 +25,16 @@ public class Order {
     @Email
     private String email;
 
-    @OneToMany ( mappedBy = "order", cascade = { CascadeType.MERGE, CascadeType.PERSIST})
+    @OneToMany(mappedBy = "order", cascade = {CascadeType.MERGE, CascadeType.PERSIST})
     private List<OrderItem> orderItems = new ArrayList<>();
 
     private LocalDate orderDate;
 
-    /// Order does not depend on Payment, can exist without it
     @OneToOne
-    @JoinColumn(name="payment_id")
+    @JoinColumn(name = "payment_id")
     private Payment payment;
 
+    @Enumerated ( EnumType.STRING)
     private OrderStatus orderStatus;
 
     @ManyToOne

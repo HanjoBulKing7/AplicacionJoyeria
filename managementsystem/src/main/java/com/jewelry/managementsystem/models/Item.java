@@ -25,6 +25,7 @@ public class Item {
     @Column(nullable = false)
     private ItemStatus status;
     @Version
+    @Column(nullable = false, columnDefinition = "integer default 0")
     private Integer version;
 
     @Column(nullable = true)

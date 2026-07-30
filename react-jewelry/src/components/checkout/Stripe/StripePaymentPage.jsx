@@ -1,10 +1,12 @@
-
 import { Elements } from '@stripe/react-stripe-js';
 import { loadStripe } from '@stripe/stripe-js';
 import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { useCheckoutContext } from '../../hooks/useCheckoutContext';
 import { createStripeSecret } from '../../../redux/actions/authActions';
+import StripePaymentForm from './StripePaymentForm';
+import { current } from '@reduxjs/toolkit';
+import { pgTypes } from '../../../domain/pgNames'
 
 const stripePromise = loadStripe( import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
@@ -13,29 +15,21 @@ const StripePaymentPage = () => {
 
 
     const dispatch = useDispatch();
-    const { clientSecret , username } = useSelector((state)=> state.auth );
+    const { clientSecret , username , email } = useSelector((state)=> state.auth );
     const { cart } = useSelector((state) => state.cart )
-
-    const totalPrice = parseInt(cart?.reduce((acc, cur) => acc += (cur.quantity * cur.price), 0));
-
-      const { checkoutAddress: currentAddress } = useCheckoutContext();
+    const { checkoutAddress: currentAddress } = useCheckoutContext();
 
     useEffect(()=>{
-        if(!clientSecret){
+        if(!clientSecret && currentAddress?.addressId ){
             const orderData = {
                 addressId: currentAddress.addressId,
-                amount: Number(totalPrice * 100),
                 currency: "mxn",
-                name: username,
-                description: `Order for ${username}`,
-                metadata: {
-                    test: "1"
-                }
+                pgName: PG_TYPES.STRIPE,
             };
             dispatch(createStripeSecret(orderData));
         }
 
-    },[dispatch, clientSecret])
+    },[dispatch, clientSecret, currentAddress])
 
     const options = {   clientSecret: clientSecret  };
 
@@ -45,7 +39,7 @@ const StripePaymentPage = () => {
     {
         clientSecret && (
             <Elements   stripe={stripePromise} options={options} >
-                <PaymentForm clientSecret={clientSecret} totalPrice={totalPrice}/>
+                <StripePaymentForm clientSecret={clientSecret} totalPrice={totalPrice}/>
             </Elements>
         )
     }

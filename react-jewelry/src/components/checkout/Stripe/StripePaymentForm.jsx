@@ -1,9 +1,7 @@
 import { PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js'
 import React , { useState}from 'react'
 
-const stripePromise = loadStripe( import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY );
-
-const StripePayment = ( clientSecret , totalPrice ) => {
+const StripePaymentForm = ({ clientSecret , totalPrice }) => {
 
 
     const stripe = useStripe();
@@ -56,4 +54,4 @@ const StripePayment = ( clientSecret , totalPrice ) => {
     )
 }
 
-export default StripePayment;
+export default StripePaymentForm;

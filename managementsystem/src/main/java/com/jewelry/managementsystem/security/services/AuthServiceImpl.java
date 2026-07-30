@@ -76,7 +76,7 @@ public class AuthServiceImpl implements AuthService {
                 });  /// If not exists create a new one with the existing user
 
         ///  Return data and the controller will handle cookies
-        return new JWTResponse(  accessToken, refreshToken.getToken(), userDetails.getUsername(), roles);
+        return new JWTResponse(  accessToken, refreshToken.getToken(), userDetails.getUsername(), userDetails.getEmail(), roles);
     }
 
     @Override

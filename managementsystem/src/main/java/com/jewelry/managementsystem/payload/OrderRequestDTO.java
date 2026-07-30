@@ -13,10 +13,6 @@ import java.util.Map;
 public class OrderRequestDTO {
 
     private Long addressId;
-    private Double amount;
     private String currency;
-    private String username;
     private String pgName;
-    private String description;
-    private Map<String, String> metadata;
 }

@@ -1,6 +1,8 @@
 package com.jewelry.managementsystem.services;
 
 import com.jewelry.managementsystem.constants.OrderStatus;
+import com.jewelry.managementsystem.constants.PaymentGateway;
+import com.jewelry.managementsystem.constants.PaymentStatus;
 import com.jewelry.managementsystem.exceptions.EmptyResourceException;
 import com.jewelry.managementsystem.exceptions.OrderException;
 import com.jewelry.managementsystem.exceptions.ShoppingCartException;
@@ -36,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
     private final ItemRepository itemRepository;
     private final StripeService stripeService;
+    private final PaymentRepository paymentRepository;
 
     @Transactional
     @Override
@@ -57,7 +60,30 @@ public class OrderServiceImpl implements OrderService {
         pendingOrder.setOrderDate(LocalDate.now());
         pendingOrder.setEmail(authUtil.loggedInEmail());
         pendingOrder.setOrderStatus(OrderStatus.PENDING);
-         // TODO : ASSIGN A PAYMENT TO THE ORDER!!!!
+
+
+        Payment payment = new Payment();
+        payment.setPaymentGatewayStatus(PaymentStatus.COMPLETED);
+        if(orderRequest.getPgName()==null || orderRequest.getPgName().equals(""))
+            throw new IllegalArgumentException("PgName is required");
+
+        PaymentGateway selectedPg = switch(orderRequest.getPgName().toLowerCase()){
+            case "stripe" -> PaymentGateway.STRIPE;
+            case "paypal" -> PaymentGateway.PAYPAL;
+            default -> throw new IllegalArgumentException("Invalid payment gateway");
+        };
+
+        payment.setPaymentGatewayName(selectedPg);
+
+
+        paymentRepository.save(payment);
+
+        pendingOrder.setOrderStatus(OrderStatus.SUCCED);
+        orderRepository.save(pendingOrder);
+
+        Cart cart = cartRepository.findByEmail(pendingOrder.getEmail());
+        cartRepository.delete(cart);
+
         pendingOrder.setTotalAmount(shoppingCart.getCartTotalPrice());
 
         Order savedOrder = orderRepository.save(pendingOrder);
@@ -95,7 +121,7 @@ public class OrderServiceImpl implements OrderService {
                 orderRequest.getCurrency(),
                 authUtil.loggedInEmail(),
                 authUtil.loggedInEmail(),
-                "Jewelry order #" + savedOrder.getOrderId()
+                "Jewelry order #" + savedOrder.getOrderId() + " - " + authUtil.loggedInEmail()
         );
 
         PaymentIntent paymentIntent = stripeService.createPaymentIntent(stripePaymentDTO);

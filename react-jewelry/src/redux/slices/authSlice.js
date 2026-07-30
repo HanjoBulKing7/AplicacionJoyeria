@@ -36,6 +36,7 @@ const authSlice = createSlice({
             .addCase(loginUser.fulfilled, (state, action)=>{
                 state.isLoading = false;
                 state.username = action.payload.username;
+                state.email = action.payload.email;
                 state.roles = action.payload.roles;
                 state.accessToken = action.payload.accessToken;
                 state.refreshToken = action.payload.refreshToken;
@@ -56,8 +57,8 @@ const authSlice = createSlice({
                 state.isLoading = true;
             })
             .addCase(createStripeSecret.fulfilled, (state, action)=>{
-                state.false = false;
-                state.clientSecret = action.clientSecret;
+                state.isLoading = false;
+                state.clientSecret = action.payload.clientSecret;
             })
     }
 })

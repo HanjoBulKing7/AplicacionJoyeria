@@ -8,4 +8,5 @@ import com.stripe.model.PaymentIntent;
 public interface StripeService {
 
     PaymentIntent createPaymentIntent(StripePaymentDTO stripePaymentDTO) throws StripeException;
+
 }

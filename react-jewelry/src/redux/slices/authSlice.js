@@ -26,6 +26,9 @@ const authSlice = createSlice({
             state.error = null;
             state.isLoading = false;
             state.message = 'Logged out succesfully';
+        }, 
+        clearClientSecret : (state)=>{
+            state.clientSecret = null;
         }
     },
     extraReducers: (builder) => {
@@ -59,9 +62,11 @@ const authSlice = createSlice({
             .addCase(createStripeSecret.fulfilled, (state, action)=>{
                 state.isLoading = false;
                 state.clientSecret = action.payload.clientSecret;
+                
+                localStorage.setItem("currentOrderId", action.payload.order.orderId )
             })
     }
 })
 
-export const { logout } = authSlice.actions;
+export const { logout , clearClientSecret } = authSlice.actions;
 export default authSlice.reducer;

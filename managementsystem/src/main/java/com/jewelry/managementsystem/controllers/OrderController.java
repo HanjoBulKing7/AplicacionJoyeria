@@ -1,6 +1,7 @@
 package com.jewelry.managementsystem.controllers;
 
 import com.jewelry.managementsystem.payload.CheckoutResponseDTO;
+import com.jewelry.managementsystem.payload.ConfirmPaymentDTO;
 import com.jewelry.managementsystem.payload.OrderDTO;
 import com.jewelry.managementsystem.payload.OrderRequestDTO;
 import com.jewelry.managementsystem.services.OrderService;
@@ -26,6 +27,15 @@ public class OrderController {
         CheckoutResponseDTO checkoutRes = orderService.validateAndPlaceOrder(orderRequest);
 
         return new ResponseEntity<>(checkoutRes, HttpStatus.OK);
+    }
+
+    @PostMapping("/orders/confirm")
+    public ResponseEntity<OrderDTO> confirmOrder(@RequestBody ConfirmPaymentDTO paymentConfirmed) throws StripeException {
+        
+        OrderDTO confirmedOrder = orderService.confirmPayment(paymentConfirmed);
+
+        return new ResponseEntity<>(confirmedOrder, HttpStatus.OK);
+
     }
 
 }

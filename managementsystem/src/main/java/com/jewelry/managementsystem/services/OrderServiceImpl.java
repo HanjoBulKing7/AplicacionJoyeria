@@ -2,10 +2,12 @@ package com.jewelry.managementsystem.services;
 
 import com.jewelry.managementsystem.constants.OrderStatus;
 import com.jewelry.managementsystem.constants.PaymentGateway;
+import com.jewelry.managementsystem.constants.PaymentMethod;
 import com.jewelry.managementsystem.constants.PaymentStatus;
 import com.jewelry.managementsystem.exceptions.EmptyResourceException;
 import com.jewelry.managementsystem.exceptions.OrderException;
 import com.jewelry.managementsystem.exceptions.ShoppingCartException;
+import com.jewelry.managementsystem.exceptions.UnauthorizedException;
 import com.jewelry.managementsystem.mapper.OrderMapper;
 import com.jewelry.managementsystem.models.*;
 import com.jewelry.managementsystem.payload.*;
@@ -54,16 +56,10 @@ public class OrderServiceImpl implements OrderService {
         Address userAddress = addressRepository.findById(orderRequest.getAddressId())
                 .orElseThrow( ()-> new EmptyResourceException(orderRequest.getAddressId(), "address"));
 
-        /// Create order
-        Order pendingOrder = new Order();
-        pendingOrder.setAddress(userAddress);
-        pendingOrder.setOrderDate(LocalDate.now());
-        pendingOrder.setEmail(authUtil.loggedInEmail());
-        pendingOrder.setOrderStatus(OrderStatus.PENDING);
 
-
+        ///  Save pending payment
         Payment payment = new Payment();
-        payment.setPaymentGatewayStatus(PaymentStatus.COMPLETED);
+
         if(orderRequest.getPgName()==null || orderRequest.getPgName().equals(""))
             throw new IllegalArgumentException("PgName is required");
 
@@ -73,19 +69,18 @@ public class OrderServiceImpl implements OrderService {
             default -> throw new IllegalArgumentException("Invalid payment gateway");
         };
 
+        payment.setPaymentGatewayStatus(PaymentStatus.PENDING);
         payment.setPaymentGatewayName(selectedPg);
-
-
-        paymentRepository.save(payment);
-
-        pendingOrder.setOrderStatus(OrderStatus.SUCCED);
-        orderRepository.save(pendingOrder);
-
-        Cart cart = cartRepository.findByEmail(pendingOrder.getEmail());
-        cartRepository.delete(cart);
-
+        payment.setPaymentMethod(PaymentMethod.ONLINE);
+        Payment savedPayment = paymentRepository.save(payment);
+        /// Create order
+        Order pendingOrder = new Order();
+        pendingOrder.setAddress(userAddress);
+        pendingOrder.setOrderDate(LocalDate.now());
+        pendingOrder.setEmail(authUtil.loggedInEmail());
+        pendingOrder.setOrderStatus(OrderStatus.PENDING);
         pendingOrder.setTotalAmount(shoppingCart.getCartTotalPrice());
-
+        pendingOrder.setPayment(savedPayment);
         Order savedOrder = orderRepository.save(pendingOrder);
 
         List<OrderItem> orderItems = new ArrayList<>();
@@ -126,5 +121,34 @@ public class OrderServiceImpl implements OrderService {
 
         PaymentIntent paymentIntent = stripeService.createPaymentIntent(stripePaymentDTO);
         return new CheckoutResponseDTO(orderDTO, paymentIntent.getClientSecret());
+    }
+
+    @Override
+    public OrderDTO confirmPayment(ConfirmPaymentDTO paymentConfirmed) throws StripeException {
+
+        Order order = orderRepository.findById(paymentConfirmed.orderId())
+                .orElseThrow(() -> new EmptyResourceException(paymentConfirmed.orderId(), "order"));
+
+        if (!order.getEmail().equals(authUtil.loggedInEmail()))
+            throw new UnauthorizedException("This order does not belong to you");
+
+        if (!order.getOrderStatus().equals(OrderStatus.PENDING))
+            throw new UnauthorizedException("Order is not in PENDING status, ,maybe it was cancelled");
+
+        order.setOrderStatus(OrderStatus.SUCCED); //SET THE ORDER !!
+
+        ///  UPDATE THE PAYMENT
+        order.getPayment().setPaymentGatewayStatus(PaymentStatus.COMPLETED);// SET THE PAYMENT!!
+        order.getPayment().setPaymentGatewayResponse(paymentConfirmed.pgRes());
+        order.getPayment().setPaymentGatewayPaymentId(paymentConfirmed.paymentId());
+        /// Save the order with the payment properly updated
+       Order payedOrder = orderRepository.save(order);
+
+       /// And now get rid of the cart because the customer already paid for it
+        Cart cart = cartRepository.findByEmail(authUtil.loggedInEmail());
+
+        cartRepository.delete(cart);
+
+       return orderMapper.toDto(payedOrder);
     }
 }

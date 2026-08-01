@@ -65,6 +65,18 @@ const authSlice = createSlice({
                 
                 localStorage.setItem("currentOrderId", action.payload.order.orderId )
             })
+            .addCase(confirmPayment.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(confirmPayment.fulfilled, (state) => {
+                state.isLoading = false;
+                state.clientSecret = null;
+                state.orderId = null;
+            })
+            .addCase(confirmPayment.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            })
     }
 })
 

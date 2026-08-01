@@ -63,13 +63,14 @@ export const createStripeSecret = createAsyncThunk(
     }
 )
 
-export const confirmPayment = ( sendData ) => async ( dispatch , getState ) => {
-    try{
-        const res = await api.post("/orders/confirm", sendData );
-
-        return res;
-
-    }catch(e){
-        return rejectWithValue( e?.response?.mesage || 'Error confirming the payment, try again later')
+export const confirmPayment = createAsyncThunk(
+    'auth/confirmPayment',
+    async (sendData, { rejectWithValue }) => {
+        try {
+            const res = await api.post("/orders/confirm", sendData);
+            return res.data;
+        } catch(e) {
+            return rejectWithValue(e?.response?.data?.message || 'Error confirming the payment');
+        }
     }
-}
+)

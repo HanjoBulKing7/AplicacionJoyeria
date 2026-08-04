@@ -35,4 +35,5 @@ public class Item {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Category category;
 
+
 }

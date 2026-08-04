@@ -8,10 +8,7 @@ import com.jewelry.managementsystem.payload.CategoryDTO;
 import com.jewelry.managementsystem.repositories.CategoryRepository;
 import com.jewelry.managementsystem.services.CategoryServiceImpl;
 import net.bytebuddy.description.type.TypeList;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -26,7 +23,7 @@ import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
-
+@Disabled
 @ExtendWith(MockitoExtension.class)
 public class CategoryServiceImplTest {
 

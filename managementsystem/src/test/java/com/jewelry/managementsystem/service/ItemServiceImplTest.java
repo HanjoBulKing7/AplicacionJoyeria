@@ -1,8 +1,12 @@
 package com.jewelry.managementsystem.service;
 
+import com.jewelry.managementsystem.builders.CategoryBuilder;
+import com.jewelry.managementsystem.builders.ItemBuilder;
+import com.jewelry.managementsystem.builders.ItemDTOBuilder;
 import com.jewelry.managementsystem.constants.ItemStatus;
 import com.jewelry.managementsystem.exceptions.DuplicateResourceException;
 import com.jewelry.managementsystem.exceptions.EmptyResourceException;
+import com.jewelry.managementsystem.factory.TestDataFactory;
 import com.jewelry.managementsystem.mapper.ItemMapper;
 import com.jewelry.managementsystem.models.Category;
 import com.jewelry.managementsystem.models.Item;
@@ -41,301 +45,307 @@ public class ItemServiceImplTest {
     @Mock
     private ItemMapper itemMapper;
 
-    Item testItem;
-    ItemDTO testItemDTO;
-    Category ringsCat;
+    Item existingItem;
+    ItemDTO existingItemDTO;
+    Category ringsCategory;
 
     @BeforeEach
     public void setUp() {
-        ringsCat = new Category(1L, "Rings", Collections.emptyList());
-        testItem = new Item(1L, "Gold ring", null, 100.50F, 10, ItemStatus.ACTIVE, ringsCat);
-        testItemDTO = new ItemDTO(null, "Gold ring", null, 100.5F, 10, ItemStatus.ACTIVE, ringsCat.getId());
+        ringsCategory  = CategoryBuilder.aCategory().build();
+        existingItem   = ItemBuilder.anItem().build();
+        existingItemDTO = ItemDTOBuilder.anItemDTO().build();
     }
 
+    // ─── GET ONE ITEM ────────────────────────────────────────────────────────────
+
     @Test
-    @DisplayName("Get one item")
+    @DisplayName("Get one item — happy path")
     void getItem_Success() {
-        when(itemRepository.findById(1L)).thenReturn(Optional.of(testItem));
-        when(itemMapper.toDto(testItem)).thenReturn(testItemDTO);
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(existingItem));
+        when(itemMapper.toDto(existingItem)).thenReturn(existingItemDTO);
 
-        ItemDTO itemDTO = itemService.getItem(1L);
+        ItemDTO result = itemService.getItem(1L);
 
-        Assertions.assertNotNull(itemDTO);
-        Assertions.assertEquals(1L, testItem.getId());
-        Assertions.assertEquals(testItemDTO.getName(), itemDTO.getName());
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(existingItemDTO.getName(), result.getName());
         verify(itemRepository, times(1)).findById(1L);
-        verify(itemMapper, times(1)).toDto(testItem);
+        verify(itemMapper,     times(1)).toDto(existingItem);
     }
 
     @Test
-    @DisplayName("Get 1 item exception")
-    void getAllItemException() {
+    @DisplayName("Get one item — sad path: item not found")
+    void getItem_NotFound() {
         when(itemRepository.findById(999L)).thenReturn(Optional.empty());
 
-        EmptyResourceException emptyEx = Assertions.assertThrows(
+        EmptyResourceException ex = Assertions.assertThrows(
                 EmptyResourceException.class,
                 () -> itemService.getItem(999L)
         );
 
-        Assertions.assertNotNull(emptyEx);
-        Assertions.assertEquals("No item with id: 999 found", emptyEx.getMessage());
-        Assertions.assertEquals(999L, emptyEx.getId());
-        verify(itemMapper, never()).toDto(any());
+        Assertions.assertEquals("No item with id: 999 found", ex.getMessage());
+        Assertions.assertEquals(999L, ex.getId());
+        verify(itemRepository, times(1)).findById(999L);
+        verify(itemMapper,     never()).toDto(any());
     }
 
+    // ─── GET ALL ITEMS ───────────────────────────────────────────────────────────
+
     @Test
-    @DisplayName("Get all items")
+    @DisplayName("Get all items — happy path")
     void getAllItems_Success() {
-        Pageable pageDetails = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-        List itemList = List.of(testItem);
-        Page itemnPage = new PageImpl<>(itemList, pageDetails, itemList.size());
-        when(itemMapper.toDto(testItem)).thenReturn(testItemDTO);
-        when(itemRepository.findAll(any(Pageable.class))).thenReturn(itemnPage);
+        List<Item> itemList = List.of(existingItem);
+        Page<Item> itemPage = TestDataFactory.page(itemList);
 
-        APIResponse<ItemDTO> allResponse = itemService.getItems(0, 10, "id", "asc");
+        when(itemRepository.findAll(any(Pageable.class))).thenReturn(itemPage);
+        when(itemMapper.toDto(existingItem)).thenReturn(existingItemDTO);
 
-        Assertions.assertNotNull(allResponse);
-        Assertions.assertEquals(itemList.size(), allResponse.getContent().size());
-        verify(itemMapper, times(itemList.size())).toDto(testItem);
+        APIResponse<ItemDTO> result = itemService.getItems(0, 10, "id", "asc");
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(itemList.size(), result.getContent().size());
         verify(itemRepository, times(1)).findAll(any(Pageable.class));
-
+        verify(itemMapper,     times(itemList.size())).toDto(existingItem);
     }
 
     @Test
-    @DisplayName("Get all items empty exception")
-    void getAllItems_Exception() {
-        Page emptyPage = new PageImpl<>(Collections.emptyList());
-        when(itemRepository.findAll(any(Pageable.class))).thenReturn(emptyPage);
+    @DisplayName("Get all items — sad path: no items in DB")
+    void getAllItems_Empty() {
+        when(itemRepository.findAll(any(Pageable.class))).thenReturn(TestDataFactory.emptyPage());
 
-        EmptyResourceException emptyEx = Assertions.assertThrows(
+        EmptyResourceException ex = Assertions.assertThrows(
                 EmptyResourceException.class,
                 () -> itemService.getItems(0, 10, "id", "asc")
         );
 
-        Assertions.assertEquals("No items found", emptyEx.getMessage());
+        Assertions.assertEquals("No items found", ex.getMessage());
         verify(itemRepository, times(1)).findAll(any(Pageable.class));
-        verify(itemMapper, never()).toDto(any());
+        verify(itemMapper,     never()).toDto(any());
     }
 
+    // ─── GET BY CATEGORY ─────────────────────────────────────────────────────────
+
     @Test
-    @DisplayName("Get by category")
+    @DisplayName("Get by category — happy path")
     void getByCategory_Success() {
-        Pageable pageDetails = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-        List itemList = List.of(testItem);
-        Page itemnPage = new PageImpl<>(itemList, pageDetails, itemList.size());
-        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(ringsCat));
-        when(itemMapper.toDto(testItem)).thenReturn(testItemDTO);
-        when(itemRepository.findByCategoryId(anyLong(), any(Pageable.class))).thenReturn(itemnPage);
+        List<Item> itemList = List.of(existingItem);
+        Page<Item> itemPage = TestDataFactory.page(itemList);
 
-        APIResponse<ItemDTO> itemDTOAPIResponse = itemService.getItemsByCategory(1L, 0, 10, "id", "asc");
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(ringsCategory));
+        when(itemRepository.findByCategoryId(anyLong(), any(Pageable.class))).thenReturn(itemPage);
+        when(itemMapper.toDto(existingItem)).thenReturn(existingItemDTO);
 
-        Assertions.assertNotNull(itemDTOAPIResponse);
-        Assertions.assertEquals(itemList.size(), itemDTOAPIResponse.getContent().size());
-        verify(categoryRepository, times(1)).findById(anyLong());
-        verify(itemMapper, times(1)).toDto(testItem);
-        verify(itemRepository, times(1)).findByCategoryId(anyLong(), any(Pageable.class));
+        APIResponse<ItemDTO> result = itemService.getItemsByCategory(1L, 0, 10, "id", "asc");
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(itemList.size(), result.getContent().size());
+        verify(categoryRepository, times(1)).findById(1L);
+        verify(itemRepository,     times(1)).findByCategoryId(anyLong(), any(Pageable.class));
+        verify(itemMapper,          times(1)).toDto(existingItem);
     }
 
     @Test
-    @DisplayName("Get by category fails ( category not found)")
-    void getByCatException() {
+    @DisplayName("Get by category — sad path: category not found")
+    void getByCategory_CategoryNotFound() {
         when(categoryRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        EmptyResourceException emtyEX = Assertions.assertThrows(
+        EmptyResourceException ex = Assertions.assertThrows(
                 EmptyResourceException.class,
                 () -> itemService.getItemsByCategory(1L, 0, 10, "id", "asc")
         );
 
-        Assertions.assertEquals("No category with id: 1 found", emtyEX.getMessage());
-        verify(itemMapper, never()).toDto(any());
-        verify(itemRepository, never()).findByCategoryId(anyLong(), any(Pageable.class));
-    }
-
-    @Test
-    @DisplayName("Get by category is empty exception")
-    void getByCategoryEmpty() {
-        Page emptyPage = new PageImpl<>(Collections.emptyList());
-        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(ringsCat));
-        when(itemRepository.findByCategoryId(anyLong(), any(Pageable.class))).thenReturn(emptyPage);
-
-        EmptyResourceException emptyEx = Assertions.assertThrows(
-                EmptyResourceException.class,
-                () -> itemService.getItemsByCategory(1l, 0, 10, "id", "asc")
-        );
-
-        Assertions.assertEquals("No items with category: Rings found", emptyEx.getMessage());
-
+        Assertions.assertEquals("No category with id: 1 found", ex.getMessage());
         verify(categoryRepository, times(1)).findById(anyLong());
-        verify(itemRepository, times(1)).findByCategoryId(anyLong(), any(Pageable.class));
-        verify(itemMapper, never()).toDto(any());
-
+        verify(itemRepository,     never()).findByCategoryId(anyLong(), any(Pageable.class));
+        verify(itemMapper,          never()).toDto(any());
     }
 
     @Test
-    @DisplayName("Get by keyword")
-    void getByKeyword_Success() {
-        Pageable pageDetails = PageRequest.of(0, 10, Sort.by(Sort.Direction.ASC, "id"));
-        List itemList = List.of(testItem);
-        Page itemnPage = new PageImpl<>(itemList, pageDetails, itemList.size());
+    @DisplayName("Get by category — sad path: category exists but has no items")
+    void getByCategory_Empty() {
+        when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(ringsCategory));
+        when(itemRepository.findByCategoryId(anyLong(), any(Pageable.class))).thenReturn(TestDataFactory.emptyPage());
 
-        when(itemRepository.findByNameContainingIgnoreCase(anyString(), any(Pageable.class))).thenReturn(itemnPage);
-        when(itemMapper.toDto(testItem)).thenReturn(testItemDTO);
-
-        APIResponse<ItemDTO> serviceRes = itemService.getItemsByKeyword("cha", 0, 10, "id", "asc");
-
-        Assertions.assertNotNull(serviceRes);
-        Assertions.assertEquals(itemList.size(), serviceRes.getContent().size());
-        Assertions.assertEquals(testItemDTO.getName(), serviceRes.getContent().get(0).getName());
-        verify(itemMapper, times(1)).toDto(testItem);
-        verify(itemRepository, times(1)).findByNameContainingIgnoreCase(eq("cha"), any(Pageable.class));
-    }
-
-    @Test
-    @DisplayName("Get by keyword empty exception")
-    void getByKeyWordEmpty(){
-        Page emptyPage = new  PageImpl<>(Collections.emptyList());
-        when(itemRepository.findByNameContainingIgnoreCase(anyString(), any(Pageable.class))).thenReturn(emptyPage);
-
-        EmptyResourceException emptyEx = Assertions.assertThrows(
-                    EmptyResourceException.class,
-                ()-> itemService.getItemsByKeyword("cha", 0, 10, "id", "asc")
+        EmptyResourceException ex = Assertions.assertThrows(
+                EmptyResourceException.class,
+                () -> itemService.getItemsByCategory(1L, 0, 10, "id", "asc")
         );
 
-        Assertions.assertEquals("No items with keyword: cha found", emptyEx.getMessage());
-        Assertions.assertEquals("cha", emptyEx.getFieldValue());
-        verify(itemMapper, never()).toDto(any());
+        Assertions.assertEquals("No items with category: Rings found", ex.getMessage());
+        verify(categoryRepository, times(1)).findById(anyLong());
+        verify(itemRepository,     times(1)).findByCategoryId(anyLong(), any(Pageable.class));
+        verify(itemMapper,          never()).toDto(any());
+    }
+
+    // ─── GET BY KEYWORD ──────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Get by keyword — happy path")
+    void getByKeyword_Success() {
+        List<Item> itemList = List.of(existingItem);
+        Page<Item> itemPage = TestDataFactory.page(itemList);
+
+        when(itemRepository.findByNameContainingIgnoreCase(anyString(), any(Pageable.class))).thenReturn(itemPage);
+        when(itemMapper.toDto(existingItem)).thenReturn(existingItemDTO);
+
+        APIResponse<ItemDTO> result = itemService.getItemsByKeyword("gold", 0, 10, "id", "asc");
+
+        Assertions.assertNotNull(result);
+        Assertions.assertEquals(itemList.size(), result.getContent().size());
+        Assertions.assertEquals(existingItemDTO.getName(), result.getContent().get(0).getName());
+        verify(itemRepository, times(1)).findByNameContainingIgnoreCase(eq("gold"), any(Pageable.class));
+        verify(itemMapper,      times(1)).toDto(existingItem);
     }
 
     @Test
-    @DisplayName("Create item")
-    void createItem_Success(){
-        // 1. Crea un DTO de entrada (Silver)
-        ItemDTO inputDTO = new ItemDTO(null,"Silver ring", null, 100.5F, 10, ItemStatus.ACTIVE, 1L);
+    @DisplayName("Get by keyword — sad path: no items match keyword")
+    void getByKeyword_Empty() {
+        when(itemRepository.findByNameContainingIgnoreCase(anyString(), any(Pageable.class))).thenReturn(TestDataFactory.emptyPage());
 
-        // 2. Crea la entidad que represente ese mismo anillo (Silver)
-        Item savedItem = new Item(1L, "Silver ring", null, 100.5F, 10, ItemStatus.ACTIVE, ringsCat);
+        EmptyResourceException ex = Assertions.assertThrows(
+                EmptyResourceException.class,
+                () -> itemService.getItemsByKeyword("cha", 0, 10, "id", "asc")
+        );
 
-        // 3. Crea el DTO de salida esperado (Silver)
-        ItemDTO expectedDTO = new ItemDTO(1L, "Silver ring", null, 100.5F, 10, ItemStatus.ACTIVE, 1L);
+        Assertions.assertEquals("No items with keyword: cha found", ex.getMessage());
+        Assertions.assertEquals("cha", ex.getFieldValue());
+        verify(itemRepository, times(1)).findByNameContainingIgnoreCase(eq("cha"), any(Pageable.class));
+        verify(itemMapper,      never()).toDto(any());
+    }
 
-        // Mocks: Ahora todo es coherente (Entra Silver -> Mapea Silver -> Guarda Silver -> Devuelve Silver)
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(ringsCat));
+    // ─── CREATE ITEM ─────────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Create item — happy path")
+    void createItem_Success() {
+        ItemDTO   inputDTO    = ItemDTOBuilder.anItemDTO().withName("Silver ring").withId(null).build();
+        Item      savedItem   = ItemBuilder.anItem().withName("Silver ring").build();
+        ItemDTO   expectedDTO = ItemDTOBuilder.anItemDTO().withName("Silver ring").build();
+
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(ringsCategory));
         when(itemRepository.findByName(inputDTO.getName())).thenReturn(Optional.empty());
         when(itemMapper.toEntity(any())).thenReturn(savedItem);
         when(itemRepository.save(any())).thenReturn(savedItem);
         when(itemMapper.toDto(any())).thenReturn(expectedDTO);
 
-        ItemDTO testResponse = itemService.addItem(1L, inputDTO);
+        ItemDTO result = itemService.addItem(1L, inputDTO);
 
-        // Assert
-        Assertions.assertEquals("Silver ring", testResponse.getName());
+        Assertions.assertEquals("Silver ring", result.getName());
+        verify(categoryRepository, times(1)).findById(1L);
+        verify(itemRepository,     times(1)).findByName("Silver ring");
+        verify(itemRepository,     times(1)).save(any());
+        verify(itemMapper,          times(1)).toDto(any());
     }
 
     @Test
-    @DisplayName("Create item category exception")
-    void createItemDuplicateException() {
+    @DisplayName("Create item — sad path: category not found")
+    void createItem_CategoryNotFound() {
         when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
 
-        EmptyResourceException emptyEx = Assertions.assertThrows(
+        EmptyResourceException ex = Assertions.assertThrows(
                 EmptyResourceException.class,
-                ()-> itemService.addItem(1L, testItemDTO)
+                () -> itemService.addItem(1L, existingItemDTO)
         );
 
-        Assertions.assertEquals("No Category with id: 1 found", emptyEx.getMessage());
-        Assertions.assertEquals(1L, emptyEx.getId());
-        verify(itemMapper, never()).toDto(any());
-        verify(itemRepository, never()).findByName(anyString());
-    }
-
-    @Test
-    @DisplayName("Create item duplicate exception")
-    void  createItemRepeatedNameException() {
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(ringsCat));
-        when(itemRepository.findByName(anyString())).thenReturn(Optional.of(testItem));
-
-        DuplicateResourceException duplicateEx = Assertions.assertThrows(
-                DuplicateResourceException.class,
-                ()-> itemService.addItem(1L, testItemDTO)
-        );
-
-        Assertions.assertEquals("Item with name: Gold ring, already exists", duplicateEx.getMessage());
-        Assertions.assertEquals("name", duplicateEx.getResourceField());
-        verify(categoryRepository, times(1)).findById(anyLong());
-        verify(itemRepository, times(1)).findByName(anyString());
-        verify(itemMapper, never()).toDto(any());
-    }
-
-    @Test
-    @DisplayName("Update item successfully")
-    void updateItem_Success(){
-        ItemDTO inputUpdateDTO = new ItemDTO(null,"Silver ring",null,  100.5F, 10, ItemStatus.ACTIVE, 1L);
-        ItemDTO resultServiceDTO = new ItemDTO(null,"Silver ring",null,  100.5F, 10, ItemStatus.ACTIVE, 1L);
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(ringsCat));
-        when(itemRepository.findById(1L)).thenReturn(Optional.of(testItem));
-        when(itemRepository.findByName(inputUpdateDTO.getName())).thenReturn(Optional.empty());
-        when(itemRepository.save(testItem)).thenReturn(testItem);
-        when(itemMapper.toDto(testItem)).thenReturn(resultServiceDTO);
-
-        ItemDTO serviceResult = itemService.updateItem(1L, inputUpdateDTO, 1L);
-
-        Assertions.assertEquals(inputUpdateDTO.getName(), serviceResult.getName());
-        Assertions.assertEquals(1L, serviceResult.getCategoryId());
+        Assertions.assertEquals("No Category with id: 1 found", ex.getMessage());
+        Assertions.assertEquals(1L, ex.getId());
         verify(categoryRepository, times(1)).findById(1L);
-        verify(itemRepository, times(1)).findById(1L);
-        verify(itemRepository, times(1)).findByName(inputUpdateDTO.getName());
-        verify(itemMapper, times(1)).updateFromDto(inputUpdateDTO, testItem);
+        verify(itemRepository,     never()).findByName(anyString());
+        verify(itemMapper,          never()).toDto(any());
     }
 
     @Test
-    @DisplayName("Input item name duplicated")
-    void updateItemDuplicateException() {
-        ItemDTO inputDTO = new ItemDTO(null, "Amethyst ring", null, 100.5F, 10, ItemStatus.ACTIVE, 1L);
-        when(categoryRepository.findById(1L)).thenReturn(Optional.of(ringsCat));
-        when(itemRepository.findById(1L)).thenReturn(Optional.of(testItem));
-        ///  New item that mathces the name and provokes the exception
-        Item matchNameItem = new Item();
-        matchNameItem.setName(inputDTO.getName());
-        when(itemRepository.findByName(inputDTO.getName())).thenReturn(Optional.of(matchNameItem));
+    @DisplayName("Create item — sad path: item name already exists")
+    void createItem_DuplicateName() {
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(ringsCategory));
+        when(itemRepository.findByName(anyString())).thenReturn(Optional.of(existingItem));
 
-        DuplicateResourceException duplicateEx = Assertions.assertThrows(
+        DuplicateResourceException ex = Assertions.assertThrows(
                 DuplicateResourceException.class,
-                ()-> itemService.updateItem(1L, inputDTO, 1L)
+                () -> itemService.addItem(1L, existingItemDTO)
         );
 
-        Assertions.assertEquals("Item with name: Amethyst ring, already exists", duplicateEx.getMessage());
+        Assertions.assertEquals("Item with name: Gold Ring, already exists", ex.getMessage());
+        Assertions.assertEquals("name", ex.getResourceField());
         verify(categoryRepository, times(1)).findById(1L);
-        verify(itemRepository, times(1)).findByName(inputDTO.getName());
-        verify(itemMapper, never()).toDto(any());
+        verify(itemRepository,     times(1)).findByName(anyString());
+        verify(itemMapper,          never()).toDto(any());
+    }
+
+    // ─── UPDATE ITEM ─────────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Update item — happy path")
+    void updateItem_Success() {
+        ItemDTO inputDTO  = ItemDTOBuilder.anItemDTO().withName("Silver ring").build();
+        ItemDTO resultDTO = ItemDTOBuilder.anItemDTO().withName("Silver ring").build();
+
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(ringsCategory));
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(existingItem));
+        when(itemRepository.findByName(inputDTO.getName())).thenReturn(Optional.empty());
+        when(itemRepository.save(existingItem)).thenReturn(existingItem);
+        when(itemMapper.toDto(existingItem)).thenReturn(resultDTO);
+
+        ItemDTO result = itemService.updateItem(1L, inputDTO, 1L);
+
+        Assertions.assertEquals("Silver ring", result.getName());
+        Assertions.assertEquals(1L, result.getCategoryId());
+        verify(categoryRepository, times(1)).findById(1L);
+        verify(itemRepository,     times(1)).findById(1L);
+        verify(itemRepository,     times(1)).findByName("Silver ring");
+        verify(itemMapper,          times(1)).updateFromDto(inputDTO, existingItem);
     }
 
     @Test
-    @DisplayName("Delete item successfully")
-    void deleteItem_Success(){
-        when(itemRepository.findById(1L)).thenReturn(Optional.of(testItem));
-        when(itemMapper.toDto(testItem)).thenReturn(testItemDTO);
+    @DisplayName("Update item — sad path: new name already taken by another item")
+    void updateItem_DuplicateName() {
+        ItemDTO inputDTO      = ItemDTOBuilder.anItemDTO().withName("Amethyst ring").withId(null).build();
+        Item    conflictItem  = ItemBuilder.anItem().withName("Amethyst ring").withId(2L).build();
 
-        ItemDTO deleted =  itemService.deleteItem(1L);
+        when(categoryRepository.findById(1L)).thenReturn(Optional.of(ringsCategory));
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(existingItem));
+        when(itemRepository.findByName("Amethyst ring")).thenReturn(Optional.of(conflictItem));
 
-        Assertions.assertEquals("Gold ring", deleted.getName());
+        DuplicateResourceException ex = Assertions.assertThrows(
+                DuplicateResourceException.class,
+                () -> itemService.updateItem(1L, inputDTO, 1L)
+        );
+
+        Assertions.assertEquals("Item with name: Amethyst ring, already exists", ex.getMessage());
+        verify(categoryRepository, times(1)).findById(1L);
+        verify(itemRepository,     times(1)).findById(1L);
+        verify(itemRepository,     times(1)).findByName("Amethyst ring");
+        verify(itemMapper,          never()).toDto(any());
+    }
+
+    // ─── DELETE ITEM ─────────────────────────────────────────────────────────────
+
+    @Test
+    @DisplayName("Delete item — happy path")
+    void deleteItem_Success() {
+        when(itemRepository.findById(1L)).thenReturn(Optional.of(existingItem));
+        when(itemMapper.toDto(existingItem)).thenReturn(existingItemDTO);
+
+        ItemDTO result = itemService.deleteItem(1L);
+
+        Assertions.assertEquals(existingItemDTO.getName(), result.getName());
         verify(itemRepository, times(1)).findById(1L);
-        verify(itemRepository, times(1)).delete(testItem);
-        verify(itemMapper, times(1)).toDto(testItem);
+        verify(itemRepository, times(1)).delete(existingItem);
+        verify(itemMapper,      times(1)).toDto(existingItem);
     }
 
     @Test
-    @DisplayName("Delete an item that does not exist")
-    void deleteItem_NotFound(){
+    @DisplayName("Delete item — sad path: item not found")
+    void deleteItem_NotFound() {
         when(itemRepository.findById(1L)).thenReturn(Optional.empty());
 
-        EmptyResourceException emptyEx = Assertions.assertThrows(
+        EmptyResourceException ex = Assertions.assertThrows(
                 EmptyResourceException.class,
-                ()-> itemService.deleteItem(1L)
+                () -> itemService.deleteItem(1L)
         );
 
-        Assertions.assertEquals("No Item with id: 1 found", emptyEx.getMessage());
+        Assertions.assertEquals("No Item with id: 1 found", ex.getMessage());
         verify(itemRepository, times(1)).findById(1L);
         verify(itemRepository, never()).delete(any(Item.class));
-        verify(itemMapper, never()).toDto(any(Item.class));
+        verify(itemMapper,      never()).toDto(any(Item.class));
     }
-
 }

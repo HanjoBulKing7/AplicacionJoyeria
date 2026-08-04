@@ -39,4 +39,5 @@ public class ItemDTO {
     private String image;
 
     private Long categoryId;
+
 }

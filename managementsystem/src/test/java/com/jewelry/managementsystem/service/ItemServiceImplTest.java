@@ -276,23 +276,35 @@ public class ItemServiceImplTest {
     @Test
     @DisplayName("Update item — happy path")
     void updateItem_Success() {
-        ItemDTO inputDTO  = ItemDTOBuilder.anItemDTO().withName("Silver ring").build();
-        ItemDTO resultDTO = ItemDTOBuilder.anItemDTO().withName("Silver ring").build();
+        ItemDTO requestDTO = ItemDTOBuilder.anItemDTO()
+                .withName("Silver ring")
+                .withId(null)
+                .build();
+        Item updatedEntity = ItemBuilder.anItem().withName("Silver ring")
+                .withId(existingItem.getId())
+                .build();
+
+        ItemDTO updatedResult = ItemDTOBuilder.anItemDTO()
+                .withName("Silver ring")
+                .withId(1L)
+                .build();
 
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(ringsCategory));
         when(itemRepository.findById(1L)).thenReturn(Optional.of(existingItem));
-        when(itemRepository.findByName(inputDTO.getName())).thenReturn(Optional.empty());
-        when(itemRepository.save(existingItem)).thenReturn(existingItem);
-        when(itemMapper.toDto(existingItem)).thenReturn(resultDTO);
+        when(itemRepository.findByName(requestDTO.getName())).thenReturn(Optional.empty());
+        when(itemRepository.save(existingItem)).thenReturn(updatedEntity);
+        when(itemMapper.toDto(updatedEntity)).thenReturn(updatedResult);
 
-        ItemDTO result = itemService.updateItem(1L, inputDTO, 1L);
+        ItemDTO result = itemService.updateItem(1L, requestDTO, 1L);
 
+        Assertions.assertNull(requestDTO.getProductId());
         Assertions.assertEquals("Silver ring", result.getName());
-        Assertions.assertEquals(1L, result.getCategoryId());
+        Assertions.assertEquals(1L, result.getProductId());
         verify(categoryRepository, times(1)).findById(1L);
         verify(itemRepository,     times(1)).findById(1L);
         verify(itemRepository,     times(1)).findByName("Silver ring");
-        verify(itemMapper,          times(1)).updateFromDto(inputDTO, existingItem);
+        verify(itemMapper,          times(1)).toDto(updatedEntity);
+        verify(itemMapper,          times(1)).updateFromDto(requestDTO, existingItem);
     }
 
     @Test

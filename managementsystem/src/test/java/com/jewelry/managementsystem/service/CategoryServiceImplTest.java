@@ -1,5 +1,7 @@
 package com.jewelry.managementsystem.service;
 
+import com.jewelry.managementsystem.builders.CategoryBuilder;
+import com.jewelry.managementsystem.builders.CategoryDTOBuilder;
 import com.jewelry.managementsystem.exceptions.DuplicateResourceException;
 import com.jewelry.managementsystem.mapper.CategoryMapper;
 import com.jewelry.managementsystem.models.Category;
@@ -43,19 +45,12 @@ public class CategoryServiceImplTest {
 
     @BeforeEach
     void setUp(){
-        /// Dummy category object for List
-        testCategory = new Category();
-        testCategory.setId(1L);
-        testCategory.setName("Rings");
-        testCategory.setItems(Collections.emptyList());
-        ///  Dummy categoryDTO object
-        testCategoryDTO = new CategoryDTO();
-        testCategoryDTO.setId(1L);
-        testCategoryDTO.setName("Rings");
-        testCategoryDTO.setItems(Collections.emptyList());
+        testCategory = CategoryBuilder.aCategory().build();
+        testCategoryDTO = CategoryDTOBuilder.aCategoryDTO().build();
 
     }
 
+    // ---- GET CATEGORY --------------------------------------------------------
     @Test
     @DisplayName("Get one category")
     void getCategoryById_Sucess(){
@@ -131,31 +126,32 @@ public class CategoryServiceImplTest {
 
     }
 
+    // ------- CREATE CATEGORY -------------------------
     @Test
-    @DisplayName("Create a category")
+    @DisplayName("Create a category - happy path")
     void  createCategory_Sucess(){
         ///  Arrange
-        CategoryDTO inputDTO = new CategoryDTO(null, "Chains", Collections.emptyList());
-        Category entityBeforeSaving = new Category(null, "Chains", Collections.emptyList());
-        Category entitySaved = new  Category(1L, "Chains", Collections.emptyList());
-        CategoryDTO resultDTO = new  CategoryDTO(1L, "Chains", Collections.emptyList());
+        CategoryDTO inputCategory = CategoryDTOBuilder.aCategoryDTO().withName("Chains").build();
+        Category savedCategory = CategoryBuilder.aCategory().withName("Chains").build();
+        CategoryDTO expectedDTO = CategoryDTOBuilder.aCategoryDTO().withName("Chains").build();
+
         when(categoryRepository.findByName(anyString())).thenReturn(Optional.empty());
-        when(categoryMapper.toEntity(inputDTO)).thenReturn(entityBeforeSaving);
-        when(categoryRepository.save(any())).thenReturn(entitySaved);
-        when(categoryMapper.toDto(entitySaved)).thenReturn(resultDTO);
+        when(categoryMapper.toEntity(any())).thenReturn(savedCategory);
+        when(categoryRepository.save(any())).thenReturn(savedCategory);
+        when(categoryMapper.toDto(any())).thenReturn(expectedDTO);
         ///  Act
-        CategoryDTO serviceResultDTO = categoryService.createCategory(inputDTO);
+        CategoryDTO res = categoryService.createCategory(inputCategory);
         ///  Assert
-        Assertions.assertNotNull(serviceResultDTO);
-        Assertions.assertEquals(resultDTO.getId(),serviceResultDTO.getId());
-        verify(categoryRepository, times(1)).save(entityBeforeSaving);
-        verify(categoryMapper, times(1)).toDto(entitySaved);
-        verify(categoryMapper, times(1)).toEntity(inputDTO);
+        Assertions.assertNotNull(res);
+        Assertions.assertEquals(expectedDTO.getId(),res.getId());
+        verify(categoryRepository, times(1)).save(savedCategory);
+        verify(categoryMapper, times(1)).toDto(any());
+        verify(categoryMapper, times(1)).toEntity(any());
 
     }
 
     @Test
-    @DisplayName("Create category fails")
+    @DisplayName("Create category - sad path")
     void createCategoryThrowsException(){
         when(categoryRepository.findByName(anyString())).thenReturn(Optional.of(testCategory));
 
@@ -168,72 +164,78 @@ public class CategoryServiceImplTest {
         verify(categoryRepository, never()).save(any());
     }
 
+    /// ---- UPDATE CATEGORY -----------------------------------------------------------------
     @Test
-    @DisplayName("Update a category")
+    @DisplayName("Update a category - happy path ")
     void updateCategory_Success(){
-        CategoryDTO inputDTO = new CategoryDTO(null, "Chains", Collections.emptyList());
+        CategoryDTO requestDTO = CategoryDTOBuilder.aCategoryDTO().withName("Chains").build();
+        CategoryDTO updatedCategory = CategoryDTOBuilder
+                .aCategoryDTO()
+                        .withName("Chains")
+                                .withId(1L).build();
+
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
-        when(categoryRepository.existsByNameAndIdNot(inputDTO.getName(), 1L)).thenReturn(Boolean.FALSE);
-
+        when(categoryRepository.existsByNameAndIdNot(requestDTO.getName(), 1L)).thenReturn(Boolean.FALSE);
         when(categoryRepository.save(testCategory)).thenReturn(testCategory);
+        when(categoryMapper.toDto(testCategory)).thenReturn(updatedCategory);
 
-        CategoryDTO categoryDTOUpdated = new CategoryDTO(1L, "Chains", Collections.emptyList());
-        when(categoryMapper.toDto(testCategory)).thenReturn(categoryDTOUpdated);
-
-        CategoryDTO result = categoryService.updateCategory(1L,  inputDTO);
+        CategoryDTO result = categoryService.updateCategory(1L,  requestDTO);
 
         Assertions.assertNotNull(result);
-        Assertions.assertEquals(categoryDTOUpdated.getId(),result.getId());
+        Assertions.assertEquals(1L  ,result.getId());
         verify(categoryRepository, times(1)).findById(1L);
-        verify(categoryRepository, times(1)).existsByNameAndIdNot(inputDTO.getName(), 1L);
-        verify(categoryMapper, times(1)).updateFromDto(inputDTO, testCategory);
+        verify(categoryRepository, times(1)).existsByNameAndIdNot(requestDTO.getName(), 1L);
+        verify(categoryMapper, times(1)).updateFromDto(requestDTO, testCategory);
 
     }
     @Test
-    @DisplayName("No category found with Id")
+    @DisplayName("Update category - Sad path: No category found with Id")
     void updateCategoryNotFound(){
-        CategoryDTO inputDTO = new CategoryDTO(null, "Chains", Collections.emptyList());
-        when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
+        CategoryDTO requestDTo = CategoryDTOBuilder.aCategoryDTO().withName("Earrings").build();
 
+        when(categoryRepository.findById(any())).thenReturn(Optional.empty());
         EmptyResourceException emptyEx = Assertions.assertThrows(EmptyResourceException.class,
-                () -> categoryService.updateCategory(1L,  inputDTO));
+                () -> categoryService.updateCategory(2L,  requestDTo));
 
-        Assertions.assertEquals("No category with id: 1 found", emptyEx.getMessage());
-        verify(categoryRepository, times(1)).findById(1L);
-        verify(categoryRepository, never()).existsByNameAndIdNot(inputDTO.getName(), 1L);
+        Assertions.assertEquals("No category with id: 2 found", emptyEx.getMessage());
+        verify(categoryRepository, times(1)).findById(2L);
+        verify(categoryRepository, never()).existsByNameAndIdNot(requestDTo.getName(), 2L);
     }
 
     @Test
-    @DisplayName("Category throws duplicate exception")
+    @DisplayName(" Update category - Sad Path: Category throws duplicate exception")
     void  updateCategoryDuplicateException(){
-        CategoryDTO inputDTO = new CategoryDTO(null, "Chains", Collections.emptyList());
+        CategoryDTO requestDTO = CategoryDTOBuilder.aCategoryDTO().withName("Chains").build();
+
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
-        when(categoryRepository.existsByNameAndIdNot(inputDTO.getName(), 1L)).thenReturn(Boolean.TRUE);
+        when(categoryRepository.existsByNameAndIdNot(requestDTO.getName(), 1L)).thenReturn(Boolean.TRUE);
 
         DuplicateResourceException duplicateEx =  Assertions.assertThrows(DuplicateResourceException.class,
-                () -> categoryService.updateCategory(1L, inputDTO));
+                () -> categoryService.updateCategory(1L, requestDTO));
 
-        Assertions.assertEquals("Category with category name: "+inputDTO.getName()+", already exists", duplicateEx.getMessage());
+        Assertions.assertEquals("Category with category name: "+requestDTO.getName()+", already exists", duplicateEx.getMessage());
         verify(categoryRepository, times(1)).findById(1L);
-        verify(categoryMapper, never()).updateFromDto(inputDTO, testCategory);
+        verify(categoryMapper, never()).updateFromDto(requestDTO, testCategory);
     }
 
+    // ------------ DELETE CATEGORY -------------------------------------------------
     @Test
-    @DisplayName("Delete successfully")
+    @DisplayName("Delete category - Happy path ")
     void deleteCategory_Success(){
+
         when(categoryRepository.findById(1L)).thenReturn(Optional.of(testCategory));
         when(categoryMapper.toDto(testCategory)).thenReturn(testCategoryDTO);
 
         CategoryDTO deletedFromService = categoryService.deleteCategory(1L);
 
-        Assertions.assertNotNull(deletedFromService);
+        Assertions.assertNotNull(deletedFromService.getId());
         Assertions.assertEquals(testCategoryDTO.getId(),deletedFromService.getId());
         verify(categoryRepository, times(1)).findById(1L);
         verify(categoryRepository, times(1)).delete(testCategory);
     }
 
     @Test
-    @DisplayName("Can't be deleted exception")
+    @DisplayName("Delete category - Sad path: No found category ")
     void deleteCategoryNotFound(){
         when(categoryRepository.findById(1L)).thenReturn(Optional.empty());
 

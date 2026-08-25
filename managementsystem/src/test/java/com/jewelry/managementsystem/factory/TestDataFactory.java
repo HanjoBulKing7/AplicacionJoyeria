@@ -2,6 +2,7 @@ package com.jewelry.managementsystem.factory;
 
 import org.springframework.data.domain.*;
 
+import java.util.Collections;
 import java.util.List;
 
 public class TestDataFactory {
@@ -21,6 +22,6 @@ public class TestDataFactory {
     }
 
     public static <T> Page<T> emptyPage() {
-        return Page.empty();
+        return new PageImpl<>(Collections.emptyList());
     }
 }

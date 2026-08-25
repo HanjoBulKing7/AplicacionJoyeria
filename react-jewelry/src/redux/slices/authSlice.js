@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { createStripeSecret, loginUser, signUpUser } from '../actions/authActions'
+import { confirmPayment, createStripeSecret, loginUser, signUpUser } from '../actions/authActions'
 import { useNavigate } from "react-router-dom"
 
 

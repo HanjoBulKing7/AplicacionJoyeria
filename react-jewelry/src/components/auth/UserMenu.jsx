@@ -7,7 +7,8 @@ import { Link , useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux';
 import { logoutUser } from '../../redux/actions/authActions';
 import { logout } from '../../redux/slices/authSlice';
-import toast from 'react-hot-toast';
+import toast from 'react-hot-toast';    
+import { RiAdminFill } from "react-icons/ri";
 
 const menuElements = [
     { icon: FaUser, label: "Profile", destination: '/profile' },
@@ -16,9 +17,10 @@ const menuElements = [
 ]
 
 function UserMenu() {
+
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const  refreshToken  = useSelector((state) => state.auth.refreshToken);
+    const { refreshToken , roles }  = useSelector((state) => state.auth);
     
 
     const handleLogout = async () => {
@@ -34,7 +36,7 @@ function UserMenu() {
                 return (
                     <div key={i} className='px-4 py-3 cursor-pointer transition-all duration-300
                         hover:bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,rgba(251,191,36,0.1)_40%,transparent_70%)]'>
-                        {e.destination
+                        {e.destination 
                             ? <Link className='flex flex-row gap-2' to={e.destination}>
                                 <CurrentIcon className='text-white text-xl' />
                                 <span>{e.label}</span>
@@ -47,6 +49,17 @@ function UserMenu() {
                     </div>
                 );
             })}
+            {
+                roles.includes("ADMIN") &&
+                <div className='px-4 py-3 cursor-pointer transition-all duration-300 
+                    hover:bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,rgba(251,191,36,0.1)_40%,transparent_70%)]'>
+                        
+                    <Link to="/admin" className='flex flex-row gap-2'>
+                        <RiAdminFill className='text-yellow-500 text-xl'/>
+                        <span>Admin Panel</span>
+                    </Link>
+                </div>
+            }
         </div>
     );
 }

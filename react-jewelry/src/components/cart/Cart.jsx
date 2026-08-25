@@ -1,11 +1,19 @@
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import CartItem from './CartItem';
 import { formatPrice } from '../../utils/formatPrice';
+import { Link } from 'react-router-dom';
+import { useEffect } from 'react';
+import { checkCartItems } from '../../redux/actions/cartActions';
 
 const Cart = () => {
-    const cart = useSelector((state) => state.cart.cart);
-
+    const  { cart , cartChecked } = useSelector((state) => state.cart);
     const subtotal = parseInt(cart?.reduce((acc, cur) => acc += (cur.quantity * cur.price), 0));
+    const dispatch = useDispatch();
+
+    useEffect(()=>{
+        if(cart.length !== 0 )
+            dispatch(checkCartItems({ cartTotalPrice: subtotal , cartItems: cart  }));
+    },[dispatch])
 
     return (
         <div className="bg-gray-900 min-h-screen pt-10 px-4 sm:px-8 lg:px-16 space-y-6">
@@ -22,7 +30,7 @@ const Cart = () => {
             ) : (
                 <>
                 <div className="w-full max-w-5xl mx-auto">
-                    <ul className='hidden sm:grid sm:grid-cols-4 text-white text-base sm:text-lg tracking-widest mb-4 px-2 text-neutral-400'>
+                    <ul className='hidden sm:grid sm:grid-cols-4 text-white text-base sm:text-lg tracking-widest mb-4 px-2'>
                         <li>Product</li>
                         <li className="text-center">Price</li>
                         <li className="text-center">Quantity</li>
@@ -30,19 +38,27 @@ const Cart = () => {
                     </ul>
 
                     <div className="space-y-4 sm:space-y-2">
-                        {cart.map((item) => (
-                            <CartItem key={item.id} {...item} />
-                        ))}
+                        {
+                            cart.map((item) =>{ 
+                                    const i = cartChecked.find(i => i.productId === item.productId );
+                                    return <CartItem key={item.productId} item={item} message={i?.message} />
+                                }
+                            )
+                        }
                     </div>
                 </div>
                 <div className='flex flex-col md:items-end gap-5 sm:items-center'>
                     <h1 className='text-white md:text-2xl sm:text-lg'>Subtotal:</h1> 
                     <span className='text-white md:text-3xl sm:text-2xl'>{formatPrice(subtotal)}</span>
                 </div>
+                <div className='flex items-center justify-center bg-white/90 text-2xl font-light tracking-tighter 
+                p-3 w-40 rounded-2xl cursor-pointer hover:border-2 hover:border-white shadow-md hover:shadow-amber-50'>
+                        <Link to='/checkout'>
+                            <button> Checkout</button>
+                        </Link>
+                </div>
                 </>
             )}
-
-
         </div>
     );
 }

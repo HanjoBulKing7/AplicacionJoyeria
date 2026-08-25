@@ -4,10 +4,9 @@ import Action from './QtyAction'
 import { cartAction } from "../../redux/slices/cartSlice";
 import toast from "react-hot-toast";
 
-const CartItem = (item) => {
+const CartItem = ({item, message}) => {
 
     const dispatch = useDispatch();
-
     return (
         <>
             {/* Mobile: card vertical */}
@@ -17,6 +16,12 @@ const CartItem = (item) => {
                     src={`${import.meta.env.VITE_BACKEND_URL}/public/images/${item.image}`}
                     alt={item.name}
                 />
+                <div>
+                    {
+                        message &&
+                        <span className="text-lg text-yellow-200">{message}</span>
+                    }
+                </div>
                 <div className="flex flex-col gap-1 flex-1">
                     <span className="font-medium text-base">{item.name}</span>
                     <div className="flex justify-between text-sm text-neutral-300 mt-auto">
@@ -30,11 +35,18 @@ const CartItem = (item) => {
             {/* Tablet / Desktop: fila de tabla */}
             <div className="hidden sm:grid sm:grid-cols-4 text-white border-b border-r border-neutral-600 items-center py-3 px-2">
                 <div className="flex items-center gap-4">
-                    <img
-                        className="w-16 h-16 lg:w-20 lg:h-20 object-cover flex-shrink-0"
-                        src={`${import.meta.env.VITE_BACKEND_URL}/public/images/${item.image}`}
-                        alt={item.name}
-                    />
+                    <div className="flex flex-col ">
+                        <img
+                            className="w-20 h-20 lg:w-22 lg:h-22 object-cover flex-shrink-0"
+                            src={`${import.meta.env.VITE_BACKEND_URL}/public/images/${item.image}`}
+                            alt={item.name}
+                        />          
+                        {
+                            message &&
+                            <span className="text-md text-yellow-200">{message}</span>
+                        }
+                    </div>
+
                     <span className="text-sm lg:text-base">{item.name}</span>
                 </div>
                 <div className="text-center text-sm lg:text-base">${item.price}</div>

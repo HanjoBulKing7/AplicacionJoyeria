@@ -1,3 +1,5 @@
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import { api } from "../../api/api";
 
 // While using localstorage
 export const handleCartAction = (cart, item, qtyAction) => {
@@ -5,7 +7,7 @@ export const handleCartAction = (cart, item, qtyAction) => {
     let found = false;
 
     const updatedCart = cart.map(i => {
-        if (i.id === item.id) {
+        if (i.productId === item.productId) {
             found = true;
             return { ...i, quantity: i.quantity + qtyAction };
         }
@@ -14,6 +16,19 @@ export const handleCartAction = (cart, item, qtyAction) => {
 
     return found ? updatedCart : [...cart, {...item, quantity: 1}]
 }
+
+export const checkCartItems = createAsyncThunk(
+    'cart/checkCart',
+    async (cart, { rejectWithValue}) => {
+        try{
+            const res = await api.post("/cart/check-availability", cart);
+            return res.data;
+            
+        }catch(e){
+            return rejectWithValue(e.response?.message || 'Error checking the cart items');
+        }
+    }
+)
 
 /*
 export const removeFromCart = (cart, id) => {

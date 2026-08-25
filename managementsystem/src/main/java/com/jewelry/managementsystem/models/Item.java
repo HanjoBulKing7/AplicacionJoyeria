@@ -24,6 +24,9 @@ public class Item {
     private Integer stock;
     @Column(nullable = false)
     private ItemStatus status;
+    @Version
+    @Column(nullable = false, columnDefinition = "integer default 0")
+    private Integer version;
 
     @Column(nullable = true)
     private String image;
@@ -31,5 +34,6 @@ public class Item {
     @JoinColumn(name = "category_id")
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     private Category category;
+
 
 }

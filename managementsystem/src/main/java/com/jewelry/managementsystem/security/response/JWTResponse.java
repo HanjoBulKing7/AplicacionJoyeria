@@ -10,12 +10,14 @@ import java.util.List;
 public class JWTResponse {
 
     private String username;
+    private String email;
     private List<String> roles;
     private String accessToken;
     private String refreshToken;
 
-    public JWTResponse( String accessToken, String refreshToken, String username, List<String> roles) {
+    public JWTResponse( String accessToken, String refreshToken, String username, String email, List<String> roles) {
         this.username = username;
+        this.email = email;
         this.roles = roles;
         this.accessToken = accessToken;
         this.refreshToken = refreshToken;

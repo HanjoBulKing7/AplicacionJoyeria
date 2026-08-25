@@ -9,6 +9,8 @@ import Login from './components/auth/Login'
 import Register from './components/auth/Register'
 import RouteProtector from './components/auth/RouteProtector'
 import useAuthToast from './components/hooks/useAuthToast'
+import Checkout from './components/checkout/Checkout'
+import SuccessPage from './components/checkout/Stripe/SuccessPage'
 
 function App() {
   useAuthToast();
@@ -21,11 +23,14 @@ function App() {
         <Route path='/contact' element={ <Contact /> } />
         <Route path='/about' element={ <About /> } />
         <Route path='/cart' element={ <Cart />} />
+        <Route path='/checkout' element={ <Checkout />} />
+        <Route path='/order-confirmed' element={  <SuccessPage />} />
 
         <Route element={ <RouteProtector isAuthPage={true} /> } >
           <Route path='/login' element={ <Login /> } />
           <Route path='/signup' element={ <Register /> } />
         </Route>
+        
       </Routes>
     </BrowserRouter>
   )

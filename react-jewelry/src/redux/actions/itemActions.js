@@ -30,4 +30,4 @@ export const fetchCategories = createAsyncThunk(
             return rejectWithValue(e.response?.data?.message || 'Error fetching categories');
         }
     }
-);
+); 

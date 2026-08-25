@@ -1,10 +1,12 @@
 package com.jewelry.managementsystem.exceptions;
 
 import com.jewelry.managementsystem.security.response.MessageResponse;
+import com.stripe.exception.*;
 import jakarta.validation.ConstraintViolationException;
 import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -113,5 +115,26 @@ public class GlobalExceptionHandler {
         );
 
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
+    }
+
+    @ExceptionHandler(StripeException.class)
+    public ResponseEntity<MessageResponse> handleStripeException(StripeException e) {
+
+        HttpStatus status = switch (e) {
+            case CardException ex          -> HttpStatus.PAYMENT_REQUIRED;  // 402
+            case InvalidRequestException ex -> HttpStatus.BAD_REQUEST;       // 400
+            case AuthenticationException ex -> HttpStatus.UNAUTHORIZED;      // 401
+            case RateLimitException ex     -> HttpStatus.TOO_MANY_REQUESTS;  // 429
+            default                        -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
+
+        return ResponseEntity.status(status)
+                .body(new MessageResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public ResponseEntity<MessageResponse> handleOptimisticLocking(ObjectOptimisticLockingFailureException e) {
+        return ResponseEntity.status(HttpStatus.CONFLICT) // 409
+                .body(new MessageResponse("Someone just bought this item. Please review your cart."));
     }
 }

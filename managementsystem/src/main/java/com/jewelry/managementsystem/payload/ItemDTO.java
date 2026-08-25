@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ItemDTO {
 
-    private Long id;
+    private Long productId;
     @NotBlank( message = "Please send a valid name for the item" )
     @Size ( min = 1, max = 15 )
     private String name;
@@ -39,4 +39,5 @@ public class ItemDTO {
     private String image;
 
     private Long categoryId;
+
 }

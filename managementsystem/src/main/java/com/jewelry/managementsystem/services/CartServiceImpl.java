@@ -1,5 +1,6 @@
 package com.jewelry.managementsystem.services;
 
+import com.jewelry.managementsystem.constants.ItemCheckStatus;
 import com.jewelry.managementsystem.exceptions.EmptyResourceException;
 import com.jewelry.managementsystem.exceptions.ShoppingCartException;
 import com.jewelry.managementsystem.mapper.CartItemMapper;
@@ -9,19 +10,25 @@ import com.jewelry.managementsystem.models.Cart;
 import com.jewelry.managementsystem.models.CartItem;
 import com.jewelry.managementsystem.models.Item;
 import com.jewelry.managementsystem.payload.CartDTO;
+import com.jewelry.managementsystem.payload.CartItemCheckDTO;
 import com.jewelry.managementsystem.payload.CartItemDTO;
 import com.jewelry.managementsystem.repositories.CartItemRepository;
 import com.jewelry.managementsystem.repositories.CartRepository;
 import com.jewelry.managementsystem.repositories.ItemRepository;
 import com.jewelry.managementsystem.security.request.CartItemRequest;
 import com.jewelry.managementsystem.util.AuthUtil;
+import jakarta.persistence.Version;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.annotations.DialectOverride;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import static java.lang.Double.sum;
 
 @RequiredArgsConstructor
 @Service
@@ -63,11 +70,12 @@ public class CartServiceImpl implements CartService{
         if( cartItemRequest.getQuantity() > foundItem.getStock())
             throw new ShoppingCartException(foundItem.getName(), foundItem.getStock());
         ///  Setting up the Cart Item ( item inside the shopping cart)
-        CartItem cartItem = itemMapper.toCartItem(foundItem); /// Map struct to transform
+        CartItem cartItem = itemMapper.toCartItem(foundItem);
         log.info("Cart mapped: {}, {}", cartItem.getPrice(),cartItem.getName());
         cartItem.setQuantity(cartItemRequest.getQuantity());
         cartItem.setCart(newCart);
         cartItem.setOriginalItem(foundItem);
+
         // 1. Guardamos el item para que exista en DB
         cartItemRepository.save(cartItem);
 
@@ -120,17 +128,63 @@ public class CartServiceImpl implements CartService{
     }
 
     @Override
+    @Transactional
     public String deleteItemFromCart(Long productId) {
         Cart currentCart = cartRepository.findByEmail(authUtil.loggedInEmail());
         CartItem cartItem  = cartItemRepository.findByCartIdAndItemId(currentCart.getCartId(), productId);
 
         if(cartItem == null)
-            throw new ShoppingCartException(productId);
+            throw new ShoppingCartException("Item not found in cart: " + productId);
 
         cartItemRepository.delete(cartItem);
 
-        return "Item with id "+productId+" successfully";
+        currentCart.getCartItems().remove(cartItem);
+
+        Double newTotalPrice = currentCart.getCartItems().stream()
+                .mapToDouble(item -> item.getPrice() * item.getQuantity())
+                .sum();
+
+
+        currentCart.setCartTotalPrice(newTotalPrice);
+
+        cartRepository.save(currentCart);
+
+        return "Item with id " + productId + " deleted successfully";
     }
+    @Override
+    public List<CartItemCheckDTO> checkCartItemsAvailability(CartDTO currentCart){
+        List<CartItemDTO> currentItems = currentCart.getCartItems();
+        System.out.println("Entered the service and Current items: " + currentItems);
+        return currentItems.stream()
+                .map(
+                        uncheckedItem->{
+                            CartItemCheckDTO checkedItem = new CartItemCheckDTO();
+
+                            /// Check if the cart item is on stock
+                            Item itemFromStock = itemRepository.findById(uncheckedItem.getProductId())
+                                    .orElseThrow(()-> new ShoppingCartException("The product does not exist in stock"));
+                            ///If exists assign from stock to the  checked list ( if not we will add something unlikely existing)
+                            checkedItem.setProductId(uncheckedItem.getProductId());
+
+                            if(itemFromStock.getStock() == 0 ){
+                                checkedItem.setStatus(ItemCheckStatus.OUTTA_STOCK);
+                                checkedItem.setMessage("This product ran out of stock verify the shopping cart");
+                            }
+                            if(itemFromStock.getStock()> 0 && itemFromStock.getStock() <= 5){
+                                checkedItem.setStatus(ItemCheckStatus.LOW_STOCK);
+                                checkedItem.setMessage("This product is almost sold out ");
+                            }
+                            if(itemFromStock.getStock() > 5 )
+                                checkedItem.setStatus(ItemCheckStatus.IN_STOCK);
+
+                            return checkedItem;
+                        }
+                )
+                .toList();
+
+    }
+
+
 
     private Cart checkBeforeCreateCart() {
         Cart  existingCart = cartRepository.findByEmail(authUtil.loggedInEmail());
@@ -143,4 +197,5 @@ public class CartServiceImpl implements CartService{
             return savedCart;
         }
     }
+
 }

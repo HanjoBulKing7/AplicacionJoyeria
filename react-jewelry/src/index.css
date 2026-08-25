@@ -52,3 +52,38 @@
     border-color: var(--color-gray-200, currentcolor);
   }
 }
+
+/* SKELETON TEMPLATE FOR ANY COMPONENT */
+/* 1. Solo aplica el gris de carga a elementos que contienen contenido visual */
+.modo-skeleton p,
+.modo-skeleton h1,
+.modo-skeleton h2,
+.modo-skeleton h3,
+.modo-skeleton h4,
+.modo-skeleton span,
+.modo-skeleton label,
+.modo-skeleton input,
+.modo-skeleton button,
+.modo-skeleton select,
+.modo-skeleton textarea,
+.modo-skeleton a,
+.modo-skeleton svg,
+.modo-skeleton img {
+  background-color: #e2e8f0 !important; /* Gris de Tailwind (bg-slate-200) */
+  color: transparent !important;         /* Esconde el texto */
+  border-color: transparent !important;
+  border-radius: 0.375rem !important;    /* rounded-md de Tailwind */
+  pointer-events: none !important;       /* Evita clicks del usuario */
+  animation: pulso-skeleton 1s infinite ease-in;
+}
+
+/* 2. Comportamiento especial para imágenes */
+.modo-skeleton img {
+  opacity: 0; /* Oculta la imagen real rota mientras descarga */
+}
+
+/* 3. Animación de parpadeo suave */
+@keyframes pulso-skeleton {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}

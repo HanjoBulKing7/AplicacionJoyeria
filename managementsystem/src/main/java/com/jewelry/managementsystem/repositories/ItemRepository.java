@@ -11,8 +11,10 @@ import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item,Long> {
 
-    Optional<Item> findByName(@NotBlank  @Size( min = 5, message = "Item name must contain at least 5 characters") String itemName);
+    Optional<Item> findByName(@NotBlank @Size(min = 5, message = "Item name must contain at least 5 characters") String itemName);
 
     Page<Item> findByCategoryId(Long categoryId, Pageable pageDetails);
+
     Page<Item> findByNameContainingIgnoreCase(String keyword, Pageable pageDetails);
+
 }

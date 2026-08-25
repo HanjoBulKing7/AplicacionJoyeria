@@ -2,6 +2,7 @@ package com.jewelry.managementsystem.controllers;
 
 import com.jewelry.managementsystem.mapper.CartItemMapper;
 import com.jewelry.managementsystem.payload.CartDTO;
+import com.jewelry.managementsystem.payload.CartItemCheckDTO;
 import com.jewelry.managementsystem.security.request.CartItemRequest;
 import com.jewelry.managementsystem.services.CartService;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,8 @@ import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api")
@@ -43,4 +46,12 @@ public class CartController {
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
+
+    @PostMapping("/cart/check-availability")
+    public ResponseEntity<List<CartItemCheckDTO>> checkAvailability(@RequestBody CartDTO currentCart) {
+        List<CartItemCheckDTO> checkedItems = cartService.checkCartItemsAvailability(currentCart);
+
+        return ResponseEntity.ok(checkedItems);
+    }
+
 }

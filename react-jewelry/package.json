@@ -16,6 +16,8 @@
     "@headlessui/react": "^2.2.9",
     "@mui/material": "^7.3.9",
     "@reduxjs/toolkit": "^2.11.2",
+    "@stripe/react-stripe-js": "^6.7.0",
+    "@stripe/stripe-js": "^9.9.0",
     "@tailwindcss/vite": "^4.3.0",
     "axios": "^1.14.0",
     "motion": "^12.40.0",

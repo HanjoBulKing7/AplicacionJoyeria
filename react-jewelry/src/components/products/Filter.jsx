@@ -26,7 +26,7 @@ const Filter = () => {
     
     // Redux
     const dispatch = useDispatch();
-    const categories = useSelector((state)=> state.categories.categories);
+    const categories = useSelector((state)=> state.categories.categories.content);
 
     //Needed hooks
     const [ category, setCategory] = useState("All");
@@ -34,7 +34,7 @@ const Filter = () => {
     const [sortBy, setSortBy ] = useState("Default");
     const [ keyword, setKeyword] = useState("");
 
-
+    console.log(categories)
     // Fetch categories with cleanup
     useEffect(()=>{
         dispatch(fetchCategories());

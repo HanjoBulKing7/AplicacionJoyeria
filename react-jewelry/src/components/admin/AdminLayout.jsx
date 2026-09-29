@@ -10,7 +10,7 @@ const AdminLayout = () => {
     const [ sideBarOpen, setSideBarOpen ] = useState(false)
 
   return (
-    <div>
+    <div className='h-full'>
 
         {/*MODAL FOR MOBILE */}
         <Dialog
@@ -40,13 +40,13 @@ const AdminLayout = () => {
         </div>
 
         {/*OUTLET OR MAIN CONTENT INSIDE THE LAYOUT */}
-        <div className='xl:pl-80'>
+        <div className='xl:pl-80 border-2 border-red-500'>
             <button type="button" className="xl:hidden p-4" onClick={()=>setSideBarOpen(true)} >
                 <span className='sr-only'>Open Admin Bar</span>
                 <FaBars className="text-black text-2xl tracking-tight"/>
             </button>
             <main className='w-full sm:p-5 xl:p-9'>
-                <Outlet />
+                <Outlet/>
             </main>
         </div>
 

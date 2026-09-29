@@ -4,13 +4,13 @@ import { fetchCategories } from '../actions/itemActions'
 const categorySlice = createSlice({
     name: 'categories',
     initialState: {
-        categories: [],
+        categories: {},
         isLoading: false,
         error: null
     },
     reducers: {
         clearCategories: (state)=>{
-            state.categories = [];
+            state.categories = {};
             state.isLoading = false;
             state.error = null;
         },
@@ -22,7 +22,7 @@ const categorySlice = createSlice({
             })
             .addCase(fetchCategories.fulfilled, (state,action)=>{
                 state.isLoading = false;
-                state.categories = action.payload.content;
+                state.categories = action.payload;
             })
     }
 })

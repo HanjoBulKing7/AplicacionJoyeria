@@ -15,6 +15,7 @@
     "@emotion/styled": "^11.14.1",
     "@headlessui/react": "^2.2.9",
     "@mui/material": "^7.3.9",
+    "@mui/x-data-grid": "^9.14.0",
     "@reduxjs/toolkit": "^2.11.2",
     "@stripe/react-stripe-js": "^6.7.0",
     "@stripe/stripe-js": "^9.9.0",

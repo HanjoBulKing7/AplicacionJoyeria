@@ -38,8 +38,7 @@ const Filter = () => {
     // Fetch categories with cleanup
     useEffect(()=>{
         dispatch(fetchCategories());
-        return ()=>dispatch(clearCategories());
-    },[]);
+    },[dispatch]);
 
     useEffect(()=>{
         if( keyword.trim() === "")

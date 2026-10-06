@@ -39,9 +39,17 @@ export const CategoriesTableColumns = (handleEdit, handleDelete) => [
         renderHeader: () => <h1 className="text-center font-bold">Actions</h1>,
         renderCell: (params) => {
             return(
-                <div className="flex flex-row items-center  ">
-                    <button className=" bg-green-600 text-white"><FaEdit/>Edit</button>
-                    <button className=" bg-red-600 text-white"><FaTrash />Delete</button>
+                <div className="flex flex-row justify-between h-fit">
+                    <button 
+                    className=" bg-green-600 text-white h-fit flex flex-row items-center justify-center cursor-pointer rounded-xl
+                    hover:bg-green-600/60"
+                        onClick={()=>handleEdit(params.row)}
+                    ><FaEdit/>Edit</button>
+                    <button 
+                    className=" bg-red-600 text-white h-fit flex flex-row items-center justify-center cursor-pointer rounded-xl
+                    hover:bg-red-600/60"
+                        onClick={()=>handleDelete(params.row)}
+                    ><FaTrash />Delete</button>
                 </div>
             )
         }

@@ -59,7 +59,7 @@ public class AuthServiceImpl implements AuthService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        String accessToken = jwtUtils.generateAccessToken(userDetails.getUsername(), roles);
+        String accessToken = jwtUtils.generateJwtCookie(userDetails).toString();
         RefreshToken refreshToken = refreshTokenRepository.findByUser_UserId(userDetails.getId()) ///  Get token if exists
                 .orElseGet(()-> {
                     User tempUser = userRepository.findById(userDetails.getId()).orElseThrow(()-> new ResourceNotFound("User","user id", Long.toString(userDetails.getId())));

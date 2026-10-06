@@ -23,7 +23,7 @@ const Navbar = () => {
     const [ isOpen, setIsOpen ] = useState(false);
     const pathname = useLocation().pathname;
     const cart = useSelector((state) => state.cart.cart);
-    const user  = useSelector((state)=> state.auth.accessToken);
+    const user = JSON.parse(localStorage.getItem('userInfo'));
     const [ isMenuVisible, setIsMenuVisible ] = useState(false)
 
     return(

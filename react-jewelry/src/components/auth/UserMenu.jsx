@@ -20,9 +20,8 @@ function UserMenu() {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { refreshToken , roles }  = useSelector((state) => state.auth);
+    const user = JSON.parse(localStorage.getItem('userInfo'));
     
-
     const handleLogout = async () => {
         await dispatch(logoutUser({ refreshToken }));
         dispatch(logout());
@@ -50,7 +49,7 @@ function UserMenu() {
                 );
             })}
             {
-                roles.includes("ADMIN") &&
+                user?.roles?.includes("ADMIN") &&
                 <div className='px-4 py-3 cursor-pointer transition-all duration-300 
                     hover:bg-[radial-gradient(circle,rgba(255,255,255,0.2)_0%,rgba(251,191,36,0.1)_40%,transparent_70%)]'>
                         

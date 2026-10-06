@@ -3,16 +3,23 @@ package com.jewelry.managementsystem.security.jwt;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.web.util.WebUtils;
+
 import javax.crypto.SecretKey;
 import java.security.Key;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
@@ -26,6 +33,31 @@ public class JwtUtils {
     @Value("${spring.jewelry.app.jwtCookieName}")
     private String jwtCookie;
 
+    ///  JWT COOKIE METHODS
+    public String getJwtFromCokie(HttpServletRequest request) {
+        Cookie cookie = WebUtils.getCookie(request, jwtCookie);
+
+        if( cookie != null)
+            return cookie.getValue();
+        else
+            return null;
+    }
+    ///  GENERATE JWT FROM COOKIE HttpServletRequest
+    public ResponseCookie generateJwtCookie(UserDetails userDetails) {
+
+        List<String> roles = userDetails.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList());
+        String jwt = generateAccessToken(userDetails.getUsername(), roles);
+
+        return ResponseCookie.from(jwtCookie,jwt)
+                .path("/")
+                .maxAge(accessTokenExpirationMs)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Lax")
+                .build();
+    }
 
     public String getJWTFromHeader(HttpServletRequest request){
         String bearerToken = request.getHeader("Authorization");

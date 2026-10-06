@@ -16,6 +16,7 @@ export const publicApi = axios.create({
 export const api = axios.create({
   baseURL: BACKEND_URL,
   headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
 });
 
 // ---- Cola de peticiones durante el refresh ----

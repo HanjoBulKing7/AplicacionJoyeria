@@ -26,7 +26,6 @@ const categorySlice = createSlice({
             .addCase(fetchCategories.fulfilled, (state,action)=>{
                 state.isLoading = false;
                 state.categories = action.payload.content;
-                console.log(action.payload.content);
                 state.pagination = {
                     pageNumber: action.payload.pageNumber,
                     pageSize: action.payload.pageSize,

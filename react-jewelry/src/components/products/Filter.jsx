@@ -34,7 +34,6 @@ const Filter = () => {
     const [sortBy, setSortBy ] = useState("Default");
     const [ keyword, setKeyword] = useState("");
 
-    console.log(categories)
     // Fetch categories with cleanup
     useEffect(()=>{
         dispatch(fetchCategories());

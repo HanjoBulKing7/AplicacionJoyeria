@@ -47,7 +47,7 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = action.payload; // Aquí guardamos el mensaje de error para mostrarlo en UI
+                state.error = action.payload;
             })
             .addCase(signUpUser.pending, (state)=>{
                 state.isLoading = true;

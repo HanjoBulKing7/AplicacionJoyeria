@@ -1,19 +1,27 @@
-import { useSelector } from 'react-redux';
 import { Navigate, Outlet } from 'react-router-dom';
+import toast from "react-hot-toast";
 
-function RouteProtector({ isAuthPage = false , adminOnly = false }) {
+function RouteProtector({ isAuthPage = false, adminOnly = false }) {
 
-  const { accessToken , roles }  = useSelector((state) => state.auth);
+  const user = JSON.parse(localStorage.getItem('userInfo'));
 
-  const isAdmin = roles && roles.includes("ADMIN");
+  const isAuthenticated = !!user?.accessToken;
+  const isAuthorized = user?.roles?.includes("ADMIN");
 
-  if (isAuthPage)
-    return accessToken ? <Navigate to="/" /> : <Outlet />;
+  if (isAuthPage) {
+    return isAuthenticated
+      ? <Navigate to="/" />
+      : <Outlet />;
+  }
 
-  if(adminOnly && !isAdmin)
-    return <Navigate to="/" />
-  
-  return accessToken ? <Outlet /> : <Navigate to="/login" />;
+  if (adminOnly && !isAuthorized) {
+    toast.error('You are not authorized to acccess')
+    return <Navigate to="/" />;
+  }
+
+  return isAuthenticated
+    ? <Outlet />
+    : <Navigate to="/login" />;
 }
 
-export default RouteProtector
+export default RouteProtector;

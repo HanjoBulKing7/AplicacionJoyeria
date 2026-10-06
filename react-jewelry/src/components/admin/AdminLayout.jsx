@@ -40,7 +40,7 @@ const AdminLayout = () => {
         </div>
 
         {/*OUTLET OR MAIN CONTENT INSIDE THE LAYOUT */}
-        <div className='xl:pl-80 border-2 border-red-500'>
+        <div className='xl:pl-80 '>
             <button type="button" className="xl:hidden p-4" onClick={()=>setSideBarOpen(true)} >
                 <span className='sr-only'>Open Admin Bar</span>
                 <FaBars className="text-black text-2xl tracking-tight"/>

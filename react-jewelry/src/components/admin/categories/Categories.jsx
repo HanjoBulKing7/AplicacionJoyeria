@@ -2,6 +2,8 @@ import { DataGrid } from '@mui/x-data-grid';
 import { useSelector } from 'react-redux';
 import { CategoriesTableColumns } from '../../helper/TableColumns';
 import { useState } from 'react';
+import CategoryForm from './CategoryForm';
+import FormModal from '../../shared/FormModal';
 
 const Categories = () => {
 
@@ -9,19 +11,23 @@ const Categories = () => {
 
   const  { categories, pagination } = useSelector((state) => state.categories );
   const [ currentPage, setCurrentPage ] = useState(1);
+  const [ openModal , setOpenModal ] = useState(null);
 
   
   const handleEdit = (category) => {
     setCurrentCategory(category);
+    setOpenModal('edit');
+
   };
 
   const handleDelete = (category) => {
     setCurrentCategory(category);
+    setOpenModal('delete')
   };
 
   return (
-    <div className='bg-gray-900 flex flex-col items-center justify-center'>
-      <h1 className='text-blue-950 text-4xl'>Categories</h1>
+    <div className=' flex flex-col items-center justify-center'>
+      <h1 className='text-blue-950 text-4xl mb-20'>Categories</h1>
 
       <div className='flex flex-col'>
         <DataGrid 
@@ -44,6 +50,10 @@ const Categories = () => {
           }}
         />
       </div>
+
+          <FormModal open={!!openModal} onClose={setOpenModal} >
+        <CategoryForm />
+      </FormModal>
     </div>
   )
 }

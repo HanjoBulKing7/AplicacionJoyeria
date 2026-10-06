@@ -6,12 +6,10 @@ export const loginUser = createAsyncThunk(
     async ( requestBody, { rejectWithValue }) => {
         try{
             const res = await api.post('/auth/signin', requestBody);
-            const { accessToken, refreshToken } = res.data;
-            console.log( accessToken, refreshToken);
-            
-            // ✅ CORRECCIÓN: Agrega las variables como segundo argumento
-            if (accessToken) localStorage.setItem('accessToken', accessToken);
-            if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+            console.log( res.data );
+        
+            if(!!res) 
+                localStorage.setItem('userInfo', JSON.stringify(res.data));
             
             return res.data;
         }catch(e){

@@ -41,7 +41,7 @@ public class AuthController {
         System.out.println("---- ENTRANDO AL SIGNIN CON: " + loginRequest.getUsername());
         JWTResponse response = authService.authenticateAndGetUserInfo(loginRequest);
 
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().header(HttpHeaders.SET_COOKIE, response.getAccessToken()).body(response);
     }
 
     @PostMapping("/signup")

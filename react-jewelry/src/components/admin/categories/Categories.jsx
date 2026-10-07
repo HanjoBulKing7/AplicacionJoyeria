@@ -1,28 +1,35 @@
 import { DataGrid } from '@mui/x-data-grid';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { CategoriesTableColumns } from '../../helper/TableColumns';
-import { useState } from 'react';
-import CategoryForm from './CategoryForm';
+import { useEffect, useState } from 'react';
 import FormModal from '../../shared/FormModal';
+import { fetchCategories } from '../../../redux/actions/itemActions';
+import Form from '../../shared/Form';
 
 const Categories = () => {
 
+  const dispatch = useDispatch();
   const [ currentCategory, setCurrentCategory ] = useState(null);
-
   const  { categories, pagination } = useSelector((state) => state.categories );
   const [ currentPage, setCurrentPage ] = useState(1);
   const [ openModal , setOpenModal ] = useState(null);
+  const [ open , setOpen ] = useState(false);
 
-  
+  useEffect(()=>{
+    dispatch(fetchCategories());
+  },[])
+
   const handleEdit = (category) => {
     setCurrentCategory(category);
     setOpenModal('edit');
+    setOpen(true)
 
   };
 
   const handleDelete = (category) => {
     setCurrentCategory(category);
     setOpenModal('delete')
+    setOpen(true)
   };
 
   return (
@@ -51,8 +58,11 @@ const Categories = () => {
         />
       </div>
 
-          <FormModal open={!!openModal} onClose={setOpenModal} >
-        <CategoryForm />
+      <FormModal open={open} setOpen={setOpen} 
+        title={openModal === 'edit' ? `Edit` : 'Create a category'}
+        selected={currentCategory}
+         >
+        <Form />
       </FormModal>
     </div>
   )

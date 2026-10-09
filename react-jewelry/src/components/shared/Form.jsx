@@ -3,13 +3,9 @@ import { useForm } from 'react-hook-form';
 import CustomInput from './CustomInput';
 import { getFilledInputUtilityClass } from '@mui/material/FilledInput';
 
-const Form = ({fields = null , selected = null }) => {
+const Form = ({fields = null , selected = null , customHandler }) => {
 
     const { register, handleSubmit, reset, setValue, formState: { errors } } = useForm({ mode: "onTouched" });
-
-    if(!!selected)
-        console.log(selected)
-
 
     useEffect(() => {
         reset(selected ?? {});
@@ -17,7 +13,7 @@ const Form = ({fields = null , selected = null }) => {
 
   return (
     <div className='flex flex-col gap-2 h-full'>
-        <form action="" className='mt-5 flex flex-col items-center justify-between flex-1'onSubmit={handleSubmit} >
+        <form action="" className='mt-5 flex flex-col items-center justify-between flex-1'onSubmit={handleSubmit(customHandler)} >
             <div className='mt-5 mb-5 flex flex-col justify-center w-full'>
                 {
                     fields.map((field)=>{

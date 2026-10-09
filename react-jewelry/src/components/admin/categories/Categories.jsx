@@ -23,11 +23,15 @@ const Categories = () => {
     dispatch(fetchCategories());
   },[])
 
+  const handleCreate = (category) => {
+    setOpenModal('save')
+  };
+
   const handleEdit = (category) => {
     setCurrentCategory(category);
-    setOpenModal('edit');
+    setOpenModal('save');
     setOpen(true)
-
+    console.log('Edit triggered')
   };
 
   const handleDelete = (category) => {
@@ -62,14 +66,18 @@ const Categories = () => {
         />
       </div>
       {
-        open &&
-        (
-        <FormModal open={open} setOpen={setOpen} 
-          title={openModal === 'edit' ? `Edit "${currentCategory?.name}"` : 'Create a Category'}
-          >
-          <Form fields={categoryFields} selected={currentCategory} />
-        </FormModal>
-        )
+        open && openModal === 'save' 
+          ?
+          (
+          <FormModal open={open} setOpen={setOpen} 
+            title={currentCategory !== null ? `Edit "${currentCategory?.name}"` : 'Create a Category'}
+            >
+            <Form fields={categoryFields} selected={currentCategory} customHandler={ currentCategory !== null ? handleEdit : handleCreate} />
+          </FormModal>
+          )
+          :
+          <h1>Holi</h1>
+
       }
     </div>
   )

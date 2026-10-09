@@ -15,6 +15,10 @@ const Categories = () => {
   const [ openModal , setOpenModal ] = useState(null);
   const [ open , setOpen ] = useState(false);
 
+  const categoryFields = [
+    { id: "name", label: "Category Name", type: "text", required: true, min: 4, placeHolder: "New category name"},
+  ];
+
   useEffect(()=>{
     dispatch(fetchCategories());
   },[])
@@ -57,13 +61,16 @@ const Categories = () => {
           }}
         />
       </div>
-
-      <FormModal open={open} setOpen={setOpen} 
-        title={openModal === 'edit' ? `Edit` : 'Create a category'}
-        selected={currentCategory}
-         >
-        <Form />
-      </FormModal>
+      {
+        open &&
+        (
+        <FormModal open={open} setOpen={setOpen} 
+          title={openModal === 'edit' ? `Edit "${currentCategory?.name}"` : 'Create a Category'}
+          >
+          <Form fields={categoryFields} selected={currentCategory} />
+        </FormModal>
+        )
+      }
     </div>
   )
 }

@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { fetchCategories } from '../actions/itemActions'
+import { fetchCategories, updateCategory } from '../actions/itemActions'
 
 const categorySlice = createSlice({
     name: 'categories',
@@ -33,6 +33,12 @@ const categorySlice = createSlice({
                     totalPages: action.payload.totalPages,
                     isLastPage: action.payload.lastPage
                 }
+            })
+            .addCase(updateCategory.pending, (state)=>{
+                state.isLoading = true;
+            })
+            .addCase(updateCategory.fulfilled, (state)=>{
+                state.isLoading = false;
             })
     }
 })

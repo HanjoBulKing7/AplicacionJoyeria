@@ -11,9 +11,13 @@ const Form = ({fields = null , selected = null , customHandler }) => {
         reset(selected ?? {});
     }, [selected, reset]);
 
+    const onClickSave = (data) => {
+        customHandler(data);
+    }
+
   return (
     <div className='flex flex-col gap-2 h-full'>
-        <form action="" className='mt-5 flex flex-col items-center justify-between flex-1'onSubmit={handleSubmit(customHandler)} >
+        <form noValidate action="" className='mt-5 flex flex-col items-center justify-between flex-1'onSubmit={handleSubmit(onClickSave)} >
             <div className='mt-5 mb-5 flex flex-col justify-center w-full'>
                 {
                     fields.map((field)=>{
@@ -29,6 +33,7 @@ const Form = ({fields = null , selected = null , customHandler }) => {
                                 placeholder={field.placeholder}
                                 placeholderStyles={null}
                                 errors={errors}
+                                pattern={field.pattern}
                             />
                         )
                     })

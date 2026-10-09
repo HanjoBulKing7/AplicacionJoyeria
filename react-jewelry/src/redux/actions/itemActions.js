@@ -1,5 +1,5 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { publicApi } from '../../api/api'
+import { createAsyncThunk, createImmutableStateInvariantMiddleware } from "@reduxjs/toolkit";
+import { api, publicApi } from '../../api/api'
 
 // Thunk para obtener Items (Soporta búsqueda, paginación y filtros)
 export const fetchItems = createAsyncThunk(
@@ -31,3 +31,16 @@ export const fetchCategories = createAsyncThunk(
         }
     }
 ); 
+
+export const updateCategory = createAsyncThunk(
+    'items/udpateCategory',
+    async ( params, dispatch, { rejectWithValue }) => {
+        try{
+            const res = await api.put(`/admin/categories/${params.id}`);
+                dispatch(fetchCategories())
+            return res.data;
+        }catch(e){
+            return rejectWithValue(e.response?.data?.message || 'Error updating the category');
+        }
+    }
+)

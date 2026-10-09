@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CategoriesTableColumns } from '../../helper/TableColumns';
 import { useEffect, useState } from 'react';
 import FormModal from '../../shared/FormModal';
-import { fetchCategories } from '../../../redux/actions/itemActions';
+import { fetchCategories, updateCategory } from '../../../redux/actions/itemActions';
 import Form from '../../shared/Form';
 
 const Categories = () => {
@@ -16,7 +16,7 @@ const Categories = () => {
   const [ open , setOpen ] = useState(false);
 
   const categoryFields = [
-    { id: "name", label: "Category Name", type: "text", required: true, min: 4, placeHolder: "New category name"},
+    { id: "name", label: "Category Name", type: "text", required: true, min: 3, placeholder: "New category name", pattern: "name"},
   ];
 
   useEffect(()=>{
@@ -31,7 +31,7 @@ const Categories = () => {
     setCurrentCategory(category);
     setOpenModal('save');
     setOpen(true)
-    console.log('Edit triggered')
+    console.log('Edit finally triggered')
   };
 
   const handleDelete = (category) => {
@@ -76,7 +76,7 @@ const Categories = () => {
           </FormModal>
           )
           :
-          <h1>Holi</h1>
+          <h1>Delete</h1>
 
       }
     </div>

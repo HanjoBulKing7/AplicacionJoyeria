@@ -37,7 +37,7 @@ export const updateCategory = createAsyncThunk(
     async ( params, { rejectWithValue }) => {
         try{
             console.log('Update triggered with: ', params?.name)
-            const res = await api.put(`/admin/categories/${params.id}`, params?.name);
+            const res = await api.put(`/admin/categories/${params.id}`, params);
             return res.data;
         }catch(e){
             return rejectWithValue(e.response?.data?.message || 'Error updating the category');

@@ -37,8 +37,16 @@ const categorySlice = createSlice({
             .addCase(updateCategory.pending, (state)=>{
                 state.isLoading = true;
             })
-            .addCase(updateCategory.fulfilled, (state)=>{
+            .addCase(updateCategory.fulfilled, (state, action)=>{
                 state.isLoading = false;
+                state.categories = action.payload.content;
+                state.pagination = {
+                    pageNumber: action.payload.pageNumber,
+                    pageSize: action.payload.pageSize,
+                    totalElements: action.payload.totalElements,
+                    totalPages: action.payload.totalPages,
+                    isLastPage: action.payload.lastPage
+                }
             })
     }
 })

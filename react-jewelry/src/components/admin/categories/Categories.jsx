@@ -31,7 +31,7 @@ const Categories = () => {
     setCurrentCategory(category);
     setOpenModal('save');
     setOpen(true)
-    console.log('Edit finally triggered')
+    dispatch(updateCategory(category));
   };
 
   const handleDelete = (category) => {

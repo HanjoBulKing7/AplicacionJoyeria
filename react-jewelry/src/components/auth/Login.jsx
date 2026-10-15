@@ -18,13 +18,16 @@ function Login() {
 
   const isLoading = useSelector((state)=> state.auth.isLoading);
 
+  const errorRes = useSelector((state)=> state.auth.error);
   const [ showPwd, setShowPwd ] = useState(false)
 
+  console.log(errorRes);
   const handleLogin = async (data) => {
     const loginRes = await dispatch(loginUser(data));
     
     if(loginUser.fulfilled.match(loginRes))
       navigate('/items')
+
   }
 
   return (
@@ -78,6 +81,10 @@ function Login() {
             }
           </button>
           <span className='text-white cursor-help'>Don't have an account? <Link to='/signup' className='font-bold underline'>Sign up</Link></span>
+          {
+            errorRes && 
+            <span className='text-2xl text-red-500 font-bold'>{errorRes}</span>
+          }
         </div>
       </form>
     </div>

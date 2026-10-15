@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { confirmPayment, createStripeSecret, loginUser, signUpUser } from '../actions/authActions'
+import { confirmPayment, createStripeSecret, loginUser, logoutUser, signUpUser } from '../actions/authActions'
 import { useNavigate } from "react-router-dom"
 
 
@@ -18,15 +18,6 @@ const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        logout: (state) => {
-            state.username = '';
-            state.roles = [];
-            state.accessToken = '';
-            state.refreshToken = '';
-            state.error = null;
-            state.isLoading = false;
-            state.message = 'Logged out succesfully';
-        }, 
         clearClientSecret : (state)=>{
             state.clientSecret = null;
         }
@@ -74,6 +65,24 @@ const authSlice = createSlice({
                 state.orderId = null;
             })
             .addCase(confirmPayment.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+            .addCase(logoutUser.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(logoutUser.fulfilled, (state) => {
+                state.username = '';
+                state.roles = [];
+                state.accessToken = '';
+                state.error = null;
+                state.isLoading = false;
+                state.message = 'Logged out successfully';
+            })
+            .addCase(logoutUser.rejected, (state, action) => {
+                state.username = '';
+                state.roles = [];
+                state.accessToken = '';
                 state.isLoading = false;
                 state.error = action.payload;
             })

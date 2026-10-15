@@ -34,10 +34,10 @@ export const fetchCategories = createAsyncThunk(
 
 export const updateCategory = createAsyncThunk(
     'items/udpateCategory',
-    async ( params, dispatch, { rejectWithValue }) => {
+    async ( params, { rejectWithValue }) => {
         try{
-            const res = await api.put(`/admin/categories/${params.id}`);
-                dispatch(fetchCategories())
+            console.log('Update triggered with: ', params?.name)
+            const res = await api.put(`/admin/categories/${params.id}`, params?.name);
             return res.data;
         }catch(e){
             return rejectWithValue(e.response?.data?.message || 'Error updating the category');

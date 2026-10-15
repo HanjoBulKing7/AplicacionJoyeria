@@ -15,5 +15,5 @@ public interface AuthService {
     MessageResponse registerUser( SignUpRequest signUpRequest);
     JWTResponse refreshToken(String refreshToken);
 
-    String logoutUser( RefreshTokenRequest refreshTokenRequest);
+    ResponseCookie logoutUser( RefreshTokenRequest refreshTokenRequest);
 }

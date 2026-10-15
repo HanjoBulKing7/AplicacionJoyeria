@@ -17,6 +17,7 @@ import com.jewelry.managementsystem.security.response.JWTResponse;
 import com.jewelry.managementsystem.security.response.MessageResponse;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -165,13 +166,19 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public String logoutUser(RefreshTokenRequest refreshTokenRequest) {
+    public ResponseCookie logoutUser(RefreshTokenRequest refreshTokenRequest) {
         String issuedToken = refreshTokenRequest.getRefreshToken();
         Integer rowsAffected = refreshTokenRepository.deleteByToken(issuedToken);
 
         if(rowsAffected == 0)
             throw new TokenException("Token not found");
 
-        return "Logged out successfully";
+        return ResponseCookie.from("jewelryC0ok13","")
+                .path("/")
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("Lax")
+                .build();
     }
 }

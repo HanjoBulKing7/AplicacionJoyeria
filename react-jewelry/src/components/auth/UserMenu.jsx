@@ -21,11 +21,12 @@ function UserMenu() {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const user = JSON.parse(localStorage.getItem('userInfo'));
-    
+    const refreshToken = user?.refreshToken;
+
     const handleLogout = async () => {
         await dispatch(logoutUser({ refreshToken }));
         dispatch(logout());
-        navigate('/items');
+        navigate('/');
     }
 
     return (

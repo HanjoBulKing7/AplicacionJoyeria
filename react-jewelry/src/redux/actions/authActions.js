@@ -6,8 +6,6 @@ export const loginUser = createAsyncThunk(
     async ( requestBody, { rejectWithValue }) => {
         try{
             const res = await api.post('/auth/signin', requestBody);
-            console.log( res.data );
-        
             if(!!res) 
                 localStorage.setItem('userInfo', JSON.stringify(res.data));
             
@@ -23,9 +21,8 @@ export const logoutUser = createAsyncThunk(
     async ( requestBody, { rejectWithValue} ) => {
 
         try{
-            const res = await api.post('/auth/signout', requestBody);
-            console.log("Refresh token: ", requestBody)
-            return res.data.message;
+            await api.post('/auth/signout', requestBody);
+            localStorage.removeItem('userInfo');
         }catch(e){
             return rejectWithValue(e?.response?.message || 'Error logging out!');
         }
@@ -39,9 +36,10 @@ export const signUpUser = createAsyncThunk(
 
         try{
             const res = await api.post('/auth/signup', requestBody);
-
+            console.log(res)
             return res.data.message;
         }catch(e){
+            console.log(e)
             return rejectWithValue(e?.response?.message || 'Error signing up!');
         }
     }

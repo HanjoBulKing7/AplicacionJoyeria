@@ -62,8 +62,10 @@ public class AuthController {
     @PostMapping("/signout")
     public ResponseEntity<?> signoutUser(@Valid @RequestBody RefreshTokenRequest refreshTokenRequest) {
 
-        String logoutMessage = authService.logoutUser(refreshTokenRequest);
+        ResponseCookie cookieResponse = authService.logoutUser(refreshTokenRequest);
 
-        return ResponseEntity.ok( new MessageResponse("You've been signed out!"));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookieResponse.toString())
+                .body(new MessageResponse("Signed out"));
     }
 }

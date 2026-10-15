@@ -49,7 +49,6 @@ public class JwtUtils {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
         String jwt = generateAccessToken(userDetails.getUsername(), roles);
-
         return ResponseCookie.from(jwtCookie,jwt)
                 .path("/")
                 .maxAge(accessTokenExpirationMs)
@@ -57,6 +56,7 @@ public class JwtUtils {
                 .secure(true)
                 .sameSite("Lax")
                 .build();
+
     }
 
     public String getJWTFromHeader(HttpServletRequest request){

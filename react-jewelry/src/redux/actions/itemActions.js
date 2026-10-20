@@ -36,11 +36,24 @@ export const updateCategory = createAsyncThunk(
     'items/udpateCategory',
     async ( params, { rejectWithValue }) => {
         try{
-            console.log('Update triggered with: ', params?.name)
             const res = await api.put(`/admin/categories/${params.id}`, params);
             return res.data;
         }catch(e){
             return rejectWithValue(e.response?.data?.message || 'Error updating the category');
+        }
+    }
+)
+
+export const createCategory = createAsyncThunk(
+    'items/createCategory',
+    async ( params, { rejectWithValue}) => {
+        try{
+            console.log(params)
+            const res = await api.post("/admin/categories", params);
+
+            return res.data;
+        }catch(e){
+            return rejectWithValue( e?.response?.data?.message || 'Error creating the category');
         }
     }
 )

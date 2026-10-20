@@ -3,8 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CategoriesTableColumns } from '../../helper/TableColumns';
 import { useEffect, useState } from 'react';
 import FormModal from '../../shared/FormModal';
-import { fetchCategories, updateCategory } from '../../../redux/actions/itemActions';
+import { createCategory, fetchCategories, updateCategory } from '../../../redux/actions/itemActions';
 import Form from '../../shared/Form';
+import { IoIosAddCircle } from "react-icons/io";
+
 
 const Categories = () => {
 
@@ -24,15 +26,16 @@ const Categories = () => {
   },[])
 
   const handleCreate = (category) => {
-    setOpenModal('save')
+    setOpenModal('save');
+    setCurrentCategory(null);
+    setOpen(true);
   };
 
   const handleEdit = (category) => {
-    setCurrentCategory(category);
-    setOpenModal('save');
-    setOpen(true)
-    dispatch(updateCategory(category));
-  };
+      setCurrentCategory(category);
+      setOpenModal('save');
+      setOpen(true);
+    };
 
   const handleDelete = (category) => {
     setCurrentCategory(category);
@@ -40,11 +43,35 @@ const Categories = () => {
     setOpen(true)
   };
 
+  const handleFormSubmit = async (formData) => {
+    try {
+      if(currentCategory !== null )
+        await dispatch(updateCategory(formData));
+      else
+        await dispatch(createCategory(formData));
+      
+      setOpen(false);
+      setOpenModal(null);
+      dispatch(fetchCategories());
+    } catch (error) {
+      console.error("Error al actualizar:", error);
+    }
+  };
+
   return (
     <div className=' flex flex-col items-center justify-center'>
-      <h1 className='text-blue-950 text-4xl mb-20'>Categories</h1>
+      <h1 className='text-blue-950 text-4xl mb-10'>Categories</h1>
 
       <div className='flex flex-col'>
+
+      <div className='flex flex-row justify-end my-10 '>
+        <button className='text-xl bg-blue-600 text-white w-fit p-2 rounded-xl flex flex-row items-center gap-2'
+          onClick={()=>handleCreate()}
+        >
+          <IoIosAddCircle size={20}/>Add Category
+        </button>
+      </div>
+
         <DataGrid 
           paginationMode='server'
           columns={CategoriesTableColumns(handleEdit, handleDelete)}
@@ -72,7 +99,7 @@ const Categories = () => {
           <FormModal open={open} setOpen={setOpen} 
             title={currentCategory !== null ? `Edit "${currentCategory?.name}"` : 'Create a Category'}
             >
-            <Form fields={categoryFields} selected={currentCategory} customHandler={ currentCategory !== null ? handleEdit : handleCreate} />
+            <Form fields={categoryFields} selected={currentCategory} customHandler={handleFormSubmit} />
           </FormModal>
           )
           :

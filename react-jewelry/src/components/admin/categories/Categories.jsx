@@ -6,6 +6,7 @@ import FormModal from '../../shared/FormModal';
 import { createCategory, fetchCategories, updateCategory } from '../../../redux/actions/itemActions';
 import Form from '../../shared/Form';
 import { IoIosAddCircle } from "react-icons/io";
+import DeletionModal from '../../shared/DeletionModal';
 
 
 const Categories = () => {
@@ -25,7 +26,7 @@ const Categories = () => {
     dispatch(fetchCategories());
   },[])
 
-  const handleCreate = (category) => {
+  const handleCreate = () => {
     setOpenModal('save');
     setCurrentCategory(null);
     setOpen(true);
@@ -45,11 +46,17 @@ const Categories = () => {
 
   const handleFormSubmit = async (formData) => {
     try {
-      if(currentCategory !== null )
-        await dispatch(updateCategory(formData));
-      else
-        await dispatch(createCategory(formData));
-      
+
+      openModal === 'save' ? (
+        currentCategory !== null ?  
+          await dispatch(updateCategory(formData))
+        :
+          await dispatch(createCategory(formData))
+        )
+        :
+        (
+          await dispatch(deleteCategory(id))
+        )
       setOpen(false);
       setOpenModal(null);
       dispatch(fetchCategories());
@@ -93,18 +100,18 @@ const Categories = () => {
         />
       </div>
       {
-        open && openModal === 'save' 
-          ?
-          (
+        open && openModal === 'save' && ( 
           <FormModal open={open} setOpen={setOpen} 
             title={currentCategory !== null ? `Edit "${currentCategory?.name}"` : 'Create a Category'}
             >
             <Form fields={categoryFields} selected={currentCategory} customHandler={handleFormSubmit} />
           </FormModal>
-          )
-          :
-          <h1>Delete</h1>
-
+        )
+      }
+      {
+        openModal && openModal === 'delete' && (
+          <DeletionModal open={open} setOpen={setOpen} itemName={currentCategory?.name} customDelete={handleDelete} />
+        )
       }
     </div>
   )

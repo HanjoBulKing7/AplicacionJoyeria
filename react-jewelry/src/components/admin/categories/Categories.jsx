@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { CategoriesTableColumns } from '../../helper/TableColumns';
 import { useEffect, useState } from 'react';
 import FormModal from '../../shared/FormModal';
-import { createCategory, fetchCategories, updateCategory } from '../../../redux/actions/itemActions';
+import { createCategory, deleteCategory, fetchCategories, updateCategory } from '../../../redux/actions/itemActions';
 import Form from '../../shared/Form';
 import { IoIosAddCircle } from "react-icons/io";
 import DeletionModal from '../../shared/DeletionModal';
@@ -55,7 +55,7 @@ const Categories = () => {
         )
         :
         (
-          await dispatch(deleteCategory(id))
+          await dispatch(deleteCategory(currentCategory))
         )
       setOpen(false);
       setOpenModal(null);
@@ -110,7 +110,7 @@ const Categories = () => {
       }
       {
         openModal && openModal === 'delete' && (
-          <DeletionModal open={open} setOpen={setOpen} itemName={currentCategory?.name} customDelete={handleDelete} />
+          <DeletionModal open={open} setOpen={setOpen} itemName={currentCategory?.name} customDelete={handleFormSubmit} />
         )
       }
     </div>

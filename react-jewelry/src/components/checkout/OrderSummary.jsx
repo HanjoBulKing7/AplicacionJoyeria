@@ -2,7 +2,7 @@ import React from 'react'
 import { FiPackage, FiMapPin, FiCreditCard, FiShield } from 'react-icons/fi'
 import { SiStripe } from 'react-icons/si'
 import { FaPaypal } from 'react-icons/fa'
-import { formatPrice } from '../../../../../../../Escritorio/ecom-frontend/src/utils/formatPrice'
+import { formatPrice } from '../../utils/formatPrice' 
 import { useCheckoutContext } from '../hooks/useCheckoutContext'
 import { useSelector } from 'react-redux'
 

@@ -69,7 +69,7 @@ export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
         cellClassName: "text-slate-700 font-normal border",
-        renderHeader: () => <h1 className="text-center font-bold">Product Id</h1>
+        renderHeader: () => <h1 className="text-center font-bold">Id</h1>
     },
     {
         sortable: false,
@@ -160,7 +160,7 @@ export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
         disableColumnMenu: true,
         field: "actions",
         headerName: "actions",
-        width: 100,
+        width: 200,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
@@ -168,7 +168,7 @@ export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
         renderHeader: () => <h1 className="text-center font-bold">Actions</h1>,
         renderCell: (params) => {
             return(
-                <div className="flex flex-row justify-between h-fit">
+                <div className="flex flex-row justify-between h-fit text-md">
                     <button 
                     className=" bg-green-600 text-white h-fit flex flex-row items-center justify-center cursor-pointer rounded-xl
                     hover:bg-green-600/60"

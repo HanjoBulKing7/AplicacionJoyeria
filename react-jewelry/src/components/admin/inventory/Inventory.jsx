@@ -34,9 +34,10 @@ const Inventory = () => {
   return (
     <div className='flex flex-col justify-center items-center w-fit'>
 
-      <h1 className='text-4xl text-blue-600 font-bold'>Inventory</h1>
 
-      <div>
+      <h1 className='text-4xl text-blue-600 font-bold mb-10'>Inventory</h1>
+
+      <div className=' flex flex-col items-center'>
         <DataGrid 
           className='w-fit'
           paginationMode='server'

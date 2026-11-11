@@ -32,12 +32,13 @@ const Inventory = () => {
   
   
   return (
-    <div className='flex flex-col justify-center items-center'>
+    <div className='flex flex-col justify-center items-center w-fit'>
 
       <h1 className='text-4xl text-blue-600 font-bold'>Inventory</h1>
 
       <div>
         <DataGrid 
+          className='w-fit'
           paginationMode='server'
           columns={InventoryTableColumns(handleEdit, handleDelete)}
           rows={formattedInventory}

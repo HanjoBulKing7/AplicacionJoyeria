@@ -64,7 +64,7 @@ export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
         disableColumnMenu: true,
         field: "id",
         headerName: "id",
-        width: 200,
+        width: 50,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
@@ -76,91 +76,91 @@ export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
         disableColumnMenu: true,
         field: "name",
         headerName: "productName",
-        width: 200,
+        width: 100,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
         cellClassName: "text-slate-700 font-normal border",
-        renderHeader: () => <h1 className="text-center font-bold">Product Name</h1>
+        renderHeader: () => <h1 className="text-center font-bold">Name</h1>
     },
     {
         sortable: false,
         disableColumnMenu: true,
         field: "description",
         headerName: "productDescription",
-        width: 200,
+        width: 100,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
         cellClassName: "text-slate-700 font-normal border",
-        renderHeader: () => <h1 className="text-center text-sm font-bold">Product Description</h1>
+        renderHeader: () => <h1 className="text-center text-sm font-bold">Description</h1>
     },
         {
         sortable: false,
         disableColumnMenu: true,
         field: "price",
         headerName: "productPrice",
-        width: 200,
+        width: 100,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
         cellClassName: "text-slate-700 font-normal border",
-        renderHeader: () => <h1 className="text-center font-bold">Product Price</h1>
+        renderHeader: () => <h1 className="text-center font-bold">Price</h1>
     },
     {
         sortable: false,
         disableColumnMenu: true,
         field: "stock",
         headerName: "productStock",
-        width: 200,
+        width: 70,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
         cellClassName: "text-slate-700 font-normal border",
-        renderHeader: () => <h1 className="text-center font-bold">Product Stock</h1>
+        renderHeader: () => <h1 className="text-center font-bold">Stock</h1>
     },   
     {
         sortable: false,
         disableColumnMenu: true,
         field: "status",
         headerName: "productStatus",
-        width: 200,
+        width: 110,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
         cellClassName: "text-slate-700 font-normal border",
-        renderHeader: () => <h1 className="text-center font-bold">Product Status</h1>
+        renderHeader: () => <h1 className="text-center font-bold">Status</h1>
     },
     {
         sortable: false,
         disableColumnMenu: true,
         field: "image",
         headerName: "productImage",
-        width: 200,
+        width: 100,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
         cellClassName: "text-slate-700 font-normal border",
-        renderHeader: () => <h1 className="text-center font-bold">Product Image</h1>
+        renderHeader: () => <h1 className="text-center font-bold">Image</h1>
     },
     {
         sortable: false,
         disableColumnMenu: true,
         field: "categoryId",
         headerName: "productCategory",
-        width: 200,
+        width: 100,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
         cellClassName: "text-slate-700 font-normal border",
-        renderHeader: () => <h1 className="text-center font-bold">Product's Category</h1>
+        renderHeader: () => <h1 className="text-center font-bold">Category</h1>
     },
     {
         sortable: false,
         disableColumnMenu: true,
         field: "actions",
         headerName: "actions",
-        width: 250,
+        width: 100,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",

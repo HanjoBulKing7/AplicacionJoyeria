@@ -18,9 +18,9 @@ const Categories = () => {
   const [ openModal , setOpenModal ] = useState(null);
   const [ open , setOpen ] = useState(false);
 
-  const categoryFields = [
-    { id: "name", label: "Category Name", type: "text", required: true, min: 3, placeholder: "New category name", pattern: "name"},
-  ];
+    const categoryFields = [
+      { id: "name", label: "Category Name", type: "text", required: true, min: 3, placeholder: "New category name", pattern: "name"},
+    ];
 
   useEffect(()=>{
     dispatch(fetchCategories());
@@ -102,7 +102,7 @@ const Categories = () => {
       {
         open && openModal === 'save' && ( 
           <FormModal open={open} setOpen={setOpen} 
-            title={currentCategory !== null ? `Edit "${currentCategory?.name}"` : 'Create a Category'}
+            title={currentCategory !== null ? `Edit "${currentCategory?.name}"` : 'Add a Category'}
             >
             <Form fields={categoryFields} selected={currentCategory} customHandler={handleFormSubmit} />
           </FormModal>

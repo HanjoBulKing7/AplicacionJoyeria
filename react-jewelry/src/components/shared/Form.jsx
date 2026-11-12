@@ -1,7 +1,6 @@
 import React, { useEffect } from 'react'
 import { useForm } from 'react-hook-form';
 import CustomInput from './CustomInput';
-import { getFilledInputUtilityClass } from '@mui/material/FilledInput';
 
 const Form = ({fields = null , selected = null , customHandler }) => {
 
@@ -34,6 +33,7 @@ const Form = ({fields = null , selected = null , customHandler }) => {
                                 placeholderStyles={null}
                                 errors={errors}
                                 pattern={field.pattern}
+                                options={field.options}
                             />
                         )
                     })

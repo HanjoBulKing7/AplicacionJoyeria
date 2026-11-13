@@ -1,4 +1,4 @@
-import { createAsyncThunk, createImmutableStateInvariantMiddleware } from "@reduxjs/toolkit";
+import { createAsyncThunk, createImmutableStateInvariantMiddleware, isRejectedWithValue } from "@reduxjs/toolkit";
 import { api, publicApi } from '../../api/api'
 
 // Thunk para obtener Items (Soporta búsqueda, paginación y filtros)
@@ -61,11 +61,23 @@ export const deleteCategory = createAsyncThunk(
     'items/deleteCategory',
     async(params, { rejectWithValue})=>{
         try{
-            console.log(params)
             const res = await api.delete(`/admin/categories/${params.id}`)
             return res.data;
         }catch(e){
             return rejectWithValue( e?.response?.data?.message || 'Error deleting the category');
+        }
+    }
+)
+
+export const updateItem = createAsyncThunk(
+    'items/updateItem',
+    async( params, { rejectWithValue}) =>{
+        try{
+            const res = await api.put(`/admin/categories/${params?.categoryId}/items/${params?.productId}`, params)
+
+            return res;
+        }catch(e){
+            return rejectWithValue( e?.response?.data?.message || 'Error updating the item' );
         }
     }
 )

@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react'
-import { fetchCategories, fetchItems } from '../../../redux/actions/itemActions'
+import { fetchCategories, fetchItems, updateItem } from '../../../redux/actions/itemActions'
 import { useDispatch, useSelector } from 'react-redux';
 import { DataGrid } from '@mui/x-data-grid';
 import { InventoryTableColumns } from '../../helper/TableColumns';
 import FormModal from '../../shared/FormModal';
 import DeletionModal from '../../shared/DeletionModal';
 import Form from '../../shared/Form';
+import { toast } from 'react-hot-toast';
+import CustomSpinner from '../../shared/CustomSpinner';
 
 const Inventory = () => {
 
   const dispatch = useDispatch();
 
-  const { items , pagination } = useSelector((state) => state.inventory )
+  const { items , pagination , isLoading } = useSelector((state) => state.inventory );
   const  { categories } = useSelector((state) => state.categories );
-
 
   const [ currentPage, setCurrentPage ] = useState(1);
   const [ openModal , setOpenModal ] = useState(null);
@@ -28,8 +29,6 @@ const Inventory = () => {
       }
     }
   );
-
-  console.log(categoryOptions)
   
   const statusOptions = [
     { value: "ACTIVE", label: "Active" },
@@ -75,8 +74,23 @@ const Inventory = () => {
     }
   })
 
-  const handleFormSubmit = () => {
-    console.log('Form triggered');
+  const handleFormSubmit = async (formData) => {
+    try {
+      if (openModal === 'save') {
+        if (currentItem) {
+          await dispatch(updateItem({ productId: currentItem.productId, ...formData })).unwrap();
+        } else {
+          await dispatch(addItem(formData)).unwrap();
+        }
+      } else {
+        await dispatch(deleteItem(currentItem.productId)).unwrap();
+      }
+      setOpen(false);
+      dispatch(fetchItems()); 
+      toast.success('Operation completed');
+    } catch (error) {
+      toast.error(typeof error === 'string' ? error : 'Error performing the operation');
+    }
   };
   
   
@@ -87,26 +101,35 @@ const Inventory = () => {
       <h1 className='text-4xl text-blue-600 font-bold mb-10'>Inventory</h1>
 
       <div className=' flex flex-col items-center'>
-        <DataGrid 
-          className='w-fit'
-          paginationMode='server'
-          columns={InventoryTableColumns(handleEdit, handleDelete)}
-          rows={formattedInventory}
-          initialState={{
-            pagination: {
-              paginationModel: {
-                pageSize: pagination?.pageSize || 2,
-                page: currentPage - 1,
-              },
-            },
-          }}
-          pagination
-          paginationOptions={{
-            showFirstButton: true,
-            showLastButton: true,
-            hideNextButton: currentPage === pagination?.totalPages
-          }}
-        />
+        {
+          isLoading === false ?
+          (
+            <DataGrid 
+              className='w-fit'
+              paginationMode='server'
+              columns={InventoryTableColumns(handleEdit, handleDelete)}
+              rows={formattedInventory}
+              initialState={{
+                pagination: {
+                  paginationModel: {
+                    pageSize: pagination?.pageSize || 2,
+                    page: currentPage - 1,
+                  },
+                },
+              }}
+              pagination
+              paginationOptions={{
+                showFirstButton: true,
+                showLastButton: true,
+                hideNextButton: currentPage === pagination?.totalPages
+              }}
+            />
+          )
+          :
+          (
+            <CustomSpinner text='Loading inventory' />
+          )
+        }
       </div>
       {
         open && openModal === 'save' && ( 

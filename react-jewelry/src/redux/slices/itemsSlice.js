@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { fetchItems } from '../actions/itemActions'
+import { fetchItems, updateItem } from '../actions/itemActions'
 
 const itemSlice = createSlice({
     name: 'items',
@@ -29,10 +29,8 @@ const itemSlice = createSlice({
             state.error = null;
         },
     },
-    extraReducers: (builder) => { // Builder pattern
-        //  Managing the status as the state changes by itself using builder
+    extraReducers: (builder) => {
         builder
-            // Handle items
             .addCase(fetchItems.pending, (state) => {
                 state.isLoading = true;
             })
@@ -46,6 +44,16 @@ const itemSlice = createSlice({
                     totalPages: action.payload.totalPages,
                     totalElements: action.payload.totalElements,
                 }; 
+            })
+            .addCase(updateItem.pending, (state) => { 
+                state.isLoading = true; 
+            })
+            .addCase(updateItem.fulfilled, (state) => {
+                 state.isLoading = false; 
+            })
+            .addCase(updateItem.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
             })
     }
 });

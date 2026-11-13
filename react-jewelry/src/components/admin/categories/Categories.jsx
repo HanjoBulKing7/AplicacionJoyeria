@@ -7,13 +7,15 @@ import { createCategory, deleteCategory, fetchCategories, updateCategory } from 
 import Form from '../../shared/Form';
 import { IoIosAddCircle } from "react-icons/io";
 import DeletionModal from '../../shared/DeletionModal';
+import CustomSpinner from '../../shared/CustomSpinner';
 
 
 const Categories = () => {
 
   const dispatch = useDispatch();
   const [ currentCategory, setCurrentCategory ] = useState(null);
-  const  { categories, pagination } = useSelector((state) => state.categories );
+  const  { categories, pagination , isLoading } = useSelector((state) => state.categories );
+
   const [ currentPage, setCurrentPage ] = useState(1);
   const [ openModal , setOpenModal ] = useState(null);
   const [ open , setOpen ] = useState(false);
@@ -45,24 +47,25 @@ const Categories = () => {
   };
 
   const handleFormSubmit = async (formData) => {
-    try {
-
-      openModal === 'save' ? (
-        currentCategory !== null ?  
-          await dispatch(updateCategory(formData))
-        :
-          await dispatch(createCategory(formData))
-        )
-        :
-        (
-          await dispatch(deleteCategory(currentCategory))
-        )
-      setOpen(false);
-      setOpenModal(null);
-      dispatch(fetchCategories());
-    } catch (error) {
-      console.error("Error al actualizar:", error);
+  try {
+    if (openModal === 'save') {
+      if (currentCategory) {
+        await dispatch(updateCategory(formData )).unwrap();
+      } else {
+        await dispatch(createCategory(formData)).unwrap();
+      }
+    } else if (openModal === 'delete') {
+      await dispatch(deleteCategory(currentCategory)).unwrap();
     }
+
+    setOpen(false);
+    setOpenModal(null);
+    setCurrentCategory(null);
+    dispatch(fetchCategories());
+    toast.success('Operation completed');
+  } catch (error) {
+    toast.error(typeof error === 'string' ? error : 'Error performing the operation');
+  }
   };
 
   return (
@@ -78,8 +81,10 @@ const Categories = () => {
           <IoIosAddCircle size={20}/>Add Category
         </button>
       </div>
-
-        <DataGrid 
+      {
+        isLoading === false ?
+        (
+          <DataGrid 
           paginationMode='server'
           columns={CategoriesTableColumns(handleEdit, handleDelete)}
           rows={categories}
@@ -98,6 +103,12 @@ const Categories = () => {
             hideNextButton: currentPage === pagination?.totalPages
           }}
         />
+        )
+        :
+        (
+          <CustomSpinner text='Loading categories' />
+        )
+      }
       </div>
       {
         open && openModal === 'save' && ( 

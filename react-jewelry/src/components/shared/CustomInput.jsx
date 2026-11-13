@@ -13,8 +13,6 @@ const CustomInput = ({ id, type, label, register, required, minLength, maxLength
     ...(minValue !== undefined && { min: { value: minValue, message: `${label} must be at least ${minValue}` } }),
     ...(activePattern && { pattern: { value: activePattern, message: `Please enter a valid ${label.toLowerCase()}` } }),
   };
-  if(type === 'select')
-    console.log(options)
 
   const styles = placeholderStyles || 'border border-black ring-1 text-xl rounded-lg';
 

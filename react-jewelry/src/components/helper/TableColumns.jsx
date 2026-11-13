@@ -68,8 +68,8 @@ export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
-        cellClassName: "text-slate-700 font-normal border",
-        renderHeader: () => <h1 className="text-center font-bold">Id</h1>
+        cellClassName: "text-slate-700 font-normal border ",
+        renderHeader: () => <h1 className="text-center font-bold ">Id</h1>,
     },
     {
         sortable: false,
@@ -134,18 +134,6 @@ export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
     {
         sortable: false,
         disableColumnMenu: true,
-        field: "image",
-        headerName: "productImage",
-        width: 100,
-        headerAlign: "center",
-        editable: false,
-        headerClassName: "text-slate-700 font-semibold border-4",
-        cellClassName: "text-slate-700 font-normal border",
-        renderHeader: () => <h1 className="text-center font-bold">Image</h1>
-    },
-    {
-        sortable: false,
-        disableColumnMenu: true,
         field: "categoryId",
         headerName: "productCategory",
         width: 100,
@@ -175,7 +163,9 @@ export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
                         onClick={()=>handleEdit(params.row)}
                     ><FaEdit/>Edit
                     </button>
-                    <button><FaFileImage  />Preview image</button>
+                    <button className="">
+                        <FaFileImage  />Preview image
+                    </button>
                     <button 
                     className=" bg-red-600 text-white h-fit flex flex-row items-center justify-center cursor-pointer rounded-xl
                     hover:bg-red-600/60"

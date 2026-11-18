@@ -58,7 +58,7 @@ export const CategoriesTableColumns = (handleEdit, handleDelete) => [
     }
 ];
 
-export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
+export const InventoryTableColumns =  ( handleEdit , handleDelete , handleImage ) => [
     {
         sortable: false,
         disableColumnMenu: true,
@@ -88,7 +88,7 @@ export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
         disableColumnMenu: true,
         field: "description",
         headerName: "productDescription",
-        width: 100,
+        width: 110,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
@@ -148,7 +148,7 @@ export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
         disableColumnMenu: true,
         field: "actions",
         headerName: "actions",
-        width: 200,
+        width: 250,
         headerAlign: "center",
         editable: false,
         headerClassName: "text-slate-700 font-semibold border-4",
@@ -156,15 +156,17 @@ export const InventoryTableColumns =  ( handleEdit , handleDelete ) => [
         renderHeader: () => <h1 className="text-center font-bold">Actions</h1>,
         renderCell: (params) => {
             return(
-                <div className="flex flex-row justify-between h-fit text-md">
+                <div className="grid grid-cols-3 justify-between h-fit text-md space-x-1">
                     <button 
                     className=" bg-green-600 text-white h-fit flex flex-row items-center justify-center cursor-pointer rounded-xl
                     hover:bg-green-600/60"
                         onClick={()=>handleEdit(params.row)}
                     ><FaEdit/>Edit
                     </button>
-                    <button className="">
-                        <FaFileImage  />Preview image
+                    <button className=" bg-blue-700 text-white h-fit flex flex-row items-center justify-center cursor-pointer rounded-xl
+                    hover:bg-blue-700/60"
+                        onClick={()=>handleImage(params.row)}>
+                        <FaFileImage  />Image
                     </button>
                     <button 
                     className=" bg-red-600 text-white h-fit flex flex-row items-center justify-center cursor-pointer rounded-xl

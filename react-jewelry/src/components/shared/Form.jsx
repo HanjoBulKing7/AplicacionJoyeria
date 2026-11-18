@@ -17,7 +17,7 @@ const Form = ({fields = null , selected = null , customHandler }) => {
   return (
     <div className='flex flex-col gap-2 h-full'>
         <form noValidate action="" className='mt-5 flex flex-col items-center justify-between flex-1'onSubmit={handleSubmit(onClickSave)} >
-            <div className='mt-5 mb-5 flex flex-col justify-center w-full'>
+            <div className='mt-5 mb-5 flex flex-col justify-center w-full gap-4'>
                 {
                     fields.map((field)=>{
                         return( 
@@ -39,7 +39,8 @@ const Form = ({fields = null , selected = null , customHandler }) => {
                     })
                 } 
             </div>
-            <button type='submit' className='hover:cursor-pointer bg-blue-600 rounded-md text-white text-xl max-w-fit p-2 mb-5'>Save</button>
+            <button type='submit' className='hover:cursor-pointer bg-blue-600 rounded-md text-white text-xl max-w-fit p-2 mb-5 h-20
+            hover:bg-blue-500/50 '>Save</button>
         </form>
     </div>
   )

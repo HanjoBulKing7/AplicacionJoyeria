@@ -8,6 +8,8 @@ import DeletionModal from '../../shared/DeletionModal';
 import Form from '../../shared/Form';
 import { toast } from 'react-hot-toast';
 import CustomSpinner from '../../shared/CustomSpinner';
+import { IoIosAddCircle } from "react-icons/io";
+import ImageModal from '../../shared/ImageModal';
 
 const Inventory = () => {
 
@@ -30,10 +32,18 @@ const Inventory = () => {
     }
   );
   
+  const formattedInventory = items.map((i)=>{
+    return  {
+      id: i.productId,  ...i, 
+    }
+  });
+
   const statusOptions = [
     { value: "ACTIVE", label: "Active" },
     { value: "INACTIVE", label: "Inactive" },
   ];
+
+
   
   const itemFields = [
     { id: "name", label: "Item Name", type: "text", required: true, minLength: 1, maxLength: 15, placeholder: "Gold chain" },
@@ -68,11 +78,23 @@ const Inventory = () => {
     setOpen(true);
   } 
 
-  const formattedInventory = items.map((i)=>{
-    return  {
-      id: i.productId,  ...i, 
+  const handleImage = (item) => {
+    setCurrentItem(item);
+    setOpenModal('image');
+    setOpen(true);
+  };
+
+  const handleImageUpload = async (file) => {
+    try {
+      await dispatch(updateItemImage({ id: currentItem.productId, file })).unwrap();
+      setOpen(false);
+      setOpenModal(null);
+      dispatch(fetchItems());
+      toast.success('Image updated');
+    } catch (error) {
+      toast.error(typeof error === 'string' ? error : 'Error uploading image');
     }
-  })
+  };
 
   const handleFormSubmit = async (formData) => {
     try {
@@ -97,8 +119,14 @@ const Inventory = () => {
   return (
     <div className='flex flex-col justify-center items-center'>
 
-
-      <h1 className='text-4xl text-blue-600 font-bold mb-10'>Inventory</h1>
+      <div className='relative flex justify-center items-center w-full mb-10'>
+        <h1 className='text-4xl text-blue-600 font-bold'>Inventory</h1>
+        <button className='absolute right-0 bg-blue-600 hover:bg-blue-600/70 hover:cursor-pointer
+          text-xl p-2 text-white rounded-xl flex flex-row justify-between items-center gap-5'
+          onClick={()=>handleCreate()}
+          >
+          Add an Item <IoIosAddCircle /></button>
+      </div> 
 
       <div className=' flex flex-col items-center'>
         {
@@ -107,7 +135,7 @@ const Inventory = () => {
             <DataGrid 
               className='w-fit'
               paginationMode='server'
-              columns={InventoryTableColumns(handleEdit, handleDelete)}
+              columns={InventoryTableColumns(handleEdit, handleDelete, handleImage)}
               rows={formattedInventory}
               initialState={{
                 pagination: {
@@ -134,7 +162,7 @@ const Inventory = () => {
       {
         open && openModal === 'save' && ( 
           <FormModal open={open} setOpen={setOpen} 
-            title={currentItem?.name !== null ? `Edit "${currentItem?.name}"` : 'Add an Item'}
+            title={currentItem !== null ? `Edit "${currentItem?.name}"` : 'Add a new Item'}
             >
             <Form fields={itemFields} selected={currentItem} customHandler={handleFormSubmit} />
           </FormModal>
@@ -143,6 +171,13 @@ const Inventory = () => {
       {
         openModal && openModal === 'delete' && (
           <DeletionModal open={open} setOpen={setOpen} itemName={currentItem?.name} customDelete={handleFormSubmit} />
+        )
+      }
+      {
+        open && openModal === 'image' && (
+          <FormModal open={open} setOpen={setOpen} title={`Image: "${currentItem?.name}"`}>
+            <ImageModal imageName={currentItem?.image} onUpload={handleImageUpload} loading={isLoading} />
+          </FormModal>
         )
       }
     </div>

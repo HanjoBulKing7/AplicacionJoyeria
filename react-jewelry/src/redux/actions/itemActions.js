@@ -81,3 +81,17 @@ export const updateItem = createAsyncThunk(
         }
     }
 )
+
+export const updateItemImage = createAsyncThunk(
+  'items/updateItemImage',
+  async ({ id, file }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);              
+      const res = await api.put(`/admin/items/${id}/image`, formData); 
+      return res.data;
+    } catch (e) {
+      return rejectWithValue(e.response?.data?.message || 'Error uploading image');
+    }
+  }
+);

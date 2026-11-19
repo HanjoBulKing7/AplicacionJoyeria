@@ -9,7 +9,7 @@ const ImageModal = ({ imageName, onUpload, loading = false }) => {
   const [preview, setPreview] = useState(null);
   const [error, setError] = useState('');
 
-  // Preview local del archivo elegido, con limpieza de la URL temporal
+  
   useEffect(() => {
     if (!file) { setPreview(null); return; }
     const url = URL.createObjectURL(file);

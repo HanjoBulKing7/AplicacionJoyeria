@@ -14,7 +14,10 @@ const CustomInput = ({ id, type, label, register, required, minLength, maxLength
     ...(activePattern && { pattern: { value: activePattern, message: `Please enter a valid ${label.toLowerCase()}` } }),
   };
 
-  const styles = placeholderStyles || 'border border-black ring-1 text-xl rounded-lg';
+  const styles = placeholderStyles ||
+  'border border-gray-400 rounded-lg text-xl px-3 py-2 w-full max-w-sm mx-auto ' +
+  'placeholder:text-gray-500/70 placeholder:italic placeholder:text-lg ' +
+  'outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/50';
 
   return (
     <div className='flex flex-col gap-4 w-full text-center justify-center'>

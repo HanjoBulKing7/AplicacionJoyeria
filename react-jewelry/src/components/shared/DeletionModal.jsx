@@ -10,16 +10,18 @@ const DeletionModal = ({ open , setOpen , itemName , customDelete }) => {
         <div className='fixed flex flex-col items-center justify-center inset-0'>
             <DialogPanel>
               <div className='flex flex-col gap-5 hfit w-fit bg-amber-50 p-5 rounded-lg '>
-                <div className='border-b-2 border-black/40 flex justify-center pb-2'><span className='text-2xl' >Deletion Confirmation</span></div>
+                <div className='border-b-2 border-black/40 flex justify-center pb-2'><span className='text-2xl' >Confirm deletion</span></div>
                 <div className=' flex flex-col gap-10'> 
-                  <h2>{`Are you sure you want to delete ${itemName}?`}</h2>
+                  <h2>
+                    Are you sure you want to delete "<em className='italic font-semibold'>{itemName}</em>"?
+                  </h2>
                   <div className='flex flex-row justify-between items-center'>
-                    <button className='bg-blue-600 text-white text-lg p-1 rounded-lg' 
+                    <button className='bg-blue-600 text-white text-lg p-2 rounded-lg' 
                       onClick={()=>setOpen(false)} >Cancel
                     </button>
-                    <button className='flex flex-row items-center bg-red-600 text-white text-lg p-1 rounded-lg gap-2' 
+                    <button className='flex flex-row items-center bg-red-600 text-white text-xl p-2 rounded-lg gap-2' 
                      onClick={()=>customDelete()} >
-                      <MdDelete />Delete
+                      Delete<MdDelete />
                     </button>
                   </div>
                 </div>

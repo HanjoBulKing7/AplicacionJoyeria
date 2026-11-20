@@ -28,7 +28,8 @@ const Form = ({fields = null , selected = null , customHandler }) => {
                                 label={field.label}
                                 register={register}
                                 required={field.required}
-                                min={field.min}
+                                min={field.minLength}
+                                maxLength={field.maxLength}
                                 placeholder={field.placeholder}
                                 placeholderStyles={null}
                                 errors={errors}

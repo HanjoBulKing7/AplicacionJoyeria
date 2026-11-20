@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { deleteItem, fetchCategories, fetchItems, updateItem, updateItemImage } from '../../../redux/actions/itemActions'
+import { addItem, deleteItem, fetchCategories, fetchItems, updateItem, updateItemImage } from '../../../redux/actions/itemActions'
 import { useDispatch, useSelector } from 'react-redux';
 import { DataGrid } from '@mui/x-data-grid';
 import { InventoryTableColumns } from '../../helper/TableColumns';
@@ -102,6 +102,7 @@ const Inventory = () => {
         if (currentItem) {
           await dispatch(updateItem({ productId: currentItem.productId, ...formData })).unwrap();
         } else {
+          console.log(formData);
           await dispatch(addItem(formData)).unwrap();
         }
       } else {

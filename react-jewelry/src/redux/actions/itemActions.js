@@ -44,6 +44,21 @@ export const updateCategory = createAsyncThunk(
     }
 )
 
+export const addItem = createAsyncThunk(
+    'items/createItem',
+    async( formData , { rejectWithValue})=> {
+        try{
+            console.log(formData);
+
+            const res = await api.post(`/admin/categories/${formData?.categoryId}/items`, formData)
+            return res.data;
+
+        }catch(e){
+            return rejectWithValue( response?.data?.message || 'Error adding a new item');
+        }
+    }
+)
+
 export const createCategory = createAsyncThunk(
     'items/createCategory',
     async ( params, { rejectWithValue}) => {

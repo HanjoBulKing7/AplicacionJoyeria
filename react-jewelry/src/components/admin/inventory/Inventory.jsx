@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { fetchCategories, fetchItems, updateItem, updateItemImage } from '../../../redux/actions/itemActions'
+import { deleteItem, fetchCategories, fetchItems, updateItem, updateItemImage } from '../../../redux/actions/itemActions'
 import { useDispatch, useSelector } from 'react-redux';
 import { DataGrid } from '@mui/x-data-grid';
 import { InventoryTableColumns } from '../../helper/TableColumns';

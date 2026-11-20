@@ -1,5 +1,5 @@
 import { createSlice } from '@reduxjs/toolkit'
-import { fetchItems, updateItem } from '../actions/itemActions'
+import { deleteItem, fetchItems, updateItem } from '../actions/itemActions'
 
 const itemSlice = createSlice({
     name: 'items',
@@ -55,6 +55,16 @@ const itemSlice = createSlice({
                 state.isLoading = false;
                 state.error = action.payload;
             })
+            .addCase( deleteItem.pending, (state)=>{
+                state.isLoading = true;
+            })
+            .addCase(deleteItem.fulfilled, (state )=>{
+                state.isLoading = false;
+            })
+            .addCase(deleteItem.rejected, (state, action)=>{
+                state.isLoading = false; 
+                state.error = action.payload;
+            } )
     }
 });
 

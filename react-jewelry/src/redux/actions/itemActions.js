@@ -104,3 +104,17 @@ export const updateItemImage = createAsyncThunk(
     }
   }
 );
+
+export const deleteItem = createAsyncThunk(
+    'items/deleteItem',
+    async( itemId , { rejectWithValue })=>{
+        try{
+            
+            const res = await api.delete(`/admin/items/${itemId}`);
+
+            return res.data;
+        }catch(e){
+            return rejectWithValue( e?.response?.data?.message || 'Error deleting the product' );
+        }
+    }
+)

@@ -1,7 +1,7 @@
 package com.jewelry.managementsystem.constants;
 
 public enum OrderStatus {
-    SUCCED,
+    SUCCEED,
     PENDING,
     CANCELED,
 }

@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { createStripeSecret, loginUser, signUpUser } from '../actions/authActions'
+import { confirmPayment, createStripeSecret, fetchDashboardData, loginUser, logoutUser, signUpUser } from '../actions/authActions'
 import { useNavigate } from "react-router-dom"
 
 
@@ -12,21 +12,13 @@ const initialState = {
     isLoading: false,
     message: '',
     error: '',
+    dashboardData: {},
 }
 
 const authSlice = createSlice({
     name: 'auth',
     initialState,
     reducers: {
-        logout: (state) => {
-            state.username = '';
-            state.roles = [];
-            state.accessToken = '';
-            state.refreshToken = '';
-            state.error = null;
-            state.isLoading = false;
-            state.message = 'Logged out succesfully';
-        }, 
         clearClientSecret : (state)=>{
             state.clientSecret = null;
         }
@@ -47,7 +39,7 @@ const authSlice = createSlice({
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.isLoading = false;
-                state.error = action.payload; // Aquí guardamos el mensaje de error para mostrarlo en UI
+                state.error = action.payload;
             })
             .addCase(signUpUser.pending, (state)=>{
                 state.isLoading = true;
@@ -74,6 +66,35 @@ const authSlice = createSlice({
                 state.orderId = null;
             })
             .addCase(confirmPayment.rejected, (state, action) => {
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+            .addCase(logoutUser.pending, (state) => {
+                state.isLoading = true;
+            })
+            .addCase(logoutUser.fulfilled, (state) => {
+                state.username = '';
+                state.roles = [];
+                state.accessToken = '';
+                state.error = null;
+                state.isLoading = false;
+                state.message = 'Logged out successfully';
+            })
+            .addCase(logoutUser.rejected, (state, action) => {
+                state.username = '';
+                state.roles = [];
+                state.accessToken = '';
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchDashboardData.pending, (state)=>{
+                state.isLoading = true;
+            })
+            .addCase(fetchDashboardData.fulfilled, (state, action )=>{
+                state.isLoading = false;
+                state.dashboardData = action.payload;
+            })
+            .addCase(fetchDashboardData.rejected , (state, action)=>{
                 state.isLoading = false;
                 state.error = action.payload;
             })

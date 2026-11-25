@@ -9,6 +9,7 @@ import com.jewelry.managementsystem.payload.CategoryDTO;
 import com.jewelry.managementsystem.repositories.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +21,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryRepository categoryRepository;
@@ -87,13 +89,14 @@ public class CategoryServiceImpl implements CategoryService {
         Category existingCategory = categoryRepository.findById(id)
                         .orElseThrow( () -> new EmptyResourceException( id , "category"));
 
-        if( categoryRepository.existsByNameAndIdNot(categoryDTO.getName(), id) ) throw new DuplicateResourceException("Category", "category name",  categoryDTO.getName());
+        if( categoryRepository.existsByNameAndIdNot(categoryDTO.getName(), id) )
+            throw new DuplicateResourceException("Category", "category name",  categoryDTO.getName());
 
         categoryMapper.updateFromDto(categoryDTO, existingCategory);
 
         Category savedCategory = categoryRepository.save(existingCategory);
 
-        return   categoryMapper.toDto(savedCategory);
+        return  categoryMapper.toDto(savedCategory);
 
     }
 

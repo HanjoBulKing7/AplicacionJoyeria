@@ -1,5 +1,6 @@
 package com.jewelry.managementsystem.repositories;
 
+import com.jewelry.managementsystem.constants.ItemStatus;
 import com.jewelry.managementsystem.models.Item;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -17,4 +18,7 @@ public interface ItemRepository extends JpaRepository<Item,Long> {
 
     Page<Item> findByNameContainingIgnoreCase(String keyword, Pageable pageDetails);
 
+    Long countByStockGreaterThan(Integer minimumStock);
+
+    Long countByStatus(ItemStatus itemStatus);
 }

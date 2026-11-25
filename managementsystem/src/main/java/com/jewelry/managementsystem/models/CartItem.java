@@ -23,7 +23,7 @@ public class CartItem {
     @ManyToOne
     @JoinColumn(name="cart_id")
     private Cart cart;
-    @ManyToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
     @OneToOne
     @JoinColumn ( name = "original_item")

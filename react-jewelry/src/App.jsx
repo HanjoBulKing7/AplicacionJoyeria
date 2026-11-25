@@ -11,6 +11,10 @@ import RouteProtector from './components/auth/RouteProtector'
 import useAuthToast from './components/hooks/useAuthToast'
 import Checkout from './components/checkout/Checkout'
 import SuccessPage from './components/checkout/Stripe/SuccessPage'
+import Categories from './components/admin/categories/Categories'
+import Inventory from './components/admin/inventory/Inventory'
+import AdminDashboard from './components/admin/dashboard/AdminDashboard'
+import AdminLayout from './components/admin/AdminLayout'
 
 function App() {
   useAuthToast();
@@ -29,6 +33,14 @@ function App() {
         <Route element={ <RouteProtector isAuthPage={true} /> } >
           <Route path='/login' element={ <Login /> } />
           <Route path='/signup' element={ <Register /> } />
+        </Route>
+
+        <Route path="/" element={ <RouteProtector adminOnly /> } >
+          <Route path="/admin" element={ <AdminLayout /> } >
+            <Route path="" element={ <AdminDashboard />  } />
+            <Route path='inventory' element={ <Inventory /> }  />
+            <Route path='categories' element={ <Categories /> } />
+          </Route>
         </Route>
         
       </Routes>

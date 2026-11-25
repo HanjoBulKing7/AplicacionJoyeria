@@ -5,27 +5,23 @@ import com.jewelry.managementsystem.constants.PaymentGateway;
 import com.jewelry.managementsystem.constants.PaymentMethod;
 import com.jewelry.managementsystem.constants.PaymentStatus;
 import com.jewelry.managementsystem.exceptions.EmptyResourceException;
-import com.jewelry.managementsystem.exceptions.OrderException;
 import com.jewelry.managementsystem.exceptions.ShoppingCartException;
 import com.jewelry.managementsystem.exceptions.UnauthorizedException;
 import com.jewelry.managementsystem.mapper.OrderMapper;
 import com.jewelry.managementsystem.models.*;
 import com.jewelry.managementsystem.payload.*;
 import com.jewelry.managementsystem.repositories.*;
-import com.jewelry.managementsystem.security.services.UserDetailsImpl;
 import com.jewelry.managementsystem.util.AuthUtil;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.LoggerFactoryFriend;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 @RequiredArgsConstructor
 @Service
@@ -135,7 +131,7 @@ public class OrderServiceImpl implements OrderService {
         if (!order.getOrderStatus().equals(OrderStatus.PENDING))
             throw new UnauthorizedException("Order is not in PENDING status, ,maybe it was cancelled");
 
-        order.setOrderStatus(OrderStatus.SUCCED); //SET THE ORDER !!
+        order.setOrderStatus(OrderStatus.SUCCEED); //SET THE ORDER !!
 
         ///  UPDATE THE PAYMENT
         order.getPayment().setPaymentGatewayStatus(PaymentStatus.COMPLETED);// SET THE PAYMENT!!

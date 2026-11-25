@@ -36,11 +36,13 @@ const ItemModal = ({ item, open, setOpen }) => {
                             <div className=' flex flex-col items-center p-7 gap-5'>
                                 <DialogTitle className='text-4xl font-light tracking-widest'>{name}</DialogTitle>
                                 <p className='text-2xl text-amber-400'>{formatPrice(price)}</p>
+                                <div className='flex flex-row justify-center items-center gap-2 text-sm'>
                                 { stock > 0 ? 
-                                    <div className='flex flex-row justify-center items-center gap-3'><p>Available</p><FaCheck color="green" size={10} /></div>
+                                    <><p>Available</p><FaCheck color="green" size={8} /></>
                                     :
-                                    <div className='flex flex-row justify-center items-center gap-3'><p>Not available<FaTimes color="red" size={10} /></p></div>
+                                    <><p>Not available</p><FaTimes color="red" size={8} /></>
                                 }
+                                </div>
                                 <p className='text-lg text-black font-light text-center'>
                                     {description}
                                 </p>

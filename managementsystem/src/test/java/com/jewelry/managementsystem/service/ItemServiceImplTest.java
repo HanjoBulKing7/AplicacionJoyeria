@@ -112,12 +112,9 @@ public class ItemServiceImplTest {
     void getAllItems_Empty() {
         when(itemRepository.findAll(any(Pageable.class))).thenReturn(TestDataFactory.emptyPage());
 
-        EmptyResourceException ex = Assertions.assertThrows(
-                EmptyResourceException.class,
-                () -> itemService.getItems(0, 10, "id", "asc")
-        );
+        APIResponse res =itemService.getItems(0, 10, "id", "asc");
 
-        Assertions.assertEquals("No items found", ex.getMessage());
+        Assertions.assertEquals(0,  res.getContent().size());
         verify(itemRepository, times(1)).findAll(any(Pageable.class));
         verify(itemMapper,     never()).toDto(any());
     }
@@ -148,12 +145,10 @@ public class ItemServiceImplTest {
     void getByCategory_CategoryNotFound() {
         when(categoryRepository.findById(anyLong())).thenReturn(Optional.empty());
 
-        EmptyResourceException ex = Assertions.assertThrows(
-                EmptyResourceException.class,
-                () -> itemService.getItemsByCategory(1L, 0, 10, "id", "asc")
-        );
+        EmptyResourceException emptyEx =  Assertions.assertThrows(EmptyResourceException.class,
+                () -> itemService.getItemsByCategory(1L, 0, 10, "id", "asc"));
 
-        Assertions.assertEquals("No category with id: 1 found", ex.getMessage());
+        Assertions.assertEquals("No category with id: 1 found", emptyEx.getMessage());
         verify(categoryRepository, times(1)).findById(anyLong());
         verify(itemRepository,     never()).findByCategoryId(anyLong(), any(Pageable.class));
         verify(itemMapper,          never()).toDto(any());
@@ -165,15 +160,13 @@ public class ItemServiceImplTest {
         when(categoryRepository.findById(anyLong())).thenReturn(Optional.of(ringsCategory));
         when(itemRepository.findByCategoryId(anyLong(), any(Pageable.class))).thenReturn(TestDataFactory.emptyPage());
 
-        EmptyResourceException ex = Assertions.assertThrows(
-                EmptyResourceException.class,
-                () -> itemService.getItemsByCategory(1L, 0, 10, "id", "asc")
-        );
+        APIResponse<ItemDTO> res = itemService.getItemsByCategory(1L, 0, 10, "id", "asc");
 
-        Assertions.assertEquals("No items with category: Rings found", ex.getMessage());
+        Assertions.assertEquals(0, res.getContent().size());
         verify(categoryRepository, times(1)).findById(anyLong());
         verify(itemRepository,     times(1)).findByCategoryId(anyLong(), any(Pageable.class));
         verify(itemMapper,          never()).toDto(any());
+
     }
 
     // ─── GET BY KEYWORD ──────────────────────────────────────────────────────────
@@ -197,18 +190,15 @@ public class ItemServiceImplTest {
     }
 
     @Test
-    @DisplayName("Get by keyword — sad path: no items match keyword")
+    @DisplayName("Get by keyword — Sad path: no items match keyword( empty APIResponse )")
     void getByKeyword_Empty() {
         when(itemRepository.findByNameContainingIgnoreCase(anyString(), any(Pageable.class))).thenReturn(TestDataFactory.emptyPage());
 
-        EmptyResourceException ex = Assertions.assertThrows(
-                EmptyResourceException.class,
-                () -> itemService.getItemsByKeyword("cha", 0, 10, "id", "asc")
-        );
+        APIResponse<ItemDTO> res = itemService.getItemsByKeyword("cha", 0, 10, "id", "asc");
 
-        Assertions.assertEquals("No items with keyword: cha found", ex.getMessage());
-        Assertions.assertEquals("cha", ex.getFieldValue());
-        verify(itemRepository, times(1)).findByNameContainingIgnoreCase(eq("cha"), any(Pageable.class));
+        Assertions.assertNotNull(res);
+        Assertions.assertEquals(0,res.getTotalElements());
+        Assertions.assertEquals(0, res.getTotalPages());
         verify(itemMapper,      never()).toDto(any());
     }
 

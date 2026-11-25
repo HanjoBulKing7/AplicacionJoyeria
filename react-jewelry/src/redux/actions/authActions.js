@@ -6,12 +6,8 @@ export const loginUser = createAsyncThunk(
     async ( requestBody, { rejectWithValue }) => {
         try{
             const res = await api.post('/auth/signin', requestBody);
-            const { accessToken, refreshToken } = res.data;
-            console.log( accessToken, refreshToken);
-            
-            // ✅ CORRECCIÓN: Agrega las variables como segundo argumento
-            if (accessToken) localStorage.setItem('accessToken', accessToken);
-            if (refreshToken) localStorage.setItem('refreshToken', refreshToken);
+            if(!!res) 
+                localStorage.setItem('userInfo', JSON.stringify(res.data));
             
             return res.data;
         }catch(e){
@@ -25,9 +21,8 @@ export const logoutUser = createAsyncThunk(
     async ( requestBody, { rejectWithValue} ) => {
 
         try{
-            const res = await api.post('/auth/signout', requestBody);
-            console.log("Refresh token: ", requestBody)
-            return res.data.message;
+            await api.post('/auth/signout', requestBody);
+            localStorage.removeItem('userInfo');
         }catch(e){
             return rejectWithValue(e?.response?.message || 'Error logging out!');
         }
@@ -41,9 +36,10 @@ export const signUpUser = createAsyncThunk(
 
         try{
             const res = await api.post('/auth/signup', requestBody);
-
+            console.log(res)
             return res.data.message;
         }catch(e){
+            console.log(e)
             return rejectWithValue(e?.response?.message || 'Error signing up!');
         }
     }
@@ -71,6 +67,20 @@ export const confirmPayment = createAsyncThunk(
             return res.data;
         } catch(e) {
             return rejectWithValue(e?.response?.data?.message || 'Error confirming the payment');
+        }
+    }
+)
+
+export const fetchDashboardData = createAsyncThunk(
+    'auth/dashboardData',
+    async( _, { rejectWithValue } ) => {
+        try{
+            const res = await api.get("/admin/dashboard");
+
+            return res.data;
+            
+        }catch(e){
+            return rejectWithValue( e?.response?.data?.message || 'Error fetching dashboard data' );
         }
     }
 )

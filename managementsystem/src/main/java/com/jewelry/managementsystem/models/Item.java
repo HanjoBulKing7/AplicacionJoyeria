@@ -32,7 +32,7 @@ public class Item {
     private String image;
 
     @JoinColumn(name = "category_id")
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne
     private Category category;
 
 

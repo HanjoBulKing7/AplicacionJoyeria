@@ -98,7 +98,7 @@ public class ItemController {
         return new ResponseEntity<>(deletedItemDTO, HttpStatus.OK);
     }
 
-    @PutMapping("/items/{itemId}/image")
+    @PutMapping("/admin/items/{itemId}/image")
     public ResponseEntity<ItemDTO> updateProductImage(@PathVariable Long itemId,
                                                       @RequestParam("Image") MultipartFile image) throws IOException {
         ItemDTO updatedImageItem = itemService.updateItemImage(itemId, image);

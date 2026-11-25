@@ -1,5 +1,5 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { publicApi } from '../../api/api'
+import { createAsyncThunk, createImmutableStateInvariantMiddleware, isRejectedWithValue } from "@reduxjs/toolkit";
+import { api, publicApi } from '../../api/api'
 
 // Thunk para obtener Items (Soporta búsqueda, paginación y filtros)
 export const fetchItems = createAsyncThunk(
@@ -31,3 +31,105 @@ export const fetchCategories = createAsyncThunk(
         }
     }
 ); 
+
+export const updateCategory = createAsyncThunk(
+    'items/udpateCategory',
+    async ( params, { rejectWithValue }) => {
+        try{
+            const res = await api.put(`/admin/categories/${params.id}`, params);
+            return res.data;
+        }catch(e){
+            return rejectWithValue(e.response?.data?.message || 'Error updating the category');
+        }
+    }
+)
+
+export const addItem = createAsyncThunk(
+    'items/createItem',
+    async( formData , { rejectWithValue})=> {
+        try{
+            console.log(formData);
+
+            const res = await api.post(`/admin/categories/${formData?.categoryId}/items`, formData)
+            return res.data;
+
+        }catch(e){
+            return rejectWithValue( response?.data?.message || 'Error adding a new item');
+        }
+    }
+)
+
+export const createCategory = createAsyncThunk(
+    'items/createCategory',
+    async ( params, { rejectWithValue}) => {
+        try{
+            const res = await api.post("/admin/categories", params);
+
+            return res.data;
+        }catch(e){
+            return rejectWithValue( e?.response?.data?.message || 'Error creating the category');
+        }
+    }
+)
+
+export const deleteCategory = createAsyncThunk(
+    'items/deleteCategory',
+    async(params, { rejectWithValue})=>{
+        try{
+            const res = await api.delete(`/admin/categories/${params.id}`)
+            return res.data;
+        }catch(e){
+            return rejectWithValue( e?.response?.data?.message || 'Error deleting the category');
+        }
+    }
+)
+
+export const updateItem = createAsyncThunk(
+    'items/updateItem',
+    async( params, { rejectWithValue}) =>{
+        try{
+            const res = await api.put(`/admin/categories/${params?.categoryId}/items/${params?.productId}`, params)
+
+            return res;
+        }catch(e){
+            return rejectWithValue( e?.response?.data?.message || 'Error updating the item' );
+        }
+    }
+)
+
+export const updateItemImage = createAsyncThunk(
+  'items/updateItemImage',
+  async ({ id, file }, { rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      formData.append('Image', file);              
+        const res = await api.put(
+        `/admin/items/${id}/image`,
+        formData,
+        {
+          headers: {
+            'Content-Type': undefined, 
+          },
+          withCredentials: true,
+        }
+      ); 
+      return res.data;
+    } catch (e) {
+      return rejectWithValue( e?.response?.data?.message || 'Error uploading image');
+    }
+  }
+);
+
+export const deleteItem = createAsyncThunk(
+    'items/deleteItem',
+    async( itemId , { rejectWithValue })=>{
+        try{
+            
+            const res = await api.delete(`/admin/items/${itemId}`);
+
+            return res.data;
+        }catch(e){
+            return rejectWithValue( e?.response?.data?.message || 'Error deleting the product' );
+        }
+    }
+)

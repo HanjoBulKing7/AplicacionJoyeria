@@ -70,3 +70,17 @@ export const confirmPayment = createAsyncThunk(
         }
     }
 )
+
+export const fetchDashboardData = createAsyncThunk(
+    'auth/dashboardData',
+    async( _, { rejectWithValue } ) => {
+        try{
+            const res = await api.get("/admin/dashboard");
+
+            return res.data;
+            
+        }catch(e){
+            return rejectWithValue( e?.response?.data?.message || 'Error fetching dashboard data' );
+        }
+    }
+)

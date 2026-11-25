@@ -1,13 +1,13 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Description, Dialog, DialogBackdrop, DialogPanel, DialogTitle, TransitionChild } from '@headlessui/react';
 import { ImCross } from "react-icons/im";
 import Sidebar from './Sidebar';
 import { Outlet } from 'react-router-dom';
-import { FaBars } from 'react-icons/fa';
+import { FaBars, FaWizardsOfTheCoast } from 'react-icons/fa';
 
 const AdminLayout = () => {
 
-    const [ sideBarOpen, setSideBarOpen ] = useState(false)
+    const [ sideBarOpen, setSideBarOpen ] = useState(false);
 
   return (
     <div className='h-full'>

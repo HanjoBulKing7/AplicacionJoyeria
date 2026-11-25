@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit"
-import { confirmPayment, createStripeSecret, loginUser, logoutUser, signUpUser } from '../actions/authActions'
+import { confirmPayment, createStripeSecret, fetchDashboardData, loginUser, logoutUser, signUpUser } from '../actions/authActions'
 import { useNavigate } from "react-router-dom"
 
 
@@ -12,6 +12,7 @@ const initialState = {
     isLoading: false,
     message: '',
     error: '',
+    dashboardData: {},
 }
 
 const authSlice = createSlice({
@@ -83,6 +84,17 @@ const authSlice = createSlice({
                 state.username = '';
                 state.roles = [];
                 state.accessToken = '';
+                state.isLoading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchDashboardData.pending, (state)=>{
+                state.isLoading = true;
+            })
+            .addCase(fetchDashboardData.fulfilled, (state, action )=>{
+                state.isLoading = false;
+                state.dashboardData = action.payload;
+            })
+            .addCase(fetchDashboardData.rejected , (state, action)=>{
                 state.isLoading = false;
                 state.error = action.payload;
             })
